@@ -19,6 +19,8 @@ Until a custom domain is configured, the site publishes at `https://culpable.git
 
 A static export built in CI and published to GitHub Pages with `actions/deploy-pages`. The Pages source is **GitHub Actions**, not branch deploy, and the custom domain is set on the Pages configuration.
 
+`public/CNAME` is the source of truth for the custom domain. It must live in the framework's static-assets directory, not the repository root: a static export only publishes the build output, so a root-level `CNAME` is not copied into `out/` and the next deploy would clear the domain setting. Do not delete or move it.
+
 ## Status
 
 Repository scaffold only. No framework or landing-page code is committed yet - the stack is still to be decided.

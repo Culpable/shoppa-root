@@ -77,14 +77,14 @@ Approved palette roles. `src/styles/global.css` owns the exact production values
 - Body role: Figtree 400 for copy, 500–600 for meta and labels, 700 for buttons and chip text.
 - Label role: Figtree 700, 12–12.5px, letter-spacing 0.16–0.2em, uppercase, used in eyebrow pills, timeline dates, connector labels.
 - Mono role: Courier Prime, embed code blocks and code-flavoured decoration only. Never for body copy.
-- Scale (approved): hero h1 `clamp(44px, 5.6vw, 72px)` at line-height 1.06; section h2 `clamp(30px, 3.8vw, 46px)` at 1.06; panel h3 24px; body 16.5px/1.65; small meta 12–13.5px. Hero line-height is deliberately 1.06, not the prototype's 1.02 — see the highlight rule under Components.
+- Scale (approved): hero h1 `clamp(44px, 5.6vw, 72px)` at line-height 1.06; section h2 `clamp(30px, 3.8vw, 46px)` at 1.06; panel h3 24px; body 16.5px/1.65; small meta 12–13.5px. Hero line-height is deliberately 1.06, not the prototype's 1.02 - see the highlight rule under Components.
 - Measure and wrapping: body copy capped near 620px; hero subhead 520px; headings wrap freely with `text-wrap: balance` where supported. No truncation or ellipsis anywhere on the marketing pages.
 - Numerics and locale: en-AU. Currency as `$189` / `$189.00` exactly as the copy contract specifies; en dashes in ranges (`$3–5T`, `$100K – $500K`); `’` apostrophes in all display strings (project rule).
 
 ## Layout
 
 - Spacing rhythm: container max-width 1140px with 32px gutters; sections separated by 72–96px; within a section, intro → content gap 44–48px; card internal padding 22–32px. `src/styles/global.css` owns the exact values.
-- Breakpoints and frames: two functional breakpoints — 960px (multi-column grids stack to one column; hero split becomes a single column with the visual below the copy) and 640px (three-up pill grids stack). Full-bleed is never used for content; the dark timeline band and CTA band are rounded 44px blocks inset within the container.
+- Breakpoints and frames: two functional breakpoints - 960px (multi-column grids stack to one column; hero split becomes a single column with the visual below the copy) and 640px (three-up pill grids stack). Full-bleed is never used for content; the dark timeline band and CTA band are rounded 44px blocks inset within the container.
 - Navigation and shell: header = brand wordmark left, inline text links (the agent, the catalogue, our process, about us) centre/right, terracotta pill "Contact us" right; below 960px the inline links hide and the full route list lives in the footer (no JavaScript burger menu). Footer = three columns (offer / company / our offices) plus wordmark and dynamic-year copyright line.
 - Overflow and dense data: no horizontal scrolling at any viewport ≥ 320px; the order-summary list and timeline cards reflow by stacking. Code blocks in embed panels are the only permitted `overflow-x: auto` regions.
 - Touch targets: interactive elements at least 44px tall (buttons, header CTA, footer links with padding); source links and small chips at least 24px with surrounding spacing.
@@ -105,7 +105,7 @@ Approved palette roles. `src/styles/global.css` owns the exact production values
 
 ### Interaction and accessibility
 
-- Semantics: native elements only — `a` for navigation, `button` reserved for future form submission, lists as `ul`/`ol`, the conversation as ordered content with visually-hidden speaker labels ("Customer:", "Your agent:") for screen readers. No custom widgets.
+- Semantics: native elements only - `a` for navigation, `button` reserved for future form submission, lists as `ul`/`ol`, the conversation as ordered content with visually-hidden speaker labels ("Customer:", "Your agent:") for screen readers. No custom widgets.
 - Cursor and stable states: pointer on links/buttons; hover states change colour/elevation without layout shift (transform-based lifts only). No disabled states exist on the marketing site.
 - Focus and keyboard: visible focus rings on every interactive element (2px ink outline with 2px offset on light, cream outline on dark/terracotta fills); skip link as first focusable element; DOM order equals visual order.
 - Names and announcements: accessible names match visible labels; external links (sources, demo.shoppa.au) carry normal link semantics with the `↗` glyph `aria-hidden`. No live regions until the contact form phase.
@@ -117,7 +117,7 @@ Primary: pill, `#B8441F` fill, white 700 text, terracotta glow shadow, hover dar
 
 ### Forms and selection
 
-Current scope: none rendered. The contact page publishes a `mailto:` email block (`hello@shoppa.au`) styled as a card. Planned (approved, not implemented): a Formspree-backed enquiry form mirroring the embeddings field set (Name, Email, Company, Phone, Message, Budget radios) restyled to this system — floating labels on `#FFFBF5` fields, 1.5px borders, terracotta focus border, error text in accent-deep with plain-language messages. Build it only when the user schedules the Formspree phase.
+Current scope: none rendered. The contact page publishes a `mailto:` email block (`hello@shoppa.au`) styled as a card. Planned (approved, not implemented): a Formspree-backed enquiry form mirroring the embeddings field set (Name, Email, Company, Phone, Message, Budget radios) restyled to this system - floating labels on `#FFFBF5` fields, 1.5px borders, terracotta focus border, error text in accent-deep with plain-language messages. Build it only when the user schedules the Formspree phase.
 
 ### Navigation and search
 
@@ -149,7 +149,7 @@ The 404 page is the only error surface: display numeral, heading, one-line body,
 
 ## Do's and Don'ts
 
-- Do render the hero highlight as a bottom-anchored background gradient on the `actually yours` span, sized to about 72% of the line box with `box-decoration-break: clone` and zero vertical padding, with hero line-height 1.06 — the prototype's full-height padded highlight collided with the ascenders/descenders of the previous line (user-reported overlap, 2026-08-18) and must not be reproduced.
+- Do render the hero highlight as a bottom-anchored background gradient on the `actually yours` span, sized to about 72% of the line box with `box-decoration-break: clone` and zero vertical padding, with hero line-height 1.06 - the prototype's full-height padded highlight collided with the ascenders/descenders of the previous line (user-reported overlap, 2026-08-18) and must not be reproduced.
 - Do pair every status with words; never colour alone.
 - Do keep every capability claim traceable to `/Users/sacino/shoppa/AGENTS.md` / the approved copy contract before publishing it.
 - Do keep small text on dark bands at ≥ 0.75 alpha and filled primary buttons on `#B8441F`.

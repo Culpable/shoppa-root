@@ -15,6 +15,7 @@
 <copy_rules>
 - Landing-page copy is ported from `/Users/sacino/embeddings/src/app/page.jsx` and its `about/`, `process/`, `contact/`, `thank-you/`, and `not-found.jsx` routes. Read the relevant source and `documents/todo/shoppa_landing_site_plan.md` before editing display copy.
 - Use British English and `’`, never `'`, in display strings.
+- Never use em dashes in display strings, documentation, or other repository-authored prose. Replace each em dash with a standard dash (`-`).
 - Never disclose the unauthenticated API, mock mode, MVP staging, repository structure, or Convex in public copy.
 - Verify product claims against `/Users/sacino/shoppa/AGENTS.md` and `/Users/sacino/shoppa/README.md` before publishing them.
 </copy_rules>

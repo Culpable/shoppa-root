@@ -15,10 +15,10 @@ This repository is intentionally separate from the product monorepo:
 
 Until a custom domain is configured, the site publishes at `https://culpable.github.io/shoppa-root/`.
 
+## Intended deployment
+
+A static export built in CI and published to GitHub Pages with `actions/deploy-pages`. The Pages source is **GitHub Actions**, not branch deploy, and the custom domain is set on the Pages configuration.
+
 ## Status
 
 Repository scaffold only. No framework or landing-page code is committed yet - the stack is still to be decided.
-
-## Precedent
-
-The intended shape follows [`Culpable/fintrace-root`](https://github.com/Culpable/fintrace-root): a static export built in CI and published to GitHub Pages via `actions/deploy-pages`, with the custom domain set on the Pages configuration.

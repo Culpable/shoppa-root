@@ -1,0 +1,38 @@
+<bug_1>
+<summary>
+<title>[Testing][Medium] Browser suite is tied to one developer’s absolute checkout path</title>
+<one_line_description>The Playwright server always serves /Users/sacino/shoppa-root/dist, so the required browser suite fails or tests the wrong build from any other checkout path.</one_line_description>
+</summary>
+
+<file_locations>
+- /Users/sacino/shoppa-root/playwright.config.ts - Playwright webServer configuration, Lines 16-20
+- /Users/sacino/shoppa-root/package.json - script: test, Lines 11-13
+</file_locations>
+
+<issue_description>
+<description>The default pnpm test command invokes Playwright, whose webServer command contains the author’s absolute macOS checkout path. A clone on another machine, a second worktree, or a CI runner still asks Python to serve /Users/sacino/shoppa-root/dist. When that directory does not exist, the health check never receives the built site and the suite times out. If that path exists but belongs to a different checkout, the tests can pass against stale or unrelated output instead of the current repository. This breaks the documented default completion gate and makes browser verification non-portable.</description>
+
+<code_example>
+
+```typescript
+// File: /Users/sacino/shoppa-root/playwright.config.ts, Lines 16-20
+
+webServer: {
+  command: 'python3 -m http.server 4321 --bind 127.0.0.1 --directory /Users/sacino/shoppa-root/dist',
+  url: 'http://127.0.0.1:4321',
+  reuseExistingServer: false,
+  timeout: 60_000,
+},
+```
+
+</code_example>
+
+<expected_vs_actual>
+| Aspect | Expected | Actual |
+|--------|----------|--------|
+| **Checkout portability** | pnpm test serves the current checkout’s dist directory | The command always serves /Users/sacino/shoppa-root/dist |
+| **CI behaviour** | Browser tests start after the current build | The web server points at a path absent from normal CI runners and cannot become healthy |
+| **Test integrity** | Assertions inspect output produced by the repository under test | Another checkout’s output can be served when the hard-coded path exists |
+</expected_vs_actual>
+</issue_description>
+</bug_1>

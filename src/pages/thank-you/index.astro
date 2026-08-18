@@ -1,0 +1,10 @@
+---
+import PageIntro from '../../components/PageIntro.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { pages } from '../../data/site';
+---
+
+<BaseLayout metadata={pages.thankYou}>
+  <PageIntro eyebrow="message received" title="We’ll review your enquiry"><p>Thanks for getting in touch. We’ll look at your store and respond with the fastest path to a live agent.</p></PageIntro>
+  <section class="container"><article class="utility-card"><h2>What to expect</h2><p>We’ll reply with the next step: a look at your catalogue feed, and how the two-line embed goes onto your site.</p><p>If anything is urgent, email hello@shoppa.au directly and include the company name from your enquiry.</p><div class="button-row"><a class="button button-primary" href="/">Back to home</a><a class="button button-ghost" href="/#agent">See the agent</a></div></article></section>
+</BaseLayout>

@@ -1,0 +1,74 @@
+---
+import CTASection from '../components/CTASection.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { pages } from '../data/site';
+
+const embedCode = `<script src="https://api.shoppa.au/embed/shoppa.js"></script>
+<script>Shoppa.init({ retailerId: "yourstore", apiBase: "https://api.shoppa.au" })</script>`;
+const capabilities = ['conversational discovery', 'checkout in the chat', 'order support', 'catalogue-grounded', 'on-brand', 'two-line embed'];
+const timeline = [
+  { date: 'Sep 2025', stat: '700M+', label: 'weekly users', text: 'OpenAI launches Instant Checkout in ChatGPT', source: 'OpenAI Instant Checkout', href: 'https://openai.com/index/buy-it-in-chatgpt/' },
+  { date: 'Jan 2026', stat: 'UCP', label: 'agent checkout standard', text: 'Google launches UCP, an open standard for agent checkout', source: 'Google UCP', href: 'https://blog.google/products/ads-commerce/agentic-commerce-ai-tools-protocol-retailers-platforms/' },
+  { date: '2026', stat: '81%', label: 'of retail executives', text: 'say AI will weaken brand loyalty (Deloitte)', source: 'Deloitte 2026 outlook', href: 'https://www.deloitte.com/us/en/insights/industry/retail-distribution/retail-distribution-industry-outlook.html' },
+  { date: '2030', stat: '$3–5T', label: 'agentic commerce', text: 'McKinsey projects $3–5 trillion globally', source: 'McKinsey', href: 'https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-automation-curve-in-agentic-commerce' },
+];
+const shiftCards = [
+  { title: 'Disintermediation', body: 'AI agents become the storefront. If the agent belongs to a platform, the customer relationship, loyalty activation, and first-party data go with it. Your own agent keeps them.', source: 'McKinsey', href: timeline[3].href },
+  { stat: '393%', statLabel: 'YoY growth in AI-driven retail traffic in Q1 2026', title: 'The data foundation', body: 'An agent is only as good as the catalogue behind it. Missing descriptions, stale inventory, and inconsistent taxonomy produce wrong answers, whether the agent is yours or a platform’s.', source: 'Adobe Digital Insights', href: 'https://business.adobe.com/blog/ai-traffic-surge-retail-sites-not-machine-readable' },
+  { title: 'The race is on', body: 'Early movers are already putting branded agents in front of their customers. Every month without one is a month of conversations, and conversions, happening somewhere else.', source: 'Deloitte 2026 outlook', href: timeline[2].href },
+];
+---
+
+<BaseLayout metadata={pages.home}>
+  <section class="container hero">
+    <div class="hero-copy">
+      <h1>The shopping agent that’s <span class="hero-highlight">actually yours</span></h1>
+      <p class="hero-subhead">Shoppa drops into your site with two lines of code. Your agent takes customers from first question to checkout, and keeps helping after the sale.</p>
+      <div class="button-row"><a class="button button-primary" href="/contact/">Contact us</a><a class="button button-ghost" href="/process/">Learn how it works</a></div>
+      <ul class="proof-pills" aria-label="Shoppa at a glance"><li class="proof-pill"><strong>Sold</strong><span>in one conversation</span></li><li class="proof-pill"><strong>Yours</strong><span>not rented</span></li><li class="proof-pill"><strong>2 lines</strong><span>of code to go live</span></li></ul>
+    </div>
+    <div class="flow-stack" aria-label="Your catalogue feeds your agent, which answers your customer">
+      <div class="flow-card"><div class="flow-title"><span>Your catalogue</span><span class="status">ready</span></div><p class="flow-meta">details · descriptions · stock</p></div>
+      <div class="flow-connector">feeds</div>
+      <div class="flow-card"><div class="flow-title agent-title"><span class="pulse-dot" aria-hidden="true"></span><span>Your agent</span></div><ul class="chip-list"><li>discover</li><li>checkout</li><li>support</li></ul></div>
+      <div class="flow-connector">answers</div>
+      <div class="flow-card"><strong>Your customer</strong><div class="mini-browser"><div class="browser-bar"><span>yourstore.com.au</span><span><span aria-hidden="true">✦ </span>your brand</span></div><div class="mini-chat"><p class="bubble bubble-customer">Do you have the Sapphire Blue Midi in size 10?</p><p class="bubble bubble-agent">Found it: in stock and in your size.</p><div class="product-row"><span class="swatch" aria-hidden="true"></span><strong>Sapphire Blue Midi</strong><span class="product-meta">$189 · size 10 · in stock</span></div><p class="bubble bubble-agent">Pay here in the chat?</p><span class="status">Paid · order confirmed</span></div></div></div>
+    </div>
+  </section>
+
+  <section id="agent" class="container section">
+    <div class="section-intro"><p class="eyebrow">the agent</p><h2>One conversation from ‘I’m looking for…’ to ‘it’s on its way’</h2><p>Your agent greets customers on your site, answers from your catalogue, takes payment in the chat, and handles the follow-ups, starting with ‘where’s my order?’</p><p>It’s grounded in your own product catalogue, ingested from the feed you already have.</p></div>
+    <div class="agent-grid">
+      <article class="conversation" aria-label="Example customer conversation">
+        <div class="browser-bar"><span aria-hidden="true">● ● ●</span><span>yourstore.com.au</span><span><span aria-hidden="true">✦ </span>your brand</span></div>
+        <ol class="conversation-list">
+          <li class="conversation-message customer"><div class="message-stack"><p class="bubble bubble-customer"><span class="sr-only">Customer: </span>I need a dress for a spring wedding, size 10, under $200</p></div></li>
+          <li class="conversation-message"><span class="avatar" aria-hidden="true">✦</span><div class="message-stack"><p class="bubble bubble-agent"><span class="sr-only">Your agent: </span>Lovely occasion. These two suit an outdoor spring wedding, and both are in your size right now:</p><div class="product-row"><span class="swatch" aria-hidden="true"></span><strong>Sapphire Blue A-Line Midi Dress</strong><span class="product-meta">$189 · size 10 · in stock</span></div><div class="product-row"><span class="swatch swatch-blush" aria-hidden="true"></span><strong>Blush Crepe Wrap Midi Dress</strong><span class="product-meta">$159 · size 10 · 3 left</span></div></div></li>
+          <li class="conversation-message customer"><div class="message-stack"><p class="bubble bubble-customer"><span class="sr-only">Customer: </span>The sapphire one, with express delivery please. Can I pay here?</p></div></li>
+          <li class="conversation-message"><span class="avatar" aria-hidden="true">✦</span><div class="message-stack"><p class="bubble bubble-agent"><span class="sr-only">Your agent: </span>Of course. Here’s your order:</p><dl class="order-summary"><div><dt>Sapphire Blue A-Line Midi</dt><dd>$189.00</dd></div><div><dt>Express delivery</dt><dd>$9.95</dd></div><div><dt>Total</dt><dd>$198.95</dd></div></dl><span class="status">Paid · order confirmed</span></div></li>
+          <li class="time-divider">3 days later</li>
+          <li class="conversation-message customer"><div class="message-stack"><p class="bubble bubble-customer"><span class="sr-only">Customer: </span>Where’s my order?</p></div></li>
+          <li class="conversation-message"><span class="avatar" aria-hidden="true">✦</span><div class="message-stack"><p class="bubble bubble-agent"><span class="sr-only">Your agent: </span>Good news. Order #8412 is out for delivery and should be with you today.</p></div></li>
+        </ol>
+      </article>
+      <div class="side-panels"><article class="embed-panel"><p class="eyebrow dark-eyebrow">the embed</p><h3>Two lines of code.</h3><p>No rebuild, no platform migration.</p><pre class="code-block"><code>{embedCode}</code></pre></article><article class="demo-panel"><p class="eyebrow dark-eyebrow">the demo</p><h3>See it live.</h3><p>Harlow the Label, a demo boutique running the real embed.</p><a class="demo-link" href="https://demo.shoppa.au">demo.shoppa.au <span aria-hidden="true">↗</span></a></article></div>
+    </div>
+    <ul class="capabilities">{capabilities.map((capability) => <li>{capability}</li>)}</ul>
+  </section>
+
+  <section id="catalogue" class="container section">
+    <div class="section-intro"><p class="eyebrow">the catalogue</p><h2>Your catalogue is your agent’s brain.</h2><p>Everything your agent says starts with your product data. Shoppa ingests the feed you already have — titles, descriptions, prices, sizes, stock — and answers only from it. A complete, current feed is the difference between a guess and a confident answer.</p></div>
+    <div class="catalogue-grid">
+      <article class="catalogue-card before"><div class="catalogue-card-head"><span class="eyebrow">Before</span><span class="status">Incomplete</span></div><h3>Blue Dress</h3><dl class="catalogue-data"><div><dt>GTIN</dt><dd aria-label="Empty">—</dd></div></dl><p class="catalogue-description">A blue dress for women.</p><dl class="catalogue-data"><div><dt>coverage</dt><dd>thin</dd></div><div><dt>agent signal</dt><dd>unclear</dd></div></dl><ul class="tags tags-muted"><li>colour?</li><li>silhouette?</li><li>occasion?</li><li>material?</li></ul><p class="footnote">Last updated: 8 months ago</p></article>
+      <div class="feed-fields"><p>what your feed carries</p><ul><li>titles</li><li>descriptions</li><li>prices</li><li>sizes &amp; colours</li><li>stock &amp; availability</li><li>images</li></ul></div>
+      <article class="catalogue-card after"><div class="catalogue-card-head"><span class="eyebrow">After</span><span class="status">Agentic-ready</span></div><h3>Women’s A-Line Midi Dress — Sapphire Blue, Taylor Swift-inspired</h3><dl class="catalogue-data"><div><dt>GTIN</dt><dd>0614141123456</dd></div></dl><p class="catalogue-description">Flattering A-line midi dress in sapphire blue crepe. Features a fitted bodice with subtle darting, a flowing midi-length skirt, and concealed side zip. Inspired by the blue dress trend popularised by Taylor Swift. Perfect for weddings, racing carnivals, and cocktail events. Machine washable. Available in sizes 6–18.</p><dl class="catalogue-data"><div><dt>coverage</dt><dd>complete</dd></div><div><dt>agent signal</dt><dd>clear</dd></div></dl><ul class="tags"><li>Sapphire Blue</li><li>A-Line</li><li>Midi</li><li>Wedding Guest</li><li>Crepe</li><li>Sizes 6–18</li></ul><p class="trend-row">Trending: Taylor Swift blue dress</p><p class="footnote">Last updated: 2 hours ago</p></article>
+    </div><p class="catalogue-close">Fresh feed in, accurate agent out.</p>
+  </section>
+
+  <section id="why-now" class="container section dark-band"><h2>Agentic shopping isn’t coming. It’s here.</h2><div class="timeline-grid">{timeline.map((item) => <article class="timeline-card"><span class="timeline-date">{item.date}</span><p class="timeline-stat">{item.stat}</p><p class="timeline-label">{item.label}</p><p class="timeline-text">{item.text}</p><a class="source-link" href={item.href} target="_blank" rel="noreferrer">Source · {item.source} <span aria-hidden="true">↗</span></a></article>)}</div><div class="timeline-close"><strong>Retailers who own the conversation keep the customer.</strong><span>The rest are handing their relationships to someone else’s agent.</span></div></section>
+
+  <section class="container section"><div class="section-intro"><p class="eyebrow">the shift</p><h2>Your customers will talk to an AI agent. Make sure it’s yours.</h2><p>When shopping moves into a third-party chat, the platform owns the relationship, the data, and the follow-up sale. A shopping agent you own keeps discovery, checkout, and after-sales support on your site, in your brand, answering from your catalogue.</p></div><div class="shift-grid">{shiftCards.map((card) => <article class="shift-card">{card.stat && <><p class="shift-stat">{card.stat}</p><p class="shift-stat-label">{card.statLabel}</p></>}<h3>{card.title}</h3><p>{card.body}</p><a class="source-link source-light" href={card.href} target="_blank" rel="noreferrer">Source · {card.source} <span aria-hidden="true">↗</span></a></article>)}</div></section>
+
+  <section id="proof" class="container section dark-band testimonial"><blockquote>We went from a script tag to a live agent <em>in an afternoon</em>. Customers ask, pay, and track orders without leaving the chat — and it’s <em>our brand doing the talking</em>.</blockquote><footer><strong>Australian retail executive</strong><span>Head of Digital, National Retailer</span></footer></section>
+  <CTASection />
+</BaseLayout>

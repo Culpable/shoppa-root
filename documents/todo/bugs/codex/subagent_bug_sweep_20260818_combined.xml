@@ -1,0 +1,104 @@
+<bug_report>
+<bug_1>
+<summary>
+<title>[Testing][Medium] Browser suite is tied to one developer’s absolute checkout path</title>
+<one_line_description>The Playwright server always serves one absolute checkout path, so the required browser suite fails or tests the wrong build elsewhere.</one_line_description>
+</summary>
+
+<file_locations>
+- /Users/sacino/shoppa-root/playwright.config.ts - Playwright webServer configuration, Lines 16-20
+- /Users/sacino/shoppa-root/package.json - script: test, Lines 11-13
+</file_locations>
+
+<issue_description>
+<description>The default pnpm test command invoked Playwright with the original developer checkout embedded in the webServer command. A clone, worktree, or CI runner could time out when that directory did not exist or inspect stale output when it did. The implementation now serves the current checkout’s relative dist directory, and the full suite passes with that configuration.</description>
+
+<code_example>
+
+```typescript
+webServer: {
+  command: 'python3 -m http.server 4321 --bind 127.0.0.1 --directory /Users/sacino/shoppa-root/dist',
+}
+```
+
+</code_example>
+
+<expected_vs_actual>
+| Aspect | Expected | Actual at audit |
+|--------|----------|-----------------|
+| **Checkout portability** | Serve the current checkout’s dist directory | Always served one absolute directory |
+| **CI behaviour** | Start against the current build | Could not become healthy on a normal CI path |
+| **Test integrity** | Inspect output from the repository under test | Could inspect another checkout’s output |
+</expected_vs_actual>
+</issue_description>
+</bug_1>
+
+<bug_2>
+<summary>
+<title>[Accessibility][Medium] Small labels fail the required text contrast target</title>
+<one_line_description>Eyebrow, flow-connector, and conversation-divider text fell below the 4.5:1 contrast target.</one_line_description>
+</summary>
+
+<file_locations>
+- /Users/sacino/shoppa-root/src/styles/global.css - selectors: .eyebrow, .flow-connector, .time-divider
+- /Users/sacino/shoppa-root/test/agent-accessibility.spec.ts - rendered axe-core and contrast checks
+</file_locations>
+
+<issue_description>
+<description>The shared eyebrow rendered 12px accent text on blush at 4.32:1. The flow connectors rendered at 3.61:1 and the conversation divider at 3.79:1. The implementation now uses #AE3E1B for small accent text and #6B4A31 for small neutral labels. Full axe-core checks now run on every route and pass at both configured viewports.</description>
+
+<code_example>
+
+```css
+.eyebrow { color: var(--colour-accent-deep); }
+.flow-connector,
+.time-divider { color: var(--colour-ink-muted); }
+```
+
+</code_example>
+
+<expected_vs_actual>
+| Aspect | Expected | Actual at audit |
+|--------|----------|-----------------|
+| **Eyebrow contrast** | At least 4.5:1 | 4.32:1 |
+| **Flow connector contrast** | At least 4.5:1 | 3.61:1 |
+| **Conversation divider contrast** | At least 4.5:1 | 3.79:1 |
+</expected_vs_actual>
+</issue_description>
+</bug_2>
+
+<bug_3>
+<summary>
+<title>[Navigation][Medium] Home header marks two sections as the current page</title>
+<one_line_description>The agent and catalogue links both displayed active dots and exposed aria-current page state on the home route.</one_line_description>
+</summary>
+
+<file_locations>
+- /Users/sacino/shoppa-root/src/components/Header.astro - function: isCurrent
+- /Users/sacino/shoppa-root/test/agent-accessibility.spec.ts - current-page state regression check
+</file_locations>
+
+<issue_description>
+<description>The current-link helper treated every home fragment target as current whenever the pathname was /. Both section links therefore announced the same current-page state. The helper now excludes fragment links and marks only real route links. The regression check proves zero header current states on home and one on about.</description>
+
+<code_example>
+
+```astro
+function isCurrent(href: string): boolean {
+  if (href.startsWith('/#')) return currentPath === '/';
+  return currentPath === href;
+}
+```
+
+</code_example>
+
+<expected_vs_actual>
+| Aspect | Expected | Actual at audit |
+|--------|----------|-----------------|
+| **Visual state** | One accurate destination marker, or none | Two dots appeared together |
+| **Screen-reader state** | One accurate current destination | Two fragment links announced current page |
+| **User impact** | One clear location cue | Conflicting location cues |
+</expected_vs_actual>
+</issue_description>
+</bug_3>
+</bug_report>

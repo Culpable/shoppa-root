@@ -1,0 +1,28 @@
+---
+import CTASection from '../../components/CTASection.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { pages } from '../../data/site';
+
+const embedCode = `<script src="https://api.shoppa.au/embed/shoppa.js"></script>
+<script>Shoppa.init({ retailerId: "yourstore", apiBase: "https://api.shoppa.au" })</script>`;
+const values = [
+  { title: 'Agent-readable data', body: 'Product records need complete identifiers, attributes, descriptions, and categories that agents can compare without guessing.' },
+  { title: 'Freshness as a signal', body: 'Stock, price, availability, and status changes must reach your agent before stale data costs a sale.' },
+  { title: 'Grounded answers', body: 'Your agent answers from your catalogue, not from the open internet. If it isn’t in your data, it isn’t in the answer.' },
+  { title: 'Brand-safe conversations', body: 'The agent lives in your brand, on your site, speaking to your customers — never a third-party surface between you.' },
+  { title: 'Ownership', body: 'The conversation, the checkout, and the customer relationship stay yours. That is the point.' },
+  { title: 'One conversation', body: 'Discovery, checkout, and order support belong in the same thread, not three different tools.' },
+];
+---
+
+<BaseLayout metadata={pages.process}>
+  <PageIntro eyebrow="our process" title="How Shoppa takes you from catalogue to live agent"><p>It starts with your product data, because your agent is only as good as what it knows. Then the embed puts the agent on your site, and the conversation does the rest.</p></PageIntro>
+  <section class="container process-stages" aria-label="Shoppa implementation stages">
+    <article class="process-stage"><div><p class="stage-number">01</p><p class="stage-label">Connect</p></div><div class="stage-copy"><h2>Point Shoppa at the feed you already have</h2><p>Shoppa ingests your product feed — JSON or CSV — and turns it into the knowledge your agent sells from. Titles, descriptions, categories, prices, sizes, colours, stock, and images: the fields you already maintain are all it needs.</p><p>Updates are incremental: re-ingest the feed and only changed products are touched. Mark a product out of stock and it leaves the agent’s in-stock answers — your agent never recommends what you can’t sell.</p><h3>Included in this phase</h3><ul class="stage-tags"><li>Product Feed</li><li>JSON or CSV</li><li>Prices in AUD</li><li>Sizes &amp; Colours</li><li>Stock &amp; Availability</li><li>Images</li></ul></div></article>
+    <article class="process-stage"><div><p class="stage-number">02</p><p class="stage-label">Embed</p></div><div class="stage-copy"><h2>Two lines of code, in your brand</h2><p>The complete integration is two script tags. Drop them on your site, point them at your retailer ID, and the agent appears in your storefront — designed to sit inside your brand rather than a bolted-on chat box.</p><p>There’s nothing to rebuild and nothing to migrate: your site stays exactly as it is, and the agent runs on top of it.</p><pre class="code-block"><code>{embedCode}</code></pre></div></article>
+    <article class="process-stage"><div><p class="stage-number">03</p><p class="stage-label">Sell</p></div><div class="stage-copy"><h2>One conversation, start to finish</h2><p>Your agent runs the whole journey: product discovery, add to cart, checkout in the chat, and post-sale order status. Customers ask in their own words and get answers grounded in your catalogue — with the sale and the relationship staying on your site.</p><p>After the sale, the same conversation keeps working: ‘where’s my order?’ gets a real answer, tied to the order the agent just took.</p></div></article>
+  </section>
+  <section class="container values-section"><div class="section-intro"><p class="eyebrow">our values</p><h2>Built for retail conversations, not generic AI adoption</h2><p>Putting a trustworthy agent between you and your customer is a technical and commercial problem. These principles keep Shoppa focused on answer quality and revenue rather than AI theatre.</p></div><div class="values-grid">{values.map((value) => <article class="value-card"><h3>{value.title}</h3><p>{value.body}</p></article>)}</div></section>
+  <CTASection />
+</BaseLayout>

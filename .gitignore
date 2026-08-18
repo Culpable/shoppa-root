@@ -10,6 +10,9 @@ node_modules/
 # Caches
 .turbo/
 .cache/
+.astro/
+playwright-report/
+test-results/
 *.tsbuildinfo
 
 # Local env files

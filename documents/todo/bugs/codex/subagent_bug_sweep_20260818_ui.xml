@@ -1,0 +1,84 @@
+<bug_1>
+<summary>
+<title>[P2][Accessibility] Small labels fail the required text contrast target</title>
+<one_line_description>Eyebrow, flow-connector, and conversation-divider text falls below the 4.5:1 contrast target on every viewport.</one_line_description>
+</summary>
+
+<file_locations>
+- /Users/sacino/shoppa-root/src/styles/global.css - selectors: `.eyebrow`, `.flow-connector`, `.time-divider`, Lines 66-80, 128-129, 160-161
+- /Users/sacino/shoppa-root/src/pages/index.astro - rendered labels: `the agent`, `the catalogue`, `Before`, `After`, `the shift`, `feeds`, `answers`, `3 days later`, Lines 32-40, 49, 59-70
+- /Users/sacino/shoppa-root/src/components/PageIntro.astro - rendered route eyebrow, Lines 10-13
+</file_locations>
+
+<issue_description>
+<description>The shared eyebrow style renders 12px accent-deep text on the blush background at 4.32:1, below the 4.5:1 target for normal text. The home flow connectors render 10px muted text on the canvas at 3.61:1, and the conversation time divider renders the same muted text on the surface at 3.79:1. A full axe-core pass reproduced serious `color-contrast` violations at 1440×900 and 390×844. The eyebrow failure appears on the home, about, process, contact, and thank-you routes; the connector and divider failures appear on the home route. This also contradicts DESIGN.md, which requires 4.5:1 for normal text and forbids the muted token for normal-size copy. Use colour pairs that reach at least 4.5:1 while preserving the approved Warm Sunrise roles.</description>
+
+<code_example>
+
+```css
+/* File: /Users/sacino/shoppa-root/src/styles/global.css, Lines 66-80, 128, 160 */
+
+.eyebrow {
+  color: var(--colour-accent-deep);
+  background: var(--colour-tint-blush);
+  font-size: 12px;
+}
+
+.flow-connector,
+.time-divider {
+  color: var(--colour-ink-muted);
+  font-size: 10px;
+}
+```
+
+</code_example>
+
+<expected_vs_actual>
+| Aspect | Expected | Actual |
+|--------|----------|--------|
+| **Eyebrow contrast** | At least 4.5:1 | 4.32:1 |
+| **Flow connector contrast** | At least 4.5:1 | 3.61:1 |
+| **Conversation divider contrast** | At least 4.5:1 | 3.79:1 |
+| **User Impact** | Small labels remain readable for low-vision users | Important labels blend into their backgrounds |
+</expected_vs_actual>
+</issue_description>
+</bug_1>
+
+<bug_2>
+<summary>
+<title>[P2][Navigation] Home header marks two sections as the current page</title>
+<one_line_description>The agent and catalogue links both display active dots and both expose `aria-current="page"` whenever the user is anywhere on the home route.</one_line_description>
+</summary>
+
+<file_locations>
+- /Users/sacino/shoppa-root/src/components/Header.astro - function: `isCurrent`, Lines 10-14; navigation rendering, Lines 20-29
+- /Users/sacino/shoppa-root/src/styles/global.css - active navigation marker, Lines 92-94
+</file_locations>
+
+<issue_description>
+<description>The current-link helper treats every `/#...` navigation target as current whenever the pathname is `/`. As a result, both `the agent` and `the catalogue` show the terracotta current-page dot at the same time, including at the top of the page before either section is active. Both links also announce `aria-current="page"` to assistive technology even though they target different fragments and neither represents the home document itself. This conflicts with the design rule that the current page has one visual marker and gives users two simultaneous location cues. Mark only the active destination, or omit current-state semantics from home section links until fragment or scroll state identifies one section.</description>
+
+<code_example>
+
+```astro
+<!-- File: /Users/sacino/shoppa-root/src/components/Header.astro, Lines 10-14 and 24 -->
+
+function isCurrent(href: string): boolean {
+  if (href.startsWith('/#')) return currentPath === '/';
+  return currentPath === href;
+}
+
+<a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>
+```
+
+</code_example>
+
+<expected_vs_actual>
+| Aspect | Expected | Actual |
+|--------|----------|--------|
+| **Visual state** | One current destination marker, or none before a section is active | Two current dots appear together on the home route |
+| **Screen-reader state** | One accurate current destination | Two fragment links announce themselves as the current page |
+| **User Impact** | Navigation gives one clear location cue | Navigation gives conflicting location cues |
+</expected_vs_actual>
+</issue_description>
+</bug_2>

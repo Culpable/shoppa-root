@@ -1,0 +1,14 @@
+---
+import PageIntro from '../../components/PageIntro.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { pages } from '../../data/site';
+---
+
+<BaseLayout metadata={pages.contact}>
+  <PageIntro eyebrow="contact us" title="Your agent starts here"><p>Ready to own the conversation with your customers? Tell us about your store and your catalogue, and we’ll map the fastest path to a live agent.</p></PageIntro>
+  <section class="container contact-grid">
+    <article class="contact-card"><h2>business enquiries</h2><p>Email us and we’ll respond with the right next step.</p><a class="email-link" href="mailto:hello@shoppa.au">hello@shoppa.au</a></article>
+    <div class="contact-details"><h2>our offices</h2><p>We’re based in Perth and Melbourne, and work with retailers all over Australia.</p><ul class="office-list"><li>perth</li><li>melbourne</li></ul><h2>email us</h2><dl><div><dt>business enquiries</dt><dd><a href="mailto:hello@shoppa.au">hello@shoppa.au</a></dd></div></dl></div>
+    <!-- FORMSPREE: Future form slot. Required fields: Name, Email, Company, Phone, Message; Budget radios: Less than 100k, $100K – $500K, $500K – $1M, More than $1M; submit: Send message; hidden _subject: New business enquiry from shoppa.au; hidden _next: https://shoppa.au/thank-you/; _gotcha honeypot; error fallback: hello@shoppa.au. Do not render until a Formspree form ID is supplied. -->
+  </section>
+</BaseLayout>

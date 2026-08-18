@@ -15,12 +15,30 @@ This repository is intentionally separate from the product monorepo:
 
 Until a custom domain is configured, the site publishes at `https://culpable.github.io/shoppa-root/`.
 
-## Intended deployment
+## Deployment
 
-A static export built in CI and published to GitHub Pages with `actions/deploy-pages`. The Pages source is **GitHub Actions**, not branch deploy, and the custom domain is set on the Pages configuration.
+The workflow in `.github/workflows/deploy.yml` builds the static export and publishes `dist/` with `actions/deploy-pages` after a push to `main`. The Pages source is **GitHub Actions**, not branch deploy, and the custom domain is set in the Pages configuration.
 
-`public/CNAME` is the source of truth for the custom domain. It must live in the framework's static-assets directory, not the repository root: a static export only publishes the build output, so a root-level `CNAME` is not copied into `out/` and the next deploy would clear the domain setting. Do not delete or move it.
+`public/CNAME` is the source of truth for the custom domain. It must stay in Astro’s static-assets directory so it is copied into `dist/` on every build. Do not delete or move it.
 
 ## Status
 
-Repository scaffold only. No framework or landing-page code is committed yet - the stack is still to be decided.
+The Astro landing site is implemented as a fully static export. It includes the home, about, process, contact, thank-you, and 404 pages, plus sitemap, robots, and LLM discovery files.
+
+## Local development
+
+```bash
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+Astro serves the development site at `http://localhost:4321`.
+
+## Validation
+
+```bash
+pnpm build
+pnpm test
+```
+
+`pnpm build` runs Astro’s type and content checks before creating `dist/`. `pnpm test` validates the static output and runs the desktop and mobile browser suite.

@@ -99,7 +99,7 @@ Approved palette roles. `src/styles/global.css` owns the exact production values
 
 - Radius and geometry: pill (999px) for buttons, chips, badges, eyebrow tags, URL pill; 20–28px for cards and panels (conversation widget 28px outer); 44px for the two inset bands; 12–16px for inner rows (product rows, code blocks, chrome bar); chat bubbles 16–20px with a 4–6px "tail" corner pointing at the speaker. Nothing square.
 - Icons: no icon library. `✦` in a terracotta circle is the agent avatar; traffic-light dots, colour swatch circles, and the pulsing status dot are CSS circles. Decorative glyphs are `aria-hidden`.
-- Imagery: no photography. All page visuals are typographic/CSS compositions (flow cards, conversation, receipt-style order summary). Browser identity assets in `public/` use the Warm Sunrise palette.
+- Imagery: no photography. All page visuals are typographic/CSS compositions (flow cards, conversation, receipt-style order summary). Browser identity assets in `public/` use the Warm Sunrise palette and keep the outer corners transparent.
 
 ## Components
 

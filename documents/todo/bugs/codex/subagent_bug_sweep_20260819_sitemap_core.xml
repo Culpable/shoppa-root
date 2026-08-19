@@ -1,0 +1,89 @@
+<bug_report>
+<bug_1>
+<summary>
+<title>[Sitemap Core][Medium] Indexed child sitemaps cannot cover root-level routes</title>
+<one_line_description>When chunking starts, every child sitemap is emitted below /sitemaps/ but contains canonical URLs outside that directory, so protocol-compliant crawlers can discard those URLs.</one_line_description>
+</summary>
+
+<file_locations>
+- /Users/sacino/shoppa-root/src/lib/sitemap.ts - renderSitemapIndex, Lines 107-120
+- /Users/sacino/shoppa-root/src/pages/sitemaps/[name].xml.ts - getStaticPaths and GET, Lines 7-21
+- /Users/sacino/shoppa-root/scripts/validate-build.mjs - synthetic indexed sitemap check, Lines 19-22
+</file_locations>
+
+<issue_description>
+<description>The indexed branch publishes each child at https://shoppa.au/sitemaps/sitemap-N.xml while its URL set contains canonical pages such as https://shoppa.au/ and https://shoppa.au/about/. The Sitemap protocol limits a sitemap to URLs under the sitemap file's own directory unless separate cross-submission authority applies. Shoppa's robots.txt submits only the root sitemap index, so a child below /sitemaps/ is not correctly located for root-level pages. The current synthetic check requires the nested child URL and only confirms that the child is a URL set. It therefore locks in the invalid location without checking whether each listed page is in scope. Once either operational limit creates more than one chunk, crawlers can drop all root-level canonical URLs from the child files. Emit site-wide child files at the site root and add a synthetic check that compares every child file location with every contained URL.</description>
+
+<code_example><![CDATA[
+
+```typescript
+// File: /Users/sacino/shoppa-root/src/lib/sitemap.ts, Lines 107-114
+
+function renderSitemapIndex(siteRoot: string, childCount: number): string {
+  const root = normaliseSiteRoot(siteRoot);
+  const children = Array.from({ length: childCount }, (_, index) => {
+    const loc = new URL(`sitemaps/sitemap-${index + 1}.xml`, root).href;
+    return [
+      "  <sitemap>",
+      `    <loc>${escapeXml(loc)}</loc>`,
+```
+
+]]></code_example>
+
+<expected_vs_actual>
+| Aspect | Expected | Actual |
+|--------|----------|--------|
+| **Child location** | Child sitemap files that list site-wide routes are emitted at the site root | Child files are emitted below /sitemaps/ |
+| **URL scope** | Every URL in a child is a descendant of that child's allowed directory | Root routes such as / and /about/ sit above the /sitemaps/ directory |
+| **Indexed verification** | A synthetic indexed case checks child location against every listed canonical URL | The test asserts the nested location and does not validate URL scope |
+</expected_vs_actual>
+</issue_description>
+</bug_1>
+
+<bug_2>
+<summary>
+<title>[Sitemap Core][Medium] Oversized location values bypass protocol validation</title>
+<one_line_description>The generator accepts and renders page URLs of 2,048 characters or more even though the Sitemap protocol requires each location value to be shorter than 2,048 characters.</one_line_description>
+</summary>
+
+<file_locations>
+- /Users/sacino/shoppa-root/src/lib/sitemap.ts - normaliseEntries, Lines 140-169
+- /Users/sacino/shoppa-root/src/lib/sitemap.ts - createChunks, Lines 172-204
+- /Users/sacino/shoppa-root/scripts/validate-build.mjs - synthetic validation checks, Lines 15-23
+</file_locations>
+
+<issue_description>
+<description>normaliseEntries validates the route prefix, slash direction, fragment, origin, site-root path, and duplicates, but it never validates the length of the resulting absolute URL. createChunks measures only the total rendered file size. A synthetic canonical path containing 2,100 ASCII characters produced an accepted 2,118-character location and a direct sitemap plan. The entry remains far below the 45 MiB file limit, so no later check rejects it. This violates the requirement that invalid protocol data fail the build, and the existing synthetic checks do not cover the per-location ceiling. Reject normalised absolute locations at the 2,048-character boundary and add focused checks for the last valid and first invalid lengths.</description>
+
+<code_example><![CDATA[
+
+```typescript
+// File: /Users/sacino/shoppa-root/src/lib/sitemap.ts, Lines 150-161
+
+// Removing the leading slash keeps the configured Astro base in the URL.
+const loc = new URL(entry.path.slice(1), siteRoot);
+if (loc.origin !== siteRoot.origin || !loc.pathname.startsWith(siteRoot.pathname)) {
+  throw new Error(`Sitemap path leaves the configured site root: ${entry.path}`);
+}
+
+if (seen.has(loc.href)) throw new Error(`Duplicate sitemap URL: ${loc.href}`);
+seen.add(loc.href);
+
+return {
+  loc: loc.href,
+  lastmod: normaliseLastmod(entry.lastmod),
+};
+```
+
+]]></code_example>
+
+<expected_vs_actual>
+| Aspect | Expected | Actual |
+|--------|----------|--------|
+| **Location validation** | The build rejects every absolute location value with 2,048 or more characters | A 2,118-character page URL is accepted and rendered |
+| **Limit enforcement** | Per-entry protocol ceilings are checked independently of file byte limits | Only the total URL-set byte size and URL count are enforced |
+| **Regression coverage** | Synthetic invalid-data checks include the location length boundary | The only entry-data rejection covered is an exact duplicate URL |
+</expected_vs_actual>
+</issue_description>
+</bug_2>
+</bug_report>

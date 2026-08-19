@@ -1,7 +1,4 @@
-import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
-
-const indexablePaths = new Set(['/', '/about/', '/process/', '/contact/']);
 
 export default defineConfig({
   site: 'https://shoppa.au',
@@ -35,10 +32,5 @@ export default defineConfig({
       subsets: ['latin'],
       fallbacks: ['Courier New', 'monospace'],
     },
-  ],
-  integrations: [
-    sitemap({
-      filter: (page) => indexablePaths.has(new URL(page).pathname),
-    }),
   ],
 });

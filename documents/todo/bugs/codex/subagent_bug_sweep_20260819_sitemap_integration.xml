@@ -1,0 +1,94 @@
+<bug_report>
+<bug_1>
+<summary>
+<title>[Sitemap Integration][Medium] The static deployment cannot preserve the application/xml response header</title>
+<one_line_description>The prerender route sets application/xml, but the GitHub Pages artifact contains only sitemap.xml and the static host derives text/xml from that extension.</one_line_description>
+</summary>
+
+<file_locations>
+- /Users/sacino/shoppa-root/src/pages/sitemap.xml.ts - prerendered sitemap route, Lines 5-10
+- /Users/sacino/shoppa-root/src/lib/sitemap.ts - createXmlResponse(), Lines 249-255
+- /Users/sacino/shoppa-root/.github/workflows/deploy.yml - GitHub Pages artifact upload, Lines 32-37
+</file_locations>
+
+<issue_description>
+<description>The route returns Content-Type: application/xml; charset=utf-8 before Astro prerenders it, but the build output is a plain dist/sitemap.xml file with no response-header metadata. The configured deployment uploads that static file directly to GitHub Pages. Astro preview reproduced the deployment-facing behaviour with Content-Type: text/xml. GitHub Pages documents that it derives MIME types from mime-db and does not support per-file or per-repository overrides: https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site#mime-types-on-github-pages. The current .xml mapping is text/xml, so createXmlResponse() cannot enforce the required application/xml header after prerendering. Reconcile the response-header requirement with GitHub Pages by accepting its XML MIME type, or use a deployment target that supports custom response headers.</description>
+
+<code_example><![CDATA[
+
+```typescript
+// File: /Users/sacino/shoppa-root/src/pages/sitemap.xml.ts, Lines 5-10
+
+export const prerender = true;
+
+export const GET = (() => {
+  return createXmlResponse(renderPrimarySitemap(sitemapPlan));
+}) satisfies APIRoute;
+```
+
+```text
+Observed from the built site with Astro preview:
+HTTP/1.1 200 OK
+Content-Type: text/xml
+```
+
+]]></code_example>
+
+<expected_vs_actual>
+| Aspect | Expected | Actual |
+|--------|----------|--------|
+| **Deployed response** | /sitemap.xml exposes application/xml | Static serving derives text/xml from the .xml extension |
+| **Header ownership** | createXmlResponse() controls the deployed Content-Type | Prerendering removes response-header metadata before the Pages artifact is uploaded |
+| **GitHub Pages compatibility** | The repository can enforce the required media type | GitHub Pages does not support a repository-level MIME override |
+</expected_vs_actual>
+</issue_description>
+</bug_1>
+
+<bug_2>
+<summary>
+<title>[Build Validation][Low] Duplicate and stale sitemap files can pass the output gate</title>
+<one_line_description>The validator checks sitemap.xml content but never rejects sitemap-index.xml, sitemap-0.xml, or unexpected files under dist/sitemaps.</one_line_description>
+</summary>
+
+<file_locations>
+- /Users/sacino/shoppa-root/scripts/validate-build.mjs - required artifact list and sitemap assertions, Lines 11-23 and 45-52
+</file_locations>
+
+<issue_description>
+<description>The desired output has exactly one sitemap owner and no child or stale integration files for this small site. The validator requires dist/sitemap.xml and verifies its content, but it does not enumerate sitemap-like output or assert that the former sitemap-index.xml, sitemap-0.xml, and dist/sitemaps files are absent. A regression that restores the Astro sitemap integration or leaves another sitemap generator active can therefore pass pnpm test:build-output as long as the custom sitemap.xml remains valid. Add a negative output assertion that permits only sitemap.xml for the current non-indexed plan.</description>
+
+<code_example><![CDATA[
+
+```javascript
+// File: /Users/sacino/shoppa-root/scripts/validate-build.mjs, Lines 11-13 and 45-52
+
+const requiredFiles = [
+  'index.html',
+  'about/index.html',
+  'process/index.html',
+  'contact/index.html',
+  'thank-you/index.html',
+  '404.html',
+  'CNAME',
+  'robots.txt',
+  'llms.txt',
+  'sitemap.xml',
+  ...identityFiles,
+];
+for (const file of requiredFiles) await stat(resolve(dist, file));
+
+const sitemap = await read('sitemap.xml');
+```
+
+]]></code_example>
+
+<expected_vs_actual>
+| Aspect | Expected | Actual |
+|--------|----------|--------|
+| **Sitemap ownership** | Validation fails when more than one sitemap system emits output | Validation ignores additional sitemap files |
+| **Small-site topology** | Only dist/sitemap.xml exists | sitemap-index.xml, sitemap-0.xml, or dist/sitemaps files are not rejected |
+| **Regression protection** | The output gate enforces removal of the former integration artifacts | The gate verifies only the new primary sitemap |
+</expected_vs_actual>
+</issue_description>
+</bug_2>
+</bug_report>

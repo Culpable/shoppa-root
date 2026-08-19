@@ -1,0 +1,39 @@
+<bug_report>
+<bug_1>
+<summary>
+<title>[Sitemap Final][Low] Indexed sitemap can emit child locations at the forbidden URL length</title>
+<one_line_description>The generator validates page locations but does not apply the same shorter-than-2,048-character rule to child sitemap locations.</one_line_description>
+</summary>
+
+<file_locations>
+- /Users/sacino/shoppa-root/src/lib/sitemap.ts - function: `renderSitemapIndex`, Lines 107-119
+- /Users/sacino/shoppa-root/src/lib/sitemap.ts - function: `createSitemapPlan`, Lines 209-235
+- /Users/sacino/shoppa-root/scripts/validate-build.mjs - indexed-plan assertions, Lines 21-26
+</file_locations>
+
+<issue_description>
+<description>The page-entry path validates each generated location and rejects values that are 2,048 characters or longer. The indexed path builds child locations separately in renderSitemapIndex and returns them without checking their length. A focused reproduction used a valid site root with two valid entry locations of 2,035 and 2,037 characters and maxUrlsPerFile set to 1. The resulting sitemap index contained sitemap-1.xml and sitemap-2.xml locations that were each exactly 2,048 characters. This violates the stated rule that every loc must be shorter than 2,048 characters. The build validation only checks that short child names appear, so it does not detect this boundary failure. Validate every generated child location before rendering the index and add an indexed boundary assertion for the accepted and rejected lengths.</description>
+
+<code_example><![CDATA[
+
+```typescript
+// File: /Users/sacino/shoppa-root/src/lib/sitemap.ts, Lines 107-110
+
+function renderSitemapIndex(siteRoot: string, childCount: number): string {
+  const root = normaliseSiteRoot(siteRoot);
+  const children = Array.from({ length: childCount }, (_, index) => {
+    const loc = new URL(`sitemap-${index + 1}.xml`, root).href;
+```
+
+]]></code_example>
+
+<expected_vs_actual>
+| Aspect | Expected | Actual |
+|--------|----------|--------|
+| **URL validation** | Every page and child sitemap loc is shorter than 2,048 characters | Page loc values are checked, but generated child loc values are not |
+| **Indexed output** | An invalid long base fails before sitemap XML is emitted | The plan succeeds and emits 2,048-character child locations |
+| **Regression coverage** | Indexed boundary checks fail when any child loc reaches the limit | The indexed test uses only short child locations and passes |
+</expected_vs_actual>
+</issue_description>
+</bug_1>
+</bug_report>

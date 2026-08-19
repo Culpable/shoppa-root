@@ -1,0 +1,57 @@
+<bug_report>
+<bug_1>
+<summary>
+<title>[Sitemap Core][Resolved] Indexed child sitemaps could not cover root-level routes</title>
+<one_line_description>Nested child sitemap files could fall outside the allowed directory scope for the site’s canonical routes.</one_line_description>
+</summary>
+<file_locations>
+- /Users/sacino/shoppa-root/src/lib/sitemap.ts - renderSitemapIndex
+- /Users/sacino/shoppa-root/src/pages/sitemap-[page].xml.ts - getStaticPaths and GET
+- /Users/sacino/shoppa-root/scripts/validate-build.mjs - indexed sitemap assertions
+</file_locations>
+<issue_description>
+<description>The first implementation emitted child files below /sitemaps/ while those files listed root-level routes. The final implementation emits future children as /sitemap-1.xml, /sitemap-2.xml, and further root-level files. The indexed regression check now requires this protocol-safe location.</description>
+</issue_description>
+</bug_1>
+
+<bug_2>
+<summary>
+<title>[Sitemap Core][Resolved] Page locations could exceed the protocol URL limit</title>
+<one_line_description>The generator accepted page locations that were 2,048 characters or longer.</one_line_description>
+</summary>
+<file_locations>
+- /Users/sacino/shoppa-root/src/lib/sitemap.ts - normaliseEntries
+- /Users/sacino/shoppa-root/scripts/validate-build.mjs - page location boundary assertion
+</file_locations>
+<issue_description>
+<description>The generator previously checked total sitemap bytes but not the length of each absolute location. The final implementation rejects every page location at or above 2,048 characters, and the build validator covers the invalid boundary.</description>
+</issue_description>
+</bug_2>
+
+<bug_3>
+<summary>
+<title>[Build Validation][Resolved] Stale sitemap files could pass the output gate</title>
+<one_line_description>The validator required sitemap.xml but did not reject legacy or duplicate sitemap output.</one_line_description>
+</summary>
+<file_locations>
+- /Users/sacino/shoppa-root/scripts/validate-build.mjs - built sitemap file inventory
+</file_locations>
+<issue_description>
+<description>The output check now recursively inventories every sitemap XML file and requires exactly sitemap.xml for the current four-route site. Legacy integration files and unexpected child files fail the gate.</description>
+</issue_description>
+</bug_3>
+
+<bug_4>
+<summary>
+<title>[Sitemap Core][Resolved] Child sitemap locations could reach the protocol URL limit</title>
+<one_line_description>Future sitemap index entries did not apply the page location length check to child sitemap URLs.</one_line_description>
+</summary>
+<file_locations>
+- /Users/sacino/shoppa-root/src/lib/sitemap.ts - renderSitemapIndex
+- /Users/sacino/shoppa-root/scripts/validate-build.mjs - child location boundary assertion
+</file_locations>
+<issue_description>
+<description>The final implementation rejects child sitemap locations at or above 2,048 characters before it emits an index. A synthetic indexed plan now covers the exact failing boundary.</description>
+</issue_description>
+</bug_4>
+</bug_report>

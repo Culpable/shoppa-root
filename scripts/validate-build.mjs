@@ -1,5 +1,7 @@
-import { readFile, stat } from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import { readFile, readdir, stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { createSitemapPlan, renderPrimarySitemap, renderSitemapChunk } from '../src/lib/sitemap.ts';
 
 const root = resolve(import.meta.dirname, '..');
 const dist = resolve(root, 'dist');
@@ -7,8 +9,22 @@ const read = (path) => readFile(resolve(dist, path), 'utf8');
 const readBuffer = (path) => readFile(resolve(dist, path));
 
 const identityFiles = ['favicon.ico', 'icon.svg', 'apple-icon.png'];
-const requiredFiles = ['index.html', 'about/index.html', 'process/index.html', 'contact/index.html', 'thank-you/index.html', '404.html', 'CNAME', 'robots.txt', 'llms.txt', 'sitemap-index.xml', 'sitemap-0.xml', ...identityFiles];
+const requiredFiles = ['index.html', 'about/index.html', 'process/index.html', 'contact/index.html', 'thank-you/index.html', '404.html', 'CNAME', 'robots.txt', 'llms.txt', 'sitemap.xml', ...identityFiles];
 for (const file of requiredFiles) await stat(resolve(dist, file));
+const sitemapFiles = (await readdir(dist, { recursive: true })).filter((file) => file.endsWith('.xml') && file.includes('sitemap')).sort();
+assert.deepEqual(sitemapFiles, ['sitemap.xml']);
+
+const directPlan = createSitemapPlan({ siteRoot: 'https://shoppa.au/', entries: [{ path: '/' }, { path: '/about/' }] });
+assert.equal(directPlan.indexed, false);
+assert.match(renderPrimarySitemap(directPlan), /<urlset[^>]*>[\s\S]*https:\/\/shoppa\.au\/about\/[\s\S]*<\/urlset>/);
+
+const indexedPlan = createSitemapPlan({ siteRoot: 'https://shoppa.au/', entries: [{ path: '/' }, { path: '/about/' }, { path: '/contact/' }], maxUrlsPerFile: 2 });
+assert.equal(indexedPlan.indexed, true);
+assert.match(renderPrimarySitemap(indexedPlan), /<sitemapindex[^>]*>[\s\S]*https:\/\/shoppa\.au\/sitemap-2\.xml[\s\S]*<\/sitemapindex>/);
+assert.doesNotMatch(renderSitemapChunk(indexedPlan, 0), /<sitemapindex/);
+assert.throws(() => createSitemapPlan({ siteRoot: 'https://shoppa.au/', entries: [{ path: '/' }, { path: '/' }] }), /Duplicate sitemap URL/);
+assert.throws(() => createSitemapPlan({ siteRoot: 'https://shoppa.au/', entries: [{ path: `/${'x'.repeat(2_100)}/` }] }), /shorter than 2,048 characters/);
+assert.throws(() => createSitemapPlan({ siteRoot: `https://shoppa.au/${'x'.repeat(2_016)}/`, entries: [{ path: '/' }, { path: '/a/' }], maxUrlsPerFile: 1 }), /shorter than 2,048 characters/);
 
 if ((await read('CNAME')).trim() !== 'shoppa.au') throw new Error('dist/CNAME must contain exactly shoppa.au.');
 
@@ -30,13 +46,17 @@ for (const page of await Promise.all(htmlFiles.map(read))) {
   }
 }
 
-const sitemap = `${await read('sitemap-index.xml')}\n${await read('sitemap-0.xml')}`;
-const sitemapUrls = [...sitemap.matchAll(/<loc>(https:\/\/shoppa\.au\/[^<]*)<\/loc>/g)].map((match) => match[1]).filter((url) => !url.includes('sitemap-'));
+const sitemap = await read('sitemap.xml');
+if (!sitemap.startsWith('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')) throw new Error('sitemap.xml must be a direct XML URL set.');
+if (sitemap.includes('<sitemapindex') || sitemap.includes('localhost') || sitemap.includes('github.io')) throw new Error('sitemap.xml contains an invalid topology or origin.');
+const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
 const expectedUrls = ['https://shoppa.au/', 'https://shoppa.au/about/', 'https://shoppa.au/contact/', 'https://shoppa.au/process/'];
 if (JSON.stringify(sitemapUrls.sort()) !== JSON.stringify(expectedUrls.sort())) throw new Error(`Unexpected sitemap membership: ${sitemapUrls.join(', ')}`);
+if (new Set(sitemapUrls).size !== sitemapUrls.length) throw new Error('sitemap.xml contains duplicate URLs.');
+if (Buffer.byteLength(sitemap, 'utf8') > 45 * 1024 * 1024) throw new Error('sitemap.xml exceeds the 45 MiB operational limit.');
 
 const robots = await read('robots.txt');
-if (!robots.includes('Allow: /') || !robots.includes('Sitemap: https://shoppa.au/sitemap-index.xml')) throw new Error('robots.txt has an invalid production policy.');
+if (!robots.includes('Allow: /') || !robots.includes('Sitemap: https://shoppa.au/sitemap.xml')) throw new Error('robots.txt has an invalid production policy.');
 const llms = await read('llms.txt');
 if (!llms.startsWith('# Shoppa\n\n> ') || !llms.includes('## Primary')) throw new Error('llms.txt does not follow the required v2 structure.');
 

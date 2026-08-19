@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bug_report>
+  <bug_1>
+    <summary>
+      <title>[Metadata] Invalid title modes silently produce composed titles</title>
+      <one_line_description>The title resolver treats every runtime mode other than absolute as composed instead of rejecting an unsupported value.</one_line_description>
+    </summary>
+
+    <file_locations><![CDATA[
+- /Users/sacino/shoppa-root/src/lib/metadata.ts - function: `composeDocumentTitle`, Lines 48-63
+- /Users/sacino/shoppa-root/src/lib/metadata.ts - function: `resolvePageMetadata`, Lines 66-89
+    ]]></file_locations>
+
+    <issue_description>
+      <description>The TypeScript union limits normal callers to composed or absolute, but the pure runtime resolver does not validate the value. Any value that reaches the function from JavaScript, parsed content, an unsafe cast, or an integration boundary falls through to the composed branch. For example, a mode of typo returns Contact Us / Shoppa instead of failing the build. This hides invalid metadata configuration and violates the resolver contract that distinguishes and validates composed versus absolute titles. Validate the mode explicitly before choosing a composition branch and throw for every unsupported value.</description>
+
+      <code_example><![CDATA[
+
+```ts
+// File: /Users/sacino/shoppa-root/src/lib/metadata.ts, Lines 48-63
+
+export function composeDocumentTitle(
+  title: string,
+  titleMode: TitleMode = 'composed',
+  config: SiteTitleConfig = site,
+): string {
+  const pageTitle = requireNonEmpty(title, 'Page title');
+  validateSiteTitleConfig(config);
+
+  if (titleMode === 'absolute') return pageTitle;
+
+  const suffix = `${config.titleSeparator}${config.name}`;
+  return `${pageTitle}${suffix}`;
+}
+```
+
+      ]]></code_example>
+
+      <expected_vs_actual><![CDATA[
+| Aspect | Expected | Actual |
+|--------|----------|--------|
+| **Validation** | Reject any mode other than composed or absolute | Every non-absolute value uses composed behaviour |
+| **Failure mode** | Invalid configuration fails during resolution | Invalid configuration produces plausible metadata |
+| **Observed result** | A mode of typo throws | A mode of typo returns Contact Us / Shoppa |
+      ]]></expected_vs_actual>
+    </issue_description>
+  </bug_1>
+
+  <bug_2>
+    <summary>
+      <title>[Canonical] Invalid canonical overrides pass validation</title>
+      <one_line_description>Empty overrides resolve to the site root, while same-origin URLs with credentials pass the origin check and are emitted.</one_line_description>
+    </summary>
+
+    <file_locations><![CDATA[
+- /Users/sacino/shoppa-root/src/components/head/PageMetadata.astro - metadata frontmatter, Lines 12-25
+- /Users/sacino/shoppa-root/src/components/head/PageMetadata.astro - canonical output, Lines 32-40
+    ]]></file_locations>
+
+    <issue_description>
+      <description>The component sends a supplied canonicalPath directly to the URL constructor and then checks only origin, query, and fragment. An empty or whitespace-only override is not rejected and resolves to https://shoppa.au/, which can silently canonicalise an internal page to the home page. A URL such as https://user:pass@shoppa.au/contact/ also passes because URL.origin excludes credentials, so the generated canonical and Open Graph URL retain user information. Both values are invalid path overrides but survive the build. Require a non-empty canonical path and reject credentials or non-path URL forms before constructing the final canonical URL.</description>
+
+      <code_example><![CDATA[
+
+```astro
+<!-- File: /Users/sacino/shoppa-root/src/components/head/PageMetadata.astro, Lines 19-25 -->
+
+const canonicalURL = new URL(metadata.canonicalPath ?? Astro.url.pathname, Astro.site);
+if (canonicalURL.origin !== Astro.site.origin) {
+  throw new Error('Canonical URLs must use the configured production origin.');
+}
+if (canonicalURL.search || canonicalURL.hash) {
+  throw new Error('Canonical URLs must not contain a query string or fragment.');
+}
+```
+
+      ]]></code_example>
+
+      <expected_vs_actual><![CDATA[
+| Aspect | Expected | Actual |
+|--------|----------|--------|
+| **Empty override** | Build fails for an empty or whitespace-only canonicalPath | Override resolves to https://shoppa.au/ |
+| **Credentials** | Canonical overrides with user information are rejected | Same-origin credential URLs pass the origin check |
+| **Output** | Only a valid production pathname reaches canonical and og:url | Invalid overrides can be emitted into both tags |
+      ]]></expected_vs_actual>
+    </issue_description>
+  </bug_2>
+</bug_report>

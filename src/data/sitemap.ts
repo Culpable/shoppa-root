@@ -1,9 +1,11 @@
 import { createSitemapPlan, type SitemapSourceEntry } from "../lib/sitemap";
-import { pages } from "./site";
 
-const sitemapEntries = Object.values(pages)
-  .filter((page) => page.indexable)
-  .map((page) => ({ path: page.path })) satisfies SitemapSourceEntry[];
+const sitemapEntries = [
+  { path: "/" },
+  { path: "/about/" },
+  { path: "/contact/" },
+  { path: "/process/" },
+] satisfies SitemapSourceEntry[];
 
 if (!import.meta.env.SITE) {
   throw new Error("Set Astro site to the canonical production origin.");

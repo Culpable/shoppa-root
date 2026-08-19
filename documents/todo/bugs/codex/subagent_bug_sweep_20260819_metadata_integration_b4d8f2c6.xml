@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bug_report>
+  <bug_1>
+    <summary>
+      <title>[Metadata Integration] No defects found</title>
+      <one_line_description>No concrete build, runtime, SEO output, sitemap, regression, test, or ownership documentation defect was found in the inspected metadata route integration.</one_line_description>
+    </summary>
+
+    <file_locations>
+      - /Users/sacino/shoppa-root/src/pages/index.astro - route-owned home metadata
+      - /Users/sacino/shoppa-root/src/pages/about/index.astro - route-owned about metadata
+      - /Users/sacino/shoppa-root/src/pages/process/index.astro - route-owned process metadata
+      - /Users/sacino/shoppa-root/src/pages/contact/index.astro - route-owned contact metadata
+      - /Users/sacino/shoppa-root/src/pages/thank-you/index.astro - route-owned noindex metadata
+      - /Users/sacino/shoppa-root/src/pages/404.astro - route-owned noindex metadata and explicit canonical path
+      - /Users/sacino/shoppa-root/src/config/site.ts - site title identity
+      - /Users/sacino/shoppa-root/src/lib/metadata.ts - title composition and metadata resolution
+      - /Users/sacino/shoppa-root/src/components/head/PageMetadata.astro - shared metadata output
+      - /Users/sacino/shoppa-root/src/layouts/BaseLayout.astro - single shared metadata render
+      - /Users/sacino/shoppa-root/src/data/site.ts - shared navigation and discovery data
+      - /Users/sacino/shoppa-root/src/data/sitemap.ts - sitemap membership
+      - /Users/sacino/shoppa-root/scripts/validate-build.mjs - title, route metadata, robots, and sitemap assertions
+      - /Users/sacino/shoppa-root/AGENTS.md - metadata ownership policy
+      - /Users/sacino/shoppa-root/documents/AGENTS/code-standards.md - metadata architecture documentation
+    </file_locations>
+
+    <issue_description>
+      <description>The audit inspected route metadata ownership, absolute and composed title behaviour, canonical URL generation, noindex output for the thank-you and 404 routes, the 404 canonical override, aligned HTML, Open Graph, and Twitter values, sitemap membership, build-output validation, and documentation ownership. The generated output preserved the expected six route titles and descriptions, emitted one aligned metadata set per route, kept only the four indexable routes in the sitemap, and retained the required noindex policies. No defect was identified in this scope.</description>
+
+      <code_example><![CDATA[
+Verification command:
+
+pnpm build && pnpm test
+
+Observed result:
+- Astro check: 0 errors, 0 warnings, 0 hints
+- Build-output validation: 13 artefacts and 6 HTML routes validated
+- Playwright: 22 tests passed
+      ]]></code_example>
+
+      <expected_vs_actual>
+        <aspect>
+          <name>Route metadata</name>
+          <expected>Each page owns its uncomposed title and route-specific description, with the home title remaining absolute.</expected>
+          <actual>All six route inputs and rendered titles match the required ownership and composition rules.</actual>
+        </aspect>
+        <aspect>
+          <name>Canonical and robots output</name>
+          <expected>Each route has one aligned canonical, thank-you and 404 are noindex, and 404 resolves to https://shoppa.au/404.html.</expected>
+          <actual>Generated HTML and build validation match these requirements.</actual>
+        </aspect>
+        <aspect>
+          <name>Sitemap membership</name>
+          <expected>Only the home, about, contact, and process routes appear.</expected>
+          <actual>The generated sitemap contains exactly those four canonical URLs.</actual>
+        </aspect>
+        <aspect>
+          <name>Verification</name>
+          <expected>The complete scoped build and browser gate passes.</expected>
+          <actual>The full gate completed successfully with all checks passing.</actual>
+        </aspect>
+      </expected_vs_actual>
+    </issue_description>
+  </bug_1>
+</bug_report>

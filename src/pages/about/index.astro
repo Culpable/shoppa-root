@@ -2,7 +2,13 @@
 import CTASection from '../../components/CTASection.astro';
 import PageIntro from '../../components/PageIntro.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { pages } from '../../data/site';
+import type { PageMetadataInput } from '../../lib/metadata.ts';
+
+const metadata = {
+  title: 'About Us',
+  description:
+    'The team building Shoppa, the AI shopping agent Australian retailers deploy and own on their own sites.',
+} satisfies PageMetadataInput;
 
 const capabilities = [
   { index: '01', title: 'The agent', body: 'Discovery, checkout, and order support in one conversation. Your agent greets customers, answers from your catalogue, takes payment in the chat, and handles ‘where’s my order?’ follow-ups.' },
@@ -16,7 +22,7 @@ const stats = [
 ];
 ---
 
-<BaseLayout metadata={pages.about}>
+<BaseLayout metadata={metadata}>
   <PageIntro eyebrow="about us" title="The team building Australia’s retailer-owned shopping agents">
     <p>Shoppa was built on a single conviction: the retailers who win in agentic commerce will be the ones who own the conversation and have the best product data behind it. So we made owning the conversation as simple as two lines of code.</p>
     <p>We don’t hand you a strategy deck and wish you luck. Shoppa is a working agent: point it at your catalogue feed, drop the embed on your site, and your customers start conversations that end in checkouts.</p>

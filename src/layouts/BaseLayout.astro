@@ -1,18 +1,17 @@
 ---
 import { Font } from 'astro:assets';
+import PageMetadata from '../components/head/PageMetadata.astro';
+import { site } from '../config/site.ts';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import type { PageMetadata } from '../data/site';
-import { site } from '../data/site';
+import type { PageMetadataInput } from '../lib/metadata.ts';
 import '../styles/global.css';
 
 interface Props {
-  metadata: PageMetadata;
+  metadata: PageMetadataInput;
 }
 
 const { metadata } = Astro.props;
-const title = metadata.path === '/' ? metadata.title : `${metadata.title} / Shoppa`;
-const canonical = new URL(metadata.path, site.origin);
 ---
 
 <!doctype html>
@@ -21,17 +20,7 @@ const canonical = new URL(metadata.path, site.origin);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
-    <meta name="description" content={metadata.description} />
-    <link rel="canonical" href={canonical} />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={metadata.description} />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:site_name" content="Shoppa" />
-    <meta property="og:locale" content="en_AU" />
-    <meta name="twitter:card" content="summary" />
-    {!metadata.indexable && <meta name="robots" content="noindex" />}
+    <PageMetadata metadata={metadata} />
     <link rel="describedby" href="/llms.txt" />
     <link rel="sitemap" href="/sitemap.xml" />
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />

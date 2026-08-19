@@ -1,10 +1,15 @@
 ---
 import PageIntro from '../../components/PageIntro.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { pages } from '../../data/site';
+import type { PageMetadataInput } from '../../lib/metadata.ts';
+
+const metadata = {
+  title: 'Contact Us',
+  description: 'Contact us to put your own AI shopping agent on your site.',
+} satisfies PageMetadataInput;
 ---
 
-<BaseLayout metadata={pages.contact}>
+<BaseLayout metadata={metadata}>
   <PageIntro eyebrow="contact us" title="Your agent starts here"><p>Ready to own the conversation with your customers? Tell us about your store and your catalogue, and we’ll map the fastest path to a live agent.</p></PageIntro>
   <section class="container contact-grid">
     <article class="contact-card"><h2>business enquiries</h2><p>Email us and we’ll respond with the right next step.</p><a class="email-link" href="mailto:hello@shoppa.au">hello@shoppa.au</a></article>

@@ -22,6 +22,7 @@
 
 <code_standards>
 - Read [code-standards.md](documents/AGENTS/code-standards.md) in full before changing application, test, script, or build-configuration code. It governs module boundaries, naming, copy-safe implementation, generated files, exceptions, and enforcement. Do not implement code changes until its applicable rules are identified.
+- Keep route metadata inputs with each page, site identity in `src/config/site.ts`, metadata resolution in `src/lib/metadata.ts`, shared head output in `src/components/head/PageMetadata.astro`, and render that component exactly once from `src/layouts/BaseLayout.astro`.
 - Mechanical enforcement: `pnpm build && pnpm test`.
 - Keep this repository marketing-only and static. Do not add product, widget, API, backend, database, blog, or CMS code.
 </code_standards>

@@ -1,12 +1,40 @@
 import assert from 'node:assert/strict';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { composeDocumentTitle, resolveCanonicalURL, resolvePageMetadata } from '../src/lib/metadata.ts';
 import { createSitemapPlan, renderPrimarySitemap, renderSitemapChunk } from '../src/lib/sitemap.ts';
 
 const root = resolve(import.meta.dirname, '..');
 const dist = resolve(root, 'dist');
 const read = (path) => readFile(resolve(dist, path), 'utf8');
 const readBuffer = (path) => readFile(resolve(dist, path));
+
+const contactMetadata = {
+  title: 'Contact Us',
+  description: 'Contact us to put your own AI shopping agent on your site.',
+};
+const resolvedContactMetadata = resolvePageMetadata(contactMetadata);
+assert.equal(resolvedContactMetadata.pageTitle, 'Contact Us');
+assert.equal(resolvedContactMetadata.documentTitle, 'Contact Us / Shoppa');
+assert.equal(composeDocumentTitle('Shoppa: The AI Shopping Agent Australian Retailers Own', 'absolute'), 'Shoppa: The AI Shopping Agent Australian Retailers Own');
+
+const alternateTitleConfig = { name: 'Example Site', titleSeparator: ' | ' };
+assert.equal(resolvePageMetadata(contactMetadata, alternateTitleConfig).documentTitle, 'Contact Us | Example Site');
+assert.equal(composeDocumentTitle('Campaign title', 'absolute', alternateTitleConfig), 'Campaign title');
+assert.throws(() => composeDocumentTitle(''), /Page title must not be empty/);
+assert.throws(() => resolvePageMetadata({ title: 'Contact Us', description: '' }), /Page description must not be empty/);
+assert.throws(() => composeDocumentTitle('Contact Us', 'composed', { name: '', titleSeparator: ' / ' }), /Site name must not be empty/);
+assert.throws(() => composeDocumentTitle('Contact Us', 'composed', { name: 'Shoppa', titleSeparator: '' }), /Title separator must not be empty/);
+assert.throws(() => composeDocumentTitle('Contact Us / Shoppa'), /Pass an uncomposed page title/);
+assert.throws(() => composeDocumentTitle('Contact Us', 'invalid'), /Unsupported title mode/);
+
+const productionSite = new URL('https://shoppa.au/');
+assert.equal(resolveCanonicalURL({ currentPath: '/contact/', siteURL: productionSite }).href, 'https://shoppa.au/contact/');
+assert.equal(resolveCanonicalURL({ canonicalPath: '/404.html', currentPath: '/404/', siteURL: productionSite }).href, 'https://shoppa.au/404.html');
+assert.throws(() => resolveCanonicalURL({ canonicalPath: '', currentPath: '/contact/', siteURL: productionSite }), /Canonical path must not be empty/);
+assert.throws(() => resolveCanonicalURL({ canonicalPath: 'https://user:pass@shoppa.au/contact/', currentPath: '/contact/', siteURL: productionSite }), /must not contain credentials/);
+assert.throws(() => resolveCanonicalURL({ canonicalPath: 'http://localhost:4321/contact/', currentPath: '/contact/', siteURL: productionSite }), /configured production origin/);
+assert.throws(() => resolveCanonicalURL({ canonicalPath: '/contact/?preview=true', currentPath: '/contact/', siteURL: productionSite }), /query string or fragment/);
 
 const identityFiles = ['favicon.ico', 'icon.svg', 'apple-icon.png'];
 const requiredFiles = ['index.html', 'about/index.html', 'process/index.html', 'contact/index.html', 'thank-you/index.html', '404.html', 'CNAME', 'robots.txt', 'llms.txt', 'sitemap.xml', ...identityFiles];
@@ -28,7 +56,15 @@ assert.throws(() => createSitemapPlan({ siteRoot: `https://shoppa.au/${'x'.repea
 
 if ((await read('CNAME')).trim() !== 'shoppa.au') throw new Error('dist/CNAME must contain exactly shoppa.au.');
 
-const htmlFiles = ['index.html', 'about/index.html', 'process/index.html', 'contact/index.html', 'thank-you/index.html', '404.html'];
+const htmlRoutes = [
+  { file: 'index.html', title: 'Shoppa: The AI Shopping Agent Australian Retailers Own', canonical: 'https://shoppa.au/', indexable: true },
+  { file: 'about/index.html', title: 'About Us / Shoppa', canonical: 'https://shoppa.au/about/', indexable: true },
+  { file: 'process/index.html', title: 'From Catalogue to Live Agent / Shoppa', canonical: 'https://shoppa.au/process/', indexable: true },
+  { file: 'contact/index.html', title: 'Contact Us / Shoppa', canonical: 'https://shoppa.au/contact/', indexable: true },
+  { file: 'thank-you/index.html', title: 'Thank You / Shoppa', canonical: 'https://shoppa.au/thank-you/', indexable: false },
+  { file: '404.html', title: 'Page Not Found / Shoppa', canonical: 'https://shoppa.au/404.html', indexable: false },
+];
+const htmlFiles = htmlRoutes.map(({ file }) => file);
 const html = (await Promise.all(htmlFiles.map(read))).join('\n');
 for (const forbidden of ['Algolia', 'Coveo', 'Elasticsearch', 'self-service', 'analytics', 'Embeddings', 'Convex', 'mock mode', '/shoppa-root/']) {
   if (html.includes(forbidden)) throw new Error(`Built output contains forbidden text: ${forbidden}`);
@@ -37,14 +73,44 @@ for (const required of ['The shopping agent thatâ€™s', 'One conversation from â€
   if (!(await read('index.html')).includes(required)) throw new Error(`Home page is missing required copy: ${required}`);
 }
 
-for (const page of await Promise.all(htmlFiles.map(read))) {
-  if (!/<title>[^<]+<\/title>/.test(page) || !/<meta name="description" content="[^"]+">/.test(page)) throw new Error('Every page requires title and description metadata.');
+const readSingleMetadataValue = (page, pattern, label, file) => {
+  const values = [...page.matchAll(pattern)].map((match) => match[1]);
+  assert.equal(values.length, 1, `${file} requires exactly one ${label}.`);
+  assert.notEqual(values[0].trim(), '', `${file} requires a non-empty ${label}.`);
+  return values[0];
+};
+
+const descriptions = [];
+for (const route of htmlRoutes) {
+  const page = await read(route.file);
+  const title = readSingleMetadataValue(page, /<title>([^<]+)<\/title>/g, 'title', route.file);
+  const description = readSingleMetadataValue(page, /<meta name="description" content="([^"]+)">/g, 'description', route.file);
+  const canonical = readSingleMetadataValue(page, /<link rel="canonical" href="([^"]+)">/g, 'canonical', route.file);
+  const openGraphTitle = readSingleMetadataValue(page, /<meta property="og:title" content="([^"]+)">/g, 'Open Graph title', route.file);
+  const openGraphDescription = readSingleMetadataValue(page, /<meta property="og:description" content="([^"]+)">/g, 'Open Graph description', route.file);
+  const openGraphUrl = readSingleMetadataValue(page, /<meta property="og:url" content="([^"]+)">/g, 'Open Graph URL', route.file);
+  const twitterTitle = readSingleMetadataValue(page, /<meta name="twitter:title" content="([^"]+)">/g, 'Twitter title', route.file);
+  const twitterDescription = readSingleMetadataValue(page, /<meta name="twitter:description" content="([^"]+)">/g, 'Twitter description', route.file);
+
+  assert.equal(title, route.title, `${route.file} has an unexpected document title.`);
+  assert.equal(canonical, route.canonical, `${route.file} has an unexpected canonical URL.`);
+  assert.equal(openGraphTitle, title, `${route.file} must reuse its document title for Open Graph.`);
+  assert.equal(twitterTitle, title, `${route.file} must reuse its document title for Twitter.`);
+  assert.equal(openGraphDescription, description, `${route.file} must reuse its description for Open Graph.`);
+  assert.equal(twitterDescription, description, `${route.file} must reuse its description for Twitter.`);
+  assert.equal(openGraphUrl, canonical, `${route.file} must reuse its canonical URL for Open Graph.`);
+
+  const robotsValues = [...page.matchAll(/<meta name="robots" content="([^"]+)">/g)].map((match) => match[1]);
+  assert.deepEqual(robotsValues, route.indexable ? [] : ['noindex'], `${route.file} has an unexpected robots policy.`);
+  descriptions.push(description);
+
   for (const match of page.matchAll(/href="([^"]+)"/g)) {
     const href = match[1];
     if (/^(https?:|mailto:|#)/.test(href) || /\.[a-z\d]+(?:\?.*)?$/i.test(href)) continue;
     if (!href.endsWith('/') && !href.includes('/#')) throw new Error(`Internal link must end in / or target an anchor: ${href}`);
   }
 }
+assert.equal(new Set(descriptions).size, descriptions.length, 'Every route requires a unique description.');
 
 const sitemap = await read('sitemap.xml');
 if (!sitemap.startsWith('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')) throw new Error('sitemap.xml must be a direct XML URL set.');

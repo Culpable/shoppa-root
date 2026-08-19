@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bug_report>
+  <bug_1>
+    <summary>
+      <title>[Metadata][Resolved] Invalid runtime title modes produced composed titles</title>
+      <one_line_description>The title resolver accepted every non-absolute runtime value as composed metadata instead of rejecting unsupported modes.</one_line_description>
+    </summary>
+
+    <file_locations><![CDATA[
+- /Users/sacino/shoppa-root/src/lib/metadata.ts - validateTitleMode and composeDocumentTitle, Lines 54-77
+- /Users/sacino/shoppa-root/scripts/validate-build.mjs - unsupported title mode assertion, Line 29
+    ]]></file_locations>
+
+    <issue_description>
+      <description>The TypeScript union limited normal callers to composed or absolute, but the runtime resolver previously treated any other value as composed. JavaScript, parsed content, or an unsafe cast could therefore produce plausible metadata from invalid configuration. The resolver now validates the runtime mode before composition and throws for every unsupported value. The build validator covers the invalid branch.</description>
+
+      <code_example><![CDATA[
+
+```ts
+// File: /Users/sacino/shoppa-root/src/lib/metadata.ts, Lines 54-67
+
+function validateTitleMode(titleMode: string): asserts titleMode is TitleMode {
+  if (titleMode !== 'composed' && titleMode !== 'absolute') {
+    throw new Error(`Unsupported title mode: ${titleMode}`);
+  }
+}
+
+validateTitleMode(titleMode);
+```
+
+      ]]></code_example>
+
+      <expected_vs_actual><![CDATA[
+| Aspect | Expected | Resolved result |
+|--------|----------|-----------------|
+| **Validation** | Reject any mode other than composed or absolute | Unsupported values now throw before title composition |
+| **Failure mode** | Invalid configuration fails during resolution | Invalid runtime configuration fails the build-output check |
+| **Regression coverage** | A mode of invalid is rejected | The validator asserts the unsupported branch |
+      ]]></expected_vs_actual>
+    </issue_description>
+  </bug_1>
+
+  <bug_2>
+    <summary>
+      <title>[Canonical][Resolved] Invalid canonical overrides passed validation</title>
+      <one_line_description>Empty overrides could resolve to the site root, and same-origin URLs with credentials could be emitted.</one_line_description>
+    </summary>
+
+    <file_locations><![CDATA[
+- /Users/sacino/shoppa-root/src/lib/metadata.ts - resolveCanonicalURL, Lines 79-101
+- /Users/sacino/shoppa-root/src/components/head/PageMetadata.astro - canonical resolution, Lines 16-24
+- /Users/sacino/shoppa-root/scripts/validate-build.mjs - canonical validation assertions, Lines 31-37
+    ]]></file_locations>
+
+    <issue_description>
+      <description>The head component previously passed a supplied canonicalPath directly to the URL constructor and checked only origin, query, and fragment. An empty override resolved to the production root, while a same-origin absolute URL containing credentials passed the origin comparison and retained that user information. Canonical resolution now has one pure validated owner. It rejects empty sources, foreign origins, credentials, query strings, and fragments before the URL reaches canonical or Open Graph output. Tests cover the current route default, the 404 override, and each invalid class.</description>
+
+      <code_example><![CDATA[
+
+```ts
+// File: /Users/sacino/shoppa-root/src/lib/metadata.ts, Lines 84-98
+
+const canonicalSource = canonicalPath ?? currentPath;
+if (!canonicalSource.trim()) {
+  throw new Error('Canonical path must not be empty.');
+}
+
+const canonicalURL = new URL(canonicalSource, siteURL);
+if (canonicalURL.origin !== siteURL.origin) {
+  throw new Error('Canonical URLs must use the configured production origin.');
+}
+if (canonicalURL.username || canonicalURL.password) {
+  throw new Error('Canonical URLs must not contain credentials.');
+}
+```
+
+      ]]></code_example>
+
+      <expected_vs_actual><![CDATA[
+| Aspect | Expected | Resolved result |
+|--------|----------|-----------------|
+| **Empty override** | Empty canonical paths fail | Empty and whitespace-only sources throw |
+| **Credentials** | Canonical URLs never contain user information | Username and password values are rejected |
+| **Authority** | Only the configured production origin is emitted | Foreign and local origins fail validation |
+| **Regression coverage** | Valid defaults and invalid overrides are tested | Current paths, 404.html, credentials, local origins, and queries are covered |
+      ]]></expected_vs_actual>
+    </issue_description>
+  </bug_2>
+</bug_report>

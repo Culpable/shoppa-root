@@ -1,7 +1,14 @@
 ---
 import CTASection from '../components/CTASection.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { pages } from '../data/site';
+import type { PageMetadataInput } from '../lib/metadata.ts';
+
+const metadata = {
+  title: 'Shoppa: The AI Shopping Agent Australian Retailers Own',
+  titleMode: 'absolute',
+  description:
+    'An out-of-the-box AI shopping agent you own. Two lines of code put discovery, checkout, and order support on your own site, answering from your catalogue.',
+} satisfies PageMetadataInput;
 
 const embedCode = `<script src="https://api.shoppa.au/embed/shoppa.js"></script>
 <script>Shoppa.init({ retailerId: "yourstore", apiBase: "https://api.shoppa.au" })</script>`;
@@ -19,7 +26,7 @@ const shiftCards = [
 ];
 ---
 
-<BaseLayout metadata={pages.home}>
+<BaseLayout metadata={metadata}>
   <section class="container hero">
     <div class="hero-copy">
       <h1>The shopping agent that’s <span class="hero-highlight">actually yours</span></h1>

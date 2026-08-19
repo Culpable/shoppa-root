@@ -21,7 +21,7 @@
 ## Module and architecture boundaries
 
 - Keep this repository static and marketing-only. Do not add product, widget, API, backend, blog, CMS, or database code.
-- Keep route content in `src/pages/`, reusable shell and sections in `src/components/`, common metadata in `src/data/site.ts`, and exact visual values in `src/styles/global.css`.
+- Keep route content and route metadata inputs in `src/pages/`, reusable shell and sections in `src/components/`, site identity in `src/config/site.ts`, metadata resolution in `src/lib/metadata.ts`, shared navigation and discovery data in `src/data/site.ts`, and exact visual values in `src/styles/global.css`.
 - Do not add a framework other than Astro or a client-side UI framework.
 
 ## Comments and documentation
@@ -39,9 +39,11 @@
 
 | Concern | Example | Why it is authoritative |
 | --- | --- | --- |
-| Page shell and metadata | `src/layouts/BaseLayout.astro` | Owns the document shell, self-hosted fonts, identity links, skip link, header, and footer |
+| Page shell | `src/layouts/BaseLayout.astro` | Owns the document shell, self-hosted fonts, identity links, skip link, header, footer, and the single shared metadata render |
+| Metadata output | `src/components/head/PageMetadata.astro` | Owns the canonical, description, robots, Open Graph, and Twitter tags derived from typed route metadata |
+| Metadata rules | `src/config/site.ts` and `src/lib/metadata.ts` | Own the site title identity, title composition, and metadata validation |
 | Exact visual values | `src/styles/global.css` | Owns all production tokens, responsive rules, components, and motion |
-| Shared navigation | `src/data/site.ts` | Owns route labels and site metadata reused by components |
+| Shared navigation and discovery | `src/data/site.ts` | Owns route labels, navigation links, and agent-readable discovery data |
 | Rendered-output rules | `test/agent-accessibility.rules.ts` | Owns the explicit agent and accessibility rules enforced in browser tests |
 
 ## Exceptions

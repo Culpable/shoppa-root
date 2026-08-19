@@ -1,59 +1,4 @@
-export interface PageMetadata {
-  title: string;
-  description: string;
-  path: string;
-  indexable: boolean;
-}
-
-export const site = {
-  name: 'Shoppa',
-  origin: 'https://shoppa.au',
-  locale: 'en-AU',
-  title: 'Shoppa: The AI Shopping Agent Australian Retailers Own',
-  description:
-    'An out-of-the-box AI shopping agent you own. Two lines of code put discovery, checkout, and order support on your own site, answering from your catalogue.',
-} as const;
-
-export const pages = {
-  home: {
-    title: site.title,
-    description: site.description,
-    path: '/',
-    indexable: true,
-  },
-  about: {
-    title: 'About Us',
-    description:
-      'The team building Shoppa, the AI shopping agent Australian retailers deploy and own on their own sites.',
-    path: '/about/',
-    indexable: true,
-  },
-  process: {
-    title: 'From Catalogue to Live Agent',
-    description:
-      'How Shoppa goes live on your site: connect your catalogue, add the two-line embed, and let your agent sell in conversation.',
-    path: '/process/',
-    indexable: true,
-  },
-  contact: {
-    title: 'Contact Us',
-    description: 'Contact us to put your own AI shopping agent on your site.',
-    path: '/contact/',
-    indexable: true,
-  },
-  thankYou: {
-    title: 'Thank You',
-    description: 'Confirmation that Shoppa received your business enquiry.',
-    path: '/thank-you/',
-    indexable: false,
-  },
-  notFound: {
-    title: 'Page Not Found',
-    description: 'The requested page could not be found.',
-    path: '/404.html',
-    indexable: false,
-  },
-} satisfies Record<string, PageMetadata>;
+import { site } from '../config/site.ts';
 
 export const headerNavigation = [
   { label: 'the agent', href: '/#agent' },
@@ -90,7 +35,7 @@ export const footerNavigation = [
 ] as const;
 
 export const llmsDocument = {
-  name: 'Shoppa',
+  name: site.name,
   summary:
     'Shoppa is an out-of-the-box AI shopping agent for Australian retailers. It runs product discovery, checkout, and order support on the retailer’s own site.',
   details: [

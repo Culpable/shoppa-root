@@ -111,7 +111,9 @@ ul, ol { padding: 0; }
 .hero-copy > :nth-child(4) { animation-delay: 220ms; }
 @keyframes hero-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 .hero h1 { max-width: 720px; margin-bottom: 26px; }
-.hero-highlight { padding-block: 0; background: linear-gradient(to top, var(--colour-highlight-start), var(--colour-highlight-end)) 0 100% / 100% 72% no-repeat; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+/* Size the highlight band in em from the text box top so it wraps the full glyph height (ascenders sit 0.72em above the baseline, descenders 0.19em below)
+   while its 0.15em top offset keeps it clear of the descenders on the line above. Wrapped lines stack edge to edge because the band matches line-height. */
+.hero-highlight { padding-block: 0; background: linear-gradient(to top, var(--colour-highlight-start), var(--colour-highlight-end)) 0 0.15em / 100% 1.06em no-repeat; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .hero-subhead { max-width: 540px; margin-bottom: 30px; color: var(--colour-ink-secondary); font-size: 18px; }
 .button-row { display: flex; flex-wrap: wrap; gap: 12px; }
 .proof-pills { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 40px 0 0; list-style: none; }

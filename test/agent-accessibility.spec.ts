@@ -31,23 +31,53 @@ for (const route of routes) {
   });
 }
 
-test('hero highlight paint clears the preceding line', async ({ page }) => {
+test('hero highlight paints over its own glyphs and clears the preceding line', async ({ page }) => {
   for (const width of [1440, 960, 640, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/', { waitUntil: 'networkidle' });
-    const overlap = await page.locator('.hero h1').evaluate((heading) => {
+    await page.evaluate(() => document.fonts.ready);
+    const bands = await page.locator('.hero h1').evaluate((heading) => {
       const highlight = heading.querySelector('.hero-highlight');
-      if (!highlight || !heading.firstChild) return true;
+      if (!highlight || !heading.firstChild) return null;
+      const styles = getComputedStyle(highlight);
+      // The computed background box is the painted band; measuring it avoids re-deriving the em values from the stylesheet.
+      const bandHeight = parseFloat(styles.backgroundSize.split(' ')[1]);
+      const bandOffset = parseFloat(styles.backgroundPositionY);
+      const context = document.createElement('canvas').getContext('2d');
+      if (!context) return null;
+      context.font = `${styles.fontWeight} ${styles.fontSize} ${styles.fontFamily}`;
+      const highlightText = context.measureText(highlight.textContent ?? '');
+      const previousText = context.measureText(heading.firstChild.textContent ?? '');
       const previous = document.createRange();
       previous.selectNodeContents(heading.firstChild);
-      const previousRects = [...previous.getClientRects()];
-      const highlightRects = [...highlight.getClientRects()];
-      return highlightRects.some((highlightRect) => {
-        const paintedTop = highlightRect.top + highlightRect.height * 0.28;
-        return previousRects.some((previousRect) => previousRect.bottom > paintedTop && previousRect.top < highlightRect.bottom && previousRect.right > highlightRect.left && previousRect.left < highlightRect.right);
+      // Ink bounds come from the baseline, which sits one font ascent below the top of each inline text box.
+      const previousInkBottoms = [...previous.getClientRects()].map((rect) => ({
+        bottom: rect.top + highlightText.fontBoundingBoxAscent + previousText.actualBoundingBoxDescent,
+        left: rect.left,
+        right: rect.right,
+      }));
+      return [...highlight.getClientRects()].map((rect) => {
+        const baseline = rect.top + highlightText.fontBoundingBoxAscent;
+        return {
+          bandTop: bandOffset + rect.top,
+          bandBottom: bandOffset + rect.top + bandHeight,
+          inkTop: baseline - highlightText.actualBoundingBoxAscent,
+          inkBottom: baseline + highlightText.actualBoundingBoxDescent,
+          previousInkBottom: Math.max(
+            ...previousInkBottoms
+              .filter((previousInk) => previousInk.right > rect.left && previousInk.left < rect.right && previousInk.bottom < rect.bottom)
+              .map((previousInk) => previousInk.bottom),
+            Number.NEGATIVE_INFINITY,
+          ),
+        };
       });
     });
-    expect(overlap, `highlight overlap at ${width}px`).toBe(false);
+    expect(bands, `highlight bands at ${width}px`).not.toBeNull();
+    for (const band of bands ?? []) {
+      expect(band.bandTop, `highlight covers ascenders at ${width}px`).toBeLessThanOrEqual(band.inkTop);
+      expect(band.bandBottom, `highlight covers descenders at ${width}px`).toBeGreaterThanOrEqual(band.inkBottom);
+      expect(band.previousInkBottom, `highlight clears the previous line at ${width}px`).toBeLessThanOrEqual(band.bandTop);
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
   }
 });

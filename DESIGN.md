@@ -77,7 +77,7 @@ Approved palette roles. `src/styles/global.css` owns the exact production values
 - Body role: Figtree 400 for copy, 500–600 for meta and labels, 700 for buttons and chip text.
 - Label role: Figtree 700, 12–12.5px, letter-spacing 0.16–0.2em, uppercase, used in eyebrow pills, timeline dates, connector labels.
 - Mono role: Courier Prime, embed code blocks and code-flavoured decoration only. Never for body copy.
-- Scale (approved): hero h1 `clamp(44px, 5.6vw, 72px)` at line-height 1.06; section h2 `clamp(30px, 3.8vw, 46px)` at 1.06; panel h3 24px; body 16.5px/1.65; small meta 12–13.5px. Hero line-height is deliberately 1.06, not the prototype's 1.02 - see the highlight rule under Components.
+- Scale (approved): hero h1 `clamp(44px, 5.6vw, 72px)` at line-height 1.06; section h2 `clamp(30px, 3.8vw, 46px)` at 1.06; panel h3 24px; body 16.5px/1.65; small meta 12–13.5px. Hero line-height is deliberately 1.06, not the prototype's 1.02, and the hero highlight band is sized in em against it - see the highlight rule under Do's and Don'ts.
 - Measure and wrapping: body copy capped near 620px; hero subhead 520px; headings wrap freely with `text-wrap: balance` where supported. No truncation or ellipsis anywhere on the marketing pages.
 - Numerics and locale: en-AU. Currency as `$189` / `$189.00` exactly as the copy contract specifies; en dashes in ranges (`$3–5T`, `$100K – $500K`); `’` apostrophes in all display strings (project rule).
 
@@ -149,7 +149,7 @@ The 404 page is the only error surface: display numeral, heading, one-line body,
 
 ## Do's and Don'ts
 
-- Do render the hero highlight as a bottom-anchored background gradient on the `actually yours` span, sized to about 72% of the line box with `box-decoration-break: clone` and zero vertical padding, with hero line-height 1.06 - the prototype's full-height padded highlight collided with the ascenders/descenders of the previous line (user-reported overlap, 2026-08-18) and must not be reproduced.
+- Do render the hero highlight as a background gradient on the `actually yours` span, sized `100% 1.06em` at background position `0 0.15em` with `box-decoration-break: clone` and zero vertical padding, with hero line-height 1.06. The band must cover the whole glyph height of its own line (ascenders 0.72em above the baseline, descenders 0.19em below) and still clear the descenders on the line above: the prototype's full-height padded highlight collided with the line above (user-reported overlap, 2026-08-18) and a 72%-height band left the ascenders of `actually yours` uncovered (user-reported gap, 2026-08-19). Neither must be reproduced.
 - Do pair every status with words; never colour alone.
 - Do keep every capability claim traceable to `/Users/sacino/shoppa/AGENTS.md` / the approved copy contract before publishing it.
 - Do keep small text on dark bands at ≥ 0.75 alpha and filled primary buttons on `#B8441F`.
@@ -174,11 +174,11 @@ The 404 page is the only error surface: display numeral, heading, one-line body,
 
 ## Design Verification
 
-Current proof: the production site was built and screenshot-reviewed on 2026-08-18 across every route at 1440×900 and 390×844. Automated checks covered semantic rules, keyboard focus, colour contrast, output discovery files, overflow, and the hero highlight at widths from 320px to 1440px. Evidence is stored in `documents/verification/screenshots/`.
+Current proof: the production site was built and screenshot-reviewed on 2026-08-19 across every route at 1440×900 and 390×844. Automated checks covered semantic rules, keyboard focus, colour contrast, output discovery files, overflow, and the hero highlight band at widths from 320px to 1440px, where the band must cover its own glyphs and clear the line above. Evidence is stored in `documents/verification/screenshots/`, including `hero-highlight-<width>.png` crops.
 
 | Viewport or mode | Routes and states | Proof |
 | --- | --- | --- |
-| 1440×900 desktop | `/`, `/about/`, `/process/`, `/contact/`, `/thank-you/`, 404 | Passed full-page visual review; no horizontal overflow; hero highlight clears adjacent lines |
+| 1440×900 desktop | `/`, `/about/`, `/process/`, `/contact/`, `/thank-you/`, 404 | Passed full-page visual review; no horizontal overflow; hero highlight covers its own glyphs and clears adjacent lines |
 | 390×844 mobile | Same routes with stacked grids, collapsed header, and inset bands | Passed full-page visual review; single-column reflow and no horizontal overflow |
 | Contrast and keyboard pass | Approved colour pairs and representative links | Passed automated contrast targets and visible-focus checks |
 

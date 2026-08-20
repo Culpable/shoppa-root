@@ -164,6 +164,7 @@ The 404 page is the only error surface: display numeral, heading, one-line body,
 - Do keep every capability claim traceable to `/Users/sacino/shoppa/AGENTS.md` / the approved copy contract before publishing it.
 - Do keep small text on dark bands at ≥ 0.75 alpha and filled primary buttons on `#B8441F`.
 - Do zero an element's own vertical margin before putting it in a centred flex or grid row. The margin sits inside the alignment, so the element's ink lands off-centre against everything beside it.
+- Do keep a `dd` flush with the `dt` above it. The user agent indents every `dd` by 40px, and the global reset zeroed only its top margin, so the proof band details sat 40px right of their labels (user-reported, 2026-08-20). `global.css` now resets `margin-inline-start` on `dd` once; a definition list sets its own inline start on top of that.
 - Do let a card that is shorter than its neighbours stay short. Where a stretched card would end in empty space, either bottom-anchor its last row (source links) or stop the stretch (`align-items: start` on the contact grid).
 - Don't add dark sections, glass effects, purple gradients, photography, icon libraries, or a second accent hue. Hand-built inline SVG marks are allowed and must join the existing set: one canvas size, one stroke weight, `aria-hidden`, meaning carried by adjacent text.
 - Don't gate any animation behind `prefers-reduced-motion` or similar conditionals.

@@ -57,6 +57,10 @@ a { color: inherit; text-decoration-thickness: 1.5px; text-underline-offset: 0.2
 :focus-visible { outline: 2px solid var(--colour-ink); outline-offset: 3px; }
 .dark-band :focus-visible, .demo-panel :focus-visible, .embed-panel :focus-visible { outline-color: var(--colour-band-text); }
 h1, h2, h3, p, ul, ol, dl, dd, blockquote { margin-top: 0; }
+/* The user agent indents every dd by 40px, which pushed each detail out of
+   line with the term above it. Components set their own inline start, so the
+   indent is reset here once instead of in each definition list. */
+dd { margin-inline-start: 0; }
 h1, h2, h3, .wordmark, .display { font-family: var(--font-display), Arial, sans-serif; letter-spacing: -0.025em; }
 h1 { font-size: clamp(44px, 5.6vw, 72px); line-height: 1.06; }
 h2 { font-size: clamp(30px, 3.8vw, 46px); line-height: 1.06; text-wrap: balance; }

@@ -127,6 +127,16 @@ test('approved colour pairs meet their contrast targets', async () => {
   expect(ratio('#6B4A31', '#FFFBF5')).toBeGreaterThanOrEqual(4.5);
 });
 
+test('every description detail clears the user-agent indent so it lines up with its term', async ({ page }) => {
+  for (const route of routes) {
+    await page.goto(route, { waitUntil: 'networkidle' });
+    const indented = await page.evaluate(() => [...document.querySelectorAll('dd')]
+      .map((detail) => ({ text: (detail.textContent ?? '').trim().slice(0, 40), margin: getComputedStyle(detail).marginInlineStart }))
+      .filter((detail) => detail.margin !== '0px'));
+    expect(indented, `unreset user-agent dd indent on ${route}`).toEqual([]);
+  }
+});
+
 test('the paid badge centres in both chat surfaces', async ({ page }) => {
   await page.goto('/', { waitUntil: 'networkidle' });
   // The conversation list, not the padded panel, is the conversation's chat

@@ -142,6 +142,7 @@ Header links: Figtree 600, 15px, ink, hover accent; current page marked by a ter
 - Source links (`src/components/SourceLink.astro`): one "Source · publisher ↗" affordance at 12px 700 for the timeline band, the shift cards, and the about-page stat cards. The label and its glyph sit in a single child element joined by a no-break space, so a wrapping publisher name never strands the ↗ on its own. Where the cards share a stretched grid row, the link is pushed to the bottom of the card so the row's links line up.
 - Comparison card head (before/after catalogue cards): eyebrow pill and status pill on one centred row. The eyebrow's section-intro bottom margin is zeroed here; left in place it sits inside the flex centring and lifts the pill above the status beside it (user-reported, 2026-08-20).
 - Capability chips: bordered surface pills, Figtree 600 13px.
+- Snippet cloud (CTA band): translucent Courier Prime pills scattered behind the closing action, two of them tilted 5-6deg. Courier Prime reserves 0.78em of ascent against 0.35em of descent, so a symmetrically padded pill centres the font's metrics box and leaves the ink about 2px above the middle (user-reported, 2026-08-20). The pills run at line-height 1 and carry 3px more padding above than below, which puts the ascender-to-baseline band on the pill's centre. Any future pill of centred monospace type needs the same correction; Figtree pills do not.
 - Status badges always combine fill + words (see Colors).
 
 ### Tables and dense data

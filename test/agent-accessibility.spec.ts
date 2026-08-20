@@ -126,3 +126,50 @@ test('approved colour pairs meet their contrast targets', async () => {
   expect(ratio('#AE3E1B', '#FDE0D4')).toBeGreaterThanOrEqual(4.5);
   expect(ratio('#6B4A31', '#FFFBF5')).toBeGreaterThanOrEqual(4.5);
 });
+
+test('every CTA snippet pill centres its type between the pill edges', async ({ page }) => {
+  // The cloud is desktop-only, so pin the width rather than inherit the project viewport.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/', { waitUntil: 'networkidle' });
+  await page.evaluate(() => document.fonts.ready);
+
+  const pills = await page.evaluate(() => [...document.querySelectorAll('.snippet-cloud span')]
+    .filter((pill) => getComputedStyle(pill).display !== 'none')
+    .map((pill) => {
+      const style = getComputedStyle(pill);
+      const text = pill.textContent ?? '';
+      const context = document.createElement('canvas').getContext('2d')!;
+      context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+      const metrics = context.measureText(text);
+
+      // Two pills are tilted, so their bounding box is not their border box.
+      // Everything here is measured down from the border box's own top edge,
+      // which the transform cannot disturb.
+      const px = (value: string) => Number.parseFloat(value);
+      const lineBox = px(style.lineHeight);
+      const top = px(style.borderTopWidth) + px(style.paddingTop);
+      const height = top + lineBox + px(style.paddingBottom) + px(style.borderBottomWidth);
+
+      // The line box is centred in the content box and the font's own ascent and
+      // descent are centred in the line box, so the baseline is one half-leading
+      // plus one ascent below the content edge.
+      const fontHeight = metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
+      const baseline = top + (lineBox - fontHeight) / 2 + metrics.fontBoundingBoxAscent;
+
+      // Descenders always hang below, so the band the eye levels on runs from the
+      // tallest ink down to the baseline.
+      const inkCentre = baseline - metrics.actualBoundingBoxAscent / 2;
+      return { text, lines: pill.getClientRects().length, offset: inkCentre - height / 2 };
+    }));
+
+  expect(pills.length).toBeGreaterThan(0);
+  for (const pill of pills) {
+    // One line, or the single-line baseline maths above would not describe it.
+    expect(pill.lines, `"${pill.text}" wrapped`).toBe(1);
+    // Courier Prime carries more ascent than descent, so a symmetric pill floats
+    // its type high. 1px covers the cap-height strings riding a shade above the
+    // ascender strings, and nothing else: the symmetric pill it replaced
+    // missed by 1.33px on every mixed-case snippet.
+    expect(Math.abs(pill.offset), `"${pill.text}" sits ${pill.offset.toFixed(2)}px off centre`).toBeLessThanOrEqual(1);
+  }
+});

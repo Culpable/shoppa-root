@@ -275,7 +275,13 @@ ul, ol { padding: 0; }
 .cta-band { position: relative; overflow: hidden; min-height: 400px; display: grid; place-items: center; padding: clamp(48px, 7vw, 78px); border-radius: var(--radius-band); background: linear-gradient(135deg, var(--colour-highlight-start), #ffd0b3); }
 .cta-content { position: relative; z-index: 1; max-width: 720px; text-align: center; }
 .cta-content p { max-width: 620px; margin: 20px auto 28px; color: var(--colour-ink-secondary); }
-.snippet-cloud span { position: absolute; padding: 5px 10px; border: 1px solid rgba(184, 68, 31, 0.2); border-radius: 999px; background: rgba(255, 251, 245, 0.54); color: rgba(107, 74, 49, 0.55); font-family: var(--font-mono); font-size: 11.5px; }
+/* Courier Prime reserves 0.78em of ascent against 0.35em of descent, so a
+   symmetrically padded pill centres the font's metrics box and leaves the ink
+   about 2px above the pill's middle (user-reported, 2026-08-20). Pin the line
+   box to the type size and carry 3px more padding above than below: that offset
+   lands the ascender-to-baseline band on the centre, which is what the eye
+   reads as level. */
+.snippet-cloud span { position: absolute; padding: 10px 10px 7px; border: 1px solid rgba(184, 68, 31, 0.2); border-radius: 999px; background: rgba(255, 251, 245, 0.54); color: rgba(107, 74, 49, 0.55); font-family: var(--font-mono); font-size: 11.5px; line-height: 1; }
 .snippet-cloud span:nth-child(1) { left: 4%; top: 12%; transform: rotate(-6deg); }
 .snippet-cloud span:nth-child(2) { right: 4%; top: 14%; transform: rotate(5deg); }
 .snippet-cloud span:nth-child(3) { left: 8%; bottom: 14%; }

@@ -1,0 +1,21 @@
+---
+// The single "payment settled" state, used wherever a demo conversation reaches
+// checkout (hero mini-chat and the full conversation). Keeping it in one
+// component means the paid state can only ever look one way.
+//
+// A tick, not a dot: the badge marks a settled outcome, so a static
+// confirmation mark is truer to the state than a "live" indicator. The generic
+// `.status` pill stays tick-free because it also carries neutral states
+// ("ready") and negative ones ("Incomplete"), where a tick would lie.
+//
+// The tick ink is centred in its own viewBox (y 3.5 to 8.5 of 12) and the label
+// runs at line-height 1, so the two boxes and the ink inside them line up and
+// plain `align-items: center` centres the type itself in every engine.
+---
+
+<span class="paid-badge">
+  <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" aria-hidden="true">
+    <path d="M2.5 6 5 8.5l4.5-5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+  <span>Paid · order confirmed</span>
+</span>

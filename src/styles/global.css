@@ -121,17 +121,17 @@ ul, ol { padding: 0; }
 .hero-subhead { max-width: 540px; margin-bottom: 30px; color: var(--colour-ink-secondary); font-size: 18px; }
 .button-row { display: flex; flex-wrap: wrap; gap: 12px; }
 .proof-pills { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 40px 0 0; list-style: none; }
-.proof-pill { min-height: 112px; padding: 18px; border-radius: 20px; }
+.proof-pill { padding: 18px; border-radius: 20px; }
 .proof-pill:nth-child(1) { background: var(--colour-tint-peach); }
 .proof-pill:nth-child(2) { background: var(--colour-tint-sage); }
 .proof-pill:nth-child(3) { background: var(--colour-tint-blush); }
 .proof-pill strong { display: block; font-family: var(--font-display); font-size: 23px; line-height: 1.1; }
-.proof-pill span { display: block; margin-top: 12px; font-size: 12.5px; font-weight: 500; }
+.proof-pill span { display: block; margin-top: 8px; font-size: 12.5px; font-weight: 500; }
 .flow-stack { display: grid; justify-items: stretch; }
 .flow-card { padding: 20px 22px; border: 1.5px solid var(--colour-border); border-radius: 22px; background: var(--colour-surface); box-shadow: var(--shadow-card); }
 .flow-title { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 8px; font-weight: 700; }
 .flow-meta { margin: 0; color: var(--colour-ink-secondary); font-size: 12.5px; }
-.status { display: inline-flex; width: fit-content; align-items: center; min-height: 29px; padding: 4px 11px; border-radius: 999px; color: var(--colour-success); background: var(--colour-tint-sage); font-size: 11px; font-weight: 700; }
+.status { display: inline-flex; width: fit-content; align-items: center; min-height: 29px; padding: 4px 11px; border-radius: 999px; color: var(--colour-success); background: var(--colour-tint-sage); font-size: 12px; font-weight: 700; }
 .flow-connector { display: grid; justify-items: center; gap: 3px; height: 52px; color: var(--colour-ink-secondary); font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
 .flow-connector::before, .flow-connector::after { width: 1.5px; height: 13px; background: var(--colour-border-strong); content: ''; }
 .agent-title { justify-content: flex-start; }
@@ -140,11 +140,15 @@ ul, ol { padding: 0; }
 .chip-list li { padding: 5px 12px; border: 1px solid var(--colour-border-strong); border-radius: 999px; font-size: 11px; font-weight: 600; }
 .mini-browser { margin-top: 14px; }
 .browser-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 14px; background: var(--colour-surface-sunken); color: var(--colour-ink-secondary); font-size: 11px; }
-.mini-chat { display: grid; gap: 8px; padding-top: 12px; font-size: 12px; }
+.mini-chat { display: grid; gap: 8px; padding-top: 12px; font-size: 13px; }
 .bubble { width: fit-content; max-width: 88%; margin: 0; padding: 9px 12px; border-radius: 15px; line-height: 1.45; }
 .bubble-customer { justify-self: end; color: white; background: var(--colour-ink); border-bottom-right-radius: 5px; }
 .bubble-agent { background: var(--colour-surface-sunken); border-bottom-left-radius: 5px; }
-.product-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 9px; align-items: center; padding: 10px 12px; border: 1px solid var(--colour-border); border-radius: 13px; background: var(--colour-surface); font-size: 12px; }
+/* Hero mini-chat agent replies carry the same ✦ avatar as the full
+   conversation, bottom-aligned so the two chats share one speaker idiom. */
+.mini-agent-row { display: flex; align-items: flex-end; gap: 7px; }
+.avatar-small { width: 22px; height: 22px; font-size: 10px; }
+.product-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 9px; align-items: center; padding: 10px 12px; border: 1px solid var(--colour-border); border-radius: 13px; background: var(--colour-surface); font-size: 13px; }
 /* Illustrated dress thumbnail (DressThumbnail.astro). The tinted tile reads as
    a photo backdrop; the two custom properties feed the SVG gradient stops. */
 .dress-thumbnail { overflow: hidden; width: 30px; height: 37px; border-radius: 9px; }
@@ -152,20 +156,31 @@ ul, ol { padding: 0; }
 .dress-thumbnail-small { width: 22px; height: 27px; border-radius: 7px; }
 .dress-sapphire { --dress-from: var(--colour-sapphire); --dress-to: var(--colour-sapphire-deep); background: var(--colour-sapphire-tint); }
 .dress-blush { --dress-from: var(--colour-blush); --dress-to: var(--colour-blush-deep); background: var(--colour-blush-tint); }
-.product-meta { color: var(--colour-ink-secondary); font-size: 11px; }
+.product-meta { color: var(--colour-ink-secondary); font-size: 12px; }
+/* Settled-payment pill. Sage like .status, but with a tick and its own class so
+   the neutral and negative .status pills never inherit a confirmation mark. */
+.paid-badge { display: inline-flex; width: fit-content; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid rgba(76, 107, 51, 0.24); border-radius: 999px; color: var(--colour-success); background: var(--colour-tint-sage); font-size: 12px; font-weight: 700; line-height: 1; }
+.paid-badge svg { width: 1em; height: 1em; flex: none; }
 
 /* Render the complete conversation as ordered content with visual speaker cues. */
 .agent-grid { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(330px, 0.88fr); gap: 24px; margin-top: 46px; align-items: start; }
 .conversation { padding: clamp(18px, 3vw, 30px); border-radius: var(--radius-panel); background: var(--colour-surface); box-shadow: var(--shadow-feature); }
 .conversation .browser-bar { margin: calc(clamp(18px, 3vw, 30px) * -1); margin-bottom: 28px; padding: 14px 18px; border-radius: var(--radius-panel) var(--radius-panel) 18px 18px; }
 .conversation-list { display: grid; gap: 16px; margin: 0; list-style: none; }
-.conversation-message { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; align-items: start; }
+.conversation-message { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px 12px; }
 .conversation-message.customer { grid-template-columns: minmax(0, 1fr); justify-items: end; }
-.avatar { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: white; background: var(--colour-accent); font-size: 13px; }
-.message-stack { display: grid; gap: 10px; max-width: 90%; }
-.conversation-message.customer .message-stack { justify-items: end; }
-.conversation .bubble { max-width: 100%; font-size: 14px; }
-.order-summary { width: min(100%, 320px); padding: 14px; border: 1px solid var(--colour-border); border-radius: 16px; }
+/* The avatar is pinned to row 1 and bottom-aligned, so it sits at the
+   bottom-left corner of the speech bubble like a chat tail rather than level
+   with the top of the message. */
+.avatar { grid-column: 1; grid-row: 1; align-self: end; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: white; background: var(--colour-accent); font-size: 13px; }
+/* display: contents lifts the bubble, product rows, and receipt into the
+   message grid as their own rows, which is what lets the avatar align to the
+   first bubble instead of the full stack. */
+.message-stack { display: contents; }
+.conversation .message-stack > * { grid-column: 2; max-width: 90%; }
+.conversation-message.customer .message-stack > * { grid-column: 1; }
+.conversation .bubble { font-size: 14px; }
+.order-summary { width: min(100%, 320px); padding: 14px; border: 1px solid var(--colour-border); border-radius: 16px; font-size: 13px; }
 .order-summary > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; padding: 8px 0; border-bottom: 1px dashed var(--colour-border); }
 .order-summary > div:last-child { border-bottom: 0; font-weight: 700; }
 .order-summary dt, .order-summary dd { margin: 0; }
@@ -313,14 +328,13 @@ ul, ol { padding: 0; }
   .wordmark { font-size: 24px; }
   .button-compact { padding-inline: 16px; }
   .proof-pills, .timeline-grid, .shift-grid, .capability-grid, .values-grid, .proof-band, .stats-band, .prose-grid, .footer-grid { grid-template-columns: 1fr; }
-  .proof-pill { min-height: 84px; }
   .flow-card { padding: 17px; }
   .product-row { grid-template-columns: auto minmax(0, 1fr); }
   .product-meta { grid-column: 2; }
   .agent-grid { margin-top: 32px; }
   .conversation { padding: 16px; }
   .conversation .browser-bar { margin: -16px -16px 22px; }
-  .message-stack { max-width: 100%; }
+  .conversation .message-stack > * { max-width: 100%; }
   .dark-band, .cta-band { border-radius: 30px; padding: 32px 20px; }
   .timeline-card { min-height: 250px; }
   .feed-fields ul { grid-template-columns: 1fr 1fr; }

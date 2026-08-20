@@ -108,7 +108,10 @@ ul, ol { padding: 0; }
 .button-dark:hover { background: var(--colour-band-code); }
 
 /* Stage the approved hero composition and preserve the highlight regression fix. */
-.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(380px, 0.72fr); gap: clamp(48px, 7vw, 96px); align-items: center; padding-block: clamp(68px, 9vw, 116px) 28px; }
+/* The top padding is capped below the flow stack's own breathing room: the
+   stack is the tallest hero element, and 116px of lead-in pushed its final card
+   past the fold on a 900px-tall viewport. */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(380px, 0.72fr); gap: clamp(48px, 7vw, 96px); align-items: center; padding-block: clamp(68px, 9vw, 104px) 28px; }
 .hero-copy > * { animation: hero-enter 650ms both ease-out; }
 .hero-copy > :nth-child(2) { animation-delay: 80ms; }
 .hero-copy > :nth-child(3) { animation-delay: 150ms; }
@@ -128,19 +131,26 @@ ul, ol { padding: 0; }
 .proof-pill strong { display: block; font-family: var(--font-display); font-size: 23px; line-height: 1.1; }
 .proof-pill span { display: block; margin-top: 8px; font-size: 12.5px; font-weight: 500; }
 .flow-stack { display: grid; justify-items: stretch; }
-.flow-card { padding: 20px 22px; border: 1.5px solid var(--colour-border); border-radius: 22px; background: var(--colour-surface); box-shadow: var(--shadow-card); }
-.flow-title { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 8px; font-weight: 700; }
+.flow-card { padding: 22px 24px; border: 1.5px solid var(--colour-border); border-radius: 22px; background: var(--colour-surface); box-shadow: var(--shadow-card); }
+/* One title idiom for all three flow cards: icon tile, label, then any trailing
+   status pill pushed to the far edge. The title owns the gap to whatever the
+   card holds below it, so the three cards keep one internal rhythm. */
+.flow-title { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: 700; }
+.flow-title .status { margin-left: auto; }
+.flow-icon { display: grid; flex: none; place-items: center; width: 28px; height: 28px; border-radius: 9px; }
+.flow-icon svg { width: 17px; height: 17px; }
+.flow-icon-catalogue { color: var(--colour-accent-text); background: var(--colour-tint-peach); }
+.flow-icon-agent { color: white; background: var(--colour-accent); }
+.flow-icon-customer { color: var(--colour-ink); background: var(--colour-tint-blush); }
 .flow-meta { margin: 0; color: var(--colour-ink-secondary); font-size: 12.5px; }
 .status { display: inline-flex; width: fit-content; align-items: center; min-height: 29px; padding: 4px 11px; border-radius: 999px; color: var(--colour-success); background: var(--colour-tint-sage); font-size: 12px; font-weight: 700; }
-.flow-connector { display: grid; justify-items: center; gap: 3px; height: 52px; color: var(--colour-ink-secondary); font-size: 11.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
-.flow-connector::before, .flow-connector::after { width: 1.5px; height: 13px; background: var(--colour-border-strong); content: ''; }
-.agent-title { justify-content: flex-start; }
-.pulse-dot { width: 10px; height: 10px; border: 3px solid var(--colour-tint-blush); border-radius: 50%; background: var(--colour-accent); }
-.chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; list-style: none; }
+.flow-connector { display: grid; justify-items: center; gap: 3px; height: 44px; color: var(--colour-ink-secondary); font-size: 11.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.flow-connector::before, .flow-connector::after { width: 1.5px; height: 11px; background: var(--colour-border-strong); content: ''; }
+.chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; list-style: none; }
 .chip-list li { padding: 5px 12px; border: 1px solid var(--colour-border-strong); border-radius: 999px; font-size: 12px; font-weight: 600; }
-.mini-browser { margin-top: 14px; }
+.mini-browser { display: grid; gap: 14px; }
 .browser-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 14px; background: var(--colour-surface-sunken); color: var(--colour-ink-secondary); font-size: 12px; }
-.mini-chat { display: grid; gap: 8px; padding-top: 12px; font-size: 13px; }
+.mini-chat { display: grid; gap: 10px; font-size: 13px; }
 .bubble { width: fit-content; max-width: 88%; margin: 0; padding: 9px 12px; border-radius: 15px; line-height: 1.45; }
 .bubble-customer { justify-self: end; color: white; background: var(--colour-ink); border-bottom-right-radius: 5px; }
 .bubble-agent { background: var(--colour-surface-sunken); border-bottom-left-radius: 5px; }
@@ -196,7 +206,7 @@ ul, ol { padding: 0; }
 .dark-eyebrow { color: var(--colour-band-accent); background: rgba(255, 242, 226, 0.15); }
 .embed-panel p, .demo-panel p { color: rgba(255, 242, 226, 0.82); }
 .code-block { margin: 20px 0 0; overflow-x: auto; padding: 16px; border-radius: 14px; background: var(--colour-band-code); color: var(--colour-band-accent); font-family: var(--font-mono), monospace; font-size: 12px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
-.demo-link { display: inline-flex; min-height: 44px; align-items: center; margin-top: 12px; padding: 8px 18px; border-radius: 999px; color: var(--colour-accent-deep); background: white; font-weight: 700; text-decoration: none; }
+.demo-link { display: inline-flex; min-height: 44px; align-items: center; gap: 6px; margin-top: 12px; padding: 8px 18px; border-radius: 999px; color: var(--colour-accent-deep); background: white; font-weight: 700; text-decoration: none; }
 .capabilities { display: flex; flex-wrap: wrap; gap: 10px; margin: 28px 0 0; list-style: none; }
 .capabilities li { padding: 8px 16px; border: 1.5px solid var(--colour-border-strong); border-radius: 999px; background: var(--colour-surface); font-size: 13px; font-weight: 600; }
 
@@ -205,7 +215,12 @@ ul, ol { padding: 0; }
 .catalogue-card { min-width: 0; padding: 24px; border: 1.5px solid var(--colour-border); border-radius: var(--radius-card); background: var(--colour-surface); box-shadow: var(--shadow-card); }
 .catalogue-card.after { box-shadow: var(--shadow-feature); }
 .catalogue-card-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
-.catalogue-card h3 { margin: 18px 0 12px; }
+/* The eyebrow carries a 22px bottom margin for its stacked section-intro use.
+   Inside this centred row that margin sits inside the flex alignment, which
+   lifted the "Before"/"After" pill 11px above the status pill beside it and
+   left a 40px hole under the row. The head owns both distances instead. */
+.catalogue-card-head .eyebrow { margin-bottom: 0; }
+.catalogue-card h3 { margin: 16px 0 12px; }
 .catalogue-description { color: var(--colour-ink-secondary); font-size: 14px; }
 .catalogue-data { display: grid; gap: 8px; margin: 18px 0; }
 .catalogue-data > div { display: flex; justify-content: space-between; gap: 14px; padding-top: 8px; border-top: 1px dashed var(--colour-border); }
@@ -230,14 +245,22 @@ ul, ol { padding: 0; }
 .timeline-stat { margin: 16px 0 0; font-family: var(--font-display); font-size: 38px; font-weight: 800; line-height: 1; }
 .timeline-label { color: rgba(255, 242, 226, 0.78); font-size: 12px; }
 .timeline-text { margin-top: auto; padding-top: 20px; color: rgba(255, 242, 226, 0.88); font-size: 14px; }
+/* SourceLink.astro keeps the label and its ↗ inside one child element, so the
+   glyph stays attached to the last word instead of being stranded at the far
+   edge of the card when the label wraps. */
 .source-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; color: var(--colour-band-accent); font-size: 12px; font-weight: 700; }
 .timeline-close { display: grid; gap: 4px; margin-top: 34px; padding-top: 30px; border-top: 1px solid rgba(255, 242, 226, 0.2); }
 .timeline-close strong { font-size: 18px; }
 .timeline-close span { color: rgba(255, 242, 226, 0.8); }
-.shift-grid, .capability-grid, .values-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 42px; }
+.shift-grid, .capability-grid, .values-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 46px; }
 .shift-card, .capability-card, .value-card { padding: 24px; border: 1.5px solid var(--colour-border); border-radius: var(--radius-card); color: var(--colour-ink); background: var(--colour-surface); box-shadow: var(--shadow-card); }
 .shift-card h3, .capability-card h3, .value-card h3 { margin-bottom: 12px; }
 .shift-card p, .capability-card p, .value-card p { color: var(--colour-ink-secondary); }
+/* Grid stretch already gives the cards one height; pushing the source link to
+   the bottom of that height lines the three links up instead of leaving them
+   wherever each body copy happens to end. The stat cards do the same. */
+.shift-card { display: flex; flex-direction: column; }
+.shift-card .source-link { margin-top: auto; }
 .source-light { color: var(--colour-accent-deep); }
 .shift-stat { margin-bottom: 4px; font-family: var(--font-display); font-size: 38px; font-weight: 800; line-height: 1; }
 .shift-stat-label { font-size: 12px; font-weight: 600; }
@@ -269,15 +292,18 @@ ul, ol { padding: 0; }
 .prose-grid p { color: var(--colour-ink-secondary); }
 .proof-band, .stats-band { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 46px; }
 .proof-item, .stat-item { padding: 22px; border-radius: 20px; background: var(--colour-surface); box-shadow: var(--shadow-card); }
+.stat-item { display: flex; flex-direction: column; }
 .proof-item dt, .stat-item dt { color: var(--colour-accent-deep); font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
 .proof-item dd { margin-top: 8px; font-family: var(--font-display); font-size: 20px; font-weight: 700; line-height: 1.3; }
 .approach-block { margin-top: var(--section-space); }
 .approach-block .eyebrow { color: var(--colour-band-accent); background: rgba(255, 242, 226, 0.12); }
 .approach-block > p { max-width: 700px; color: rgba(255, 242, 226, 0.84); }
-.capability-card .index, .stage-number { color: var(--colour-accent); font-family: var(--font-display); font-size: 28px; font-weight: 800; }
+/* The index numeral labels the card title under it, so it keeps a label-sized
+   gap rather than the 1em paragraph margin its 28px type would inherit. */
+.capability-card .index, .stage-number { margin-bottom: 10px; color: var(--colour-accent); font-family: var(--font-display); font-size: 28px; font-weight: 800; }
 .stat-item .stat-value { margin: 8px 0 4px; font-family: var(--font-display); font-size: 36px; font-weight: 800; }
 .stat-item dd { margin: 0; color: var(--colour-ink-secondary); }
-.stat-item a { display: inline-flex; min-height: 44px; align-items: center; color: var(--colour-accent-deep); font-weight: 700; }
+.stat-item .stat-source { margin-top: auto; }
 .process-stages { display: grid; gap: 28px; margin-top: var(--section-space); }
 .process-stage { display: grid; grid-template-columns: 140px 1fr; gap: 32px; padding: clamp(26px, 5vw, 48px); border: 1.5px solid var(--colour-border); border-radius: var(--radius-panel); background: var(--colour-surface); box-shadow: var(--shadow-card); }
 .stage-label { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
@@ -286,8 +312,13 @@ ul, ol { padding: 0; }
 .stage-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; list-style: none; }
 .stage-tags li { padding: 7px 12px; border-radius: 999px; background: var(--colour-tint-peach); font-size: 12px; font-weight: 600; }
 .values-section { margin-top: var(--section-space); }
-.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(38px, 7vw, 86px); margin-top: var(--section-space); }
+/* align-items: start stops the short enquiry card from being stretched to the
+   height of the details column, which left a block of empty card below the
+   email address. The details column then takes the card's own padding as a top
+   offset so both columns open their first heading on the same line. */
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(38px, 7vw, 86px); align-items: start; margin-top: var(--section-space); }
 .contact-card { padding: clamp(28px, 5vw, 48px); border-radius: var(--radius-panel); background: var(--colour-surface); box-shadow: var(--shadow-feature); }
+.contact-details { padding-top: clamp(28px, 5vw, 48px); }
 .contact-card p, .contact-details p { color: var(--colour-ink-secondary); }
 .email-link { display: inline-flex; min-height: 48px; align-items: center; margin-top: 18px; color: var(--colour-accent-deep); font-family: var(--font-display); font-size: clamp(22px, 3vw, 34px); font-weight: 700; overflow-wrap: anywhere; }
 .office-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 26px 0 42px; list-style: none; }
@@ -317,6 +348,9 @@ ul, ol { padding: 0; }
   .header-nav { display: none; }
   .hero, .agent-grid, .catalogue-grid, .contact-grid { grid-template-columns: 1fr; }
   .hero { padding-top: 52px; }
+  /* Stacked, the details column follows the card, so the alignment offset would
+     only read as dead space. */
+  .contact-details { padding-top: 0; }
   .flow-stack { max-width: 640px; }
   .feed-fields { padding-block: 8px; }
   .feed-fields ul { grid-template-columns: repeat(3, 1fr); }
@@ -331,7 +365,18 @@ ul, ol { padding: 0; }
   .wordmark { font-size: 24px; }
   .button-compact { padding-inline: 16px; }
   .proof-pills, .timeline-grid, .shift-grid, .capability-grid, .values-grid, .proof-band, .stats-band, .prose-grid, .footer-grid { grid-template-columns: 1fr; }
-  .flow-card { padding: 17px; }
+  .flow-card { padding: 18px 20px; }
+  /* The agent card holds one line on phones: label left, capability chips right.
+     Three chips never fit beside the label - at 390px the label and three chips
+     need 372px of a 310px row - so the row drops the last chip and shrinks the
+     rest. The chip list refuses to shrink, so on a phone narrower than about
+     340px the whole list wraps to its own line instead of stacking one chip per
+     line beside the label. */
+  .flow-card-agent { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .flow-card-agent .flow-title { margin-bottom: 0; }
+  .flow-card-agent .chip-list { flex: 1 0 auto; justify-content: flex-end; gap: 6px; }
+  .flow-card-agent .chip-list li:nth-child(3) { display: none; }
+  .flow-card-agent .chip-list li { padding: 4px 9px; font-size: 11.5px; }
   .agent-grid { margin-top: 32px; }
   .conversation { padding: 16px; }
   .conversation .browser-bar { margin: -16px -16px 22px; }

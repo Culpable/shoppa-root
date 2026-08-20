@@ -1,0 +1,52 @@
+---
+// Identity marks for the three hero flow cards. The cards read as a chain -
+// catalogue feeds agent, agent answers customer - and the labels alone made the
+// three steps look interchangeable at a glance. Each card now opens with a
+// tinted tile carrying its own glyph so the role is legible before the label is
+// read.
+//
+// Hand-built inline SVG, matching DressThumbnail.astro: no icon library, no
+// image request, no client JavaScript. Every glyph is drawn on the same 24x24
+// canvas at the same stroke weight so the trio reads as one set. Colours live
+// in global.css; the paths only use currentColor.
+
+interface Props {
+  variant: 'catalogue' | 'agent' | 'customer';
+}
+
+const { variant } = Astro.props;
+---
+
+<!-- Decorative: the adjacent card label names the step, so the glyph stays out
+     of the accessibility tree. -->
+<span class:list={['flow-icon', `flow-icon-${variant}`]} aria-hidden="true">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    {variant === 'catalogue' && (
+      <>
+        {/* Product grid: four rounded tiles, the shape of a catalogue listing. */}
+        <rect x="3.7" y="3.7" width="7.5" height="7.5" rx="2.2" />
+        <rect x="12.8" y="3.7" width="7.5" height="7.5" rx="2.2" />
+        <rect x="3.7" y="12.8" width="7.5" height="7.5" rx="2.2" />
+        <rect x="12.8" y="12.8" width="7.5" height="7.5" rx="2.2" />
+      </>
+    )}
+    {variant === 'agent' && (
+      <>
+        {/* Robot face: antenna, rounded head, two eyes, and a mouth line. */}
+        <path d="M12 5.9V3.6" />
+        <circle cx="12" cy="2.5" r="1.2" fill="currentColor" stroke="none" />
+        <rect x="3.9" y="5.9" width="16.2" height="13.4" rx="4.2" />
+        <circle cx="9.1" cy="11.7" r="1.15" fill="currentColor" stroke="none" />
+        <circle cx="14.9" cy="11.7" r="1.15" fill="currentColor" stroke="none" />
+        <path d="M9.7 15.6h4.6" />
+      </>
+    )}
+    {variant === 'customer' && (
+      <>
+        {/* Shopper: head and shoulders. */}
+        <circle cx="12" cy="8.3" r="3.9" />
+        <path d="M4.7 20.1a7.3 7.3 0 0 1 14.6 0" />
+      </>
+    )}
+  </svg>
+</span>

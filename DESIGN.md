@@ -39,7 +39,7 @@ Precedence: repository `AGENTS.md` instructions and explicit user decisions over
 
 - Framework and rendering: Astro static export. All pages are prerendered; the production pages ship no browser JavaScript.
 - Styling and token authority: plain CSS with custom properties in `src/styles/global.css`; this document owns their semantic roles and constraints.
-- Components and icons: hand-built Astro components; no UI framework, no icon library. The agent mark is the `✦` glyph. Decorative dots and connectors are CSS; the dress thumbnails in the chat product rows are inline SVG (`src/components/DressThumbnail.astro`).
+- Components and icons: hand-built Astro components; no UI framework, no icon library. The agent mark is the `✦` glyph. Decorative dots and connectors are CSS; the dress thumbnails in the chat product rows and the three hero flow-card marks are inline SVG (`src/components/DressThumbnail.astro`, `src/components/FlowIcon.astro`).
 - Fonts and charts: Bricolage Grotesque (display), Figtree (body), Courier Prime (embed code only), self-hosted through Astro Fonts. No charts.
 
 ## Colors
@@ -84,7 +84,9 @@ Approved palette roles. `src/styles/global.css` owns the exact production values
 
 ## Layout
 
-- Spacing rhythm: container max-width 1140px with 32px gutters; sections separated by 72–96px; within a section, intro → content gap 44–48px; card internal padding 22–32px. `src/styles/global.css` owns the exact values.
+- Spacing rhythm: container max-width 1140px with 32px gutters; sections separated by 72–96px; within a section, intro → content gap 46px; card internal padding 22–32px. `src/styles/global.css` owns the exact values.
+- Label-to-content gap: a small label above the thing it names - eyebrow pill in a card head, index numeral, connector - keeps a 10–16px gap, not the 22px the eyebrow uses when it opens a section or the 1em paragraph margin a large numeral would inherit. The wider gaps read as a hole in the card (user-reported, 2026-08-20).
+- Above the fold: the hero visual is the tallest hero element, so its lead-in is capped at 104px. The flow stack must finish inside a 1440×900 viewport; check it after changing hero padding, flow-card padding, or the connector height.
 - Breakpoints and frames: two functional breakpoints - 960px (multi-column grids stack to one column; hero split becomes a single column with the visual below the copy) and 640px (three-up pill grids stack). Full-bleed is never used for content; the dark timeline band and CTA band are rounded 44px blocks inset within the container.
 - Navigation and shell: header = brand wordmark left, inline text links (the agent, the catalogue, our process, about us) centre/right, terracotta pill "Contact us" right; below 960px the inline links hide and the full route list lives in the footer (no JavaScript burger menu). Footer = three columns (offer / company / our offices) plus wordmark and dynamic-year copyright line.
 - Overflow and dense data: no horizontal scrolling at any viewport ≥ 320px; the order-summary list and timeline cards reflow by stacking. Code blocks in embed panels are the only permitted `overflow-x: auto` regions.
@@ -99,7 +101,7 @@ Approved palette roles. `src/styles/global.css` owns the exact production values
 ## Shapes
 
 - Radius and geometry: pill (999px) for buttons, chips, badges, eyebrow tags, URL pill; 20–28px for cards and panels (conversation widget 28px outer); 44px for the two inset bands; 12–16px for inner rows (product rows, code blocks, chrome bar); chat bubbles 16–20px with a 4–6px "tail" corner pointing at the speaker. Nothing square.
-- Icons: no icon library. `✦` in a terracotta circle is the agent avatar; traffic-light dots and the pulsing status dot are CSS circles. Decorative glyphs and thumbnails are `aria-hidden`.
+- Icons: no icon library. `✦` in a terracotta circle is the agent avatar; traffic-light dots and connector rules are CSS. The only line icons are the three hero flow-card marks - product grid, robot face, and shopper - drawn on one 24x24 canvas at one stroke weight so the trio reads as a set. Decorative glyphs, thumbnails, and flow icons are `aria-hidden`; the card label beside each one carries the meaning.
 - Imagery: no photography. All page visuals are typographic/CSS/SVG compositions (flow cards, conversation, dress thumbnails, receipt-style order summary). Browser identity assets in `public/` use the Warm Sunrise palette and keep the outer corners transparent.
 
 ## Components
@@ -128,7 +130,7 @@ Header links: Figtree 600, 15px, ink, hover accent; current page marked by a ter
 
 - Eyebrow pill: uppercase label on blush fill (`#FDE0D4`, accent text) opening every section.
 - Proof pills (hero): three tinted cards (peach/sage/blush), stat in display 800 over a 12.5px label 8px below it. The cards hug their content with symmetric 18px padding; no fixed or minimum height, which previously left dead space under the label.
-- Flow cards (hero visual): bordered surface cards joined by uppercase connector labels ("feeds", "answers") over short vertical rules.
+- Flow cards (hero visual): bordered surface cards joined by uppercase connector labels ("feeds", "answers") over short vertical rules. All three cards open with the same title row - a 28px rounded icon tile, the label, then any status pill pushed to the far edge - so the chain reads as three named steps rather than three blocks of text. Tiles: catalogue = product grid, accent text on peach; agent = robot face, white on terracotta (it replaced a bare status dot); customer = shopper, ink on blush. The title row owns the gap to whatever the card holds below it, so the three cards keep one internal rhythm. Below 640px the agent card is a single line - label left, capability chips right - because a wrapped chip row cost more vertical space above the fold than the third chip is worth; the row drops "support" and shrinks the remaining chips to the 11.5px label floor, and the chip list wraps to its own line only under about 340px.
 - Conversation widget: surface card, 28px radius, chrome bar (dots + URL pill + brand chip), customer bubbles ink-filled right-aligned, agent bubbles sunken-surface left-aligned with `✦` avatar, product rows with dress thumbnail + name + meta, receipt-style order list, sage paid badge, dashed "3 days later" divider (1px dashed `--colour-border-strong` on both flanking rules).
 - Product rows: two columns, thumbnail then text. The meta line sits directly under the name at 4px, at every width - never justified to the opposite edge of the row, which stranded the price ~180px from the item it prices at desktop widths. The thumbnail spans both text rows so it centres against the pair.
 - Agent avatar placement: the `✦` avatar bottom-aligns to the first bubble of its message, not to the top of the message and not to the bottom of a multi-part stack, so it reads as the tail of the speech bubble. Both chat surfaces follow this: 30px in the conversation, 22px in the hero mini-chat.
@@ -137,6 +139,8 @@ Header links: Figtree 600, 15px, ink, hover accent; current page marked by a ter
 - Embed panel: `#40291A` card, peach eyebrow, display heading, two-line code block on `#2B1A0F`.
 - Proof panel: terracotta gradient card with cream "See it live." heading and a white pill link to demo.shoppa.au.
 - Timeline cards: translucent cream-on-espresso cards (`rgba(255,242,226,.07)`) with peach date label, display stat, source link underlined in peach.
+- Source links (`src/components/SourceLink.astro`): one "Source · publisher ↗" affordance at 12px 700 for the timeline band, the shift cards, and the about-page stat cards. The label and its glyph sit in a single child element joined by a no-break space, so a wrapping publisher name never strands the ↗ on its own. Where the cards share a stretched grid row, the link is pushed to the bottom of the card so the row's links line up.
+- Comparison card head (before/after catalogue cards): eyebrow pill and status pill on one centred row. The eyebrow's section-intro bottom margin is zeroed here; left in place it sits inside the flex centring and lifts the pill above the status beside it (user-reported, 2026-08-20).
 - Capability chips: bordered surface pills, Figtree 600 13px.
 - Status badges always combine fill + words (see Colors).
 
@@ -158,7 +162,9 @@ The 404 page is the only error surface: display numeral, heading, one-line body,
 - Do pair every status with words; never colour alone.
 - Do keep every capability claim traceable to `/Users/sacino/shoppa/AGENTS.md` / the approved copy contract before publishing it.
 - Do keep small text on dark bands at ≥ 0.75 alpha and filled primary buttons on `#B8441F`.
-- Don't add dark sections, glass effects, purple gradients, photography, icon libraries, or a second accent hue.
+- Do zero an element's own vertical margin before putting it in a centred flex or grid row. The margin sits inside the alignment, so the element's ink lands off-centre against everything beside it.
+- Do let a card that is shorter than its neighbours stay short. Where a stretched card would end in empty space, either bottom-anchor its last row (source links) or stop the stretch (`align-items: start` on the contact grid).
+- Don't add dark sections, glass effects, purple gradients, photography, icon libraries, or a second accent hue. Hand-built inline SVG marks are allowed and must join the existing set: one canvas size, one stroke weight, `aria-hidden`, meaning carried by adjacent text.
 - Don't gate any animation behind `prefers-reduced-motion` or similar conditionals.
 - Don't introduce horizontal scrolling anywhere except code blocks.
 - Don't use `#9A7B5F` for normal-size text on canvas.
@@ -179,7 +185,7 @@ The 404 page is the only error surface: display numeral, heading, one-line body,
 
 ## Design Verification
 
-Current proof: the production site was built and screenshot-reviewed on 2026-08-19 across every route at 1440×900 and 390×844. Automated checks covered semantic rules, keyboard focus, colour contrast, output discovery files, overflow, and the hero highlight band at widths from 320px to 1440px, where the band must cover its own glyphs and clear the line above. Evidence is stored in `documents/verification/screenshots/`, including `hero-highlight-<width>.png` crops.
+Current proof: the production site was built and screenshot-reviewed on 2026-08-20 across every route at 1440×900 and 390×844. Automated checks covered semantic rules, keyboard focus, colour contrast, output discovery files, overflow, and the hero highlight band at widths from 320px to 1440px, where the band must cover its own glyphs and clear the line above. The 2026-08-20 pass added measured geometry for the flow-card title rows, the before/after card heads, the source-link rows, and the contact columns, plus the hero flow stack and the single-line agent card at 1440, 1280, 960, 640, 430, 390, 375, 360, 340, and 320px. Evidence is stored in `documents/verification/screenshots/`, including `hero-highlight-<width>.png` crops.
 
 | Viewport or mode | Routes and states | Proof |
 | --- | --- | --- |

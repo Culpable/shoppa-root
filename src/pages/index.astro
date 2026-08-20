@@ -1,7 +1,9 @@
 ---
 import CTASection from '../components/CTASection.astro';
 import DressThumbnail from '../components/DressThumbnail.astro';
+import FlowIcon from '../components/FlowIcon.astro';
 import PaidOrderBadge from '../components/PaidOrderBadge.astro';
+import SourceLink from '../components/SourceLink.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import type { PageMetadataInput } from '../lib/metadata.ts';
 
@@ -37,11 +39,11 @@ const shiftCards = [
       <ul class="proof-pills" aria-label="Shoppa at a glance"><li class="proof-pill"><strong>Sold</strong><span>in one conversation</span></li><li class="proof-pill"><strong>Yours</strong><span>not rented</span></li><li class="proof-pill"><strong>2 lines</strong><span>of code to go live</span></li></ul>
     </div>
     <div class="flow-stack" aria-label="Your catalogue feeds your agent, which answers your customer">
-      <div class="flow-card"><div class="flow-title"><span>Your catalogue</span><span class="status">ready</span></div><p class="flow-meta">details · descriptions · stock</p></div>
+      <div class="flow-card"><div class="flow-title"><FlowIcon variant="catalogue" /><span>Your catalogue</span><span class="status">ready</span></div><p class="flow-meta">details · descriptions · stock</p></div>
       <div class="flow-connector">feeds</div>
-      <div class="flow-card"><div class="flow-title agent-title"><span class="pulse-dot" aria-hidden="true"></span><span>Your agent</span></div><ul class="chip-list"><li>discover</li><li>checkout</li><li>support</li></ul></div>
+      <div class="flow-card flow-card-agent"><div class="flow-title"><FlowIcon variant="agent" /><span>Your agent</span></div><ul class="chip-list"><li>discover</li><li>checkout</li><li>support</li></ul></div>
       <div class="flow-connector">answers</div>
-      <div class="flow-card"><strong>Your customer</strong><div class="mini-browser"><div class="browser-bar"><span>yourstore.com.au</span><span><span aria-hidden="true">✦ </span>your brand</span></div><div class="mini-chat"><p class="bubble bubble-customer">Do you have the Sapphire Blue Midi in size 10?</p><div class="mini-agent-row"><span class="avatar avatar-small" aria-hidden="true">✦</span><p class="bubble bubble-agent">Found it: in stock and in your size.</p></div><div class="product-row"><DressThumbnail variant="sapphire" idPrefix="hero-chat" size="small" /><strong>Sapphire Blue Midi</strong><span class="product-meta">$189 · size 10 · in stock</span></div><div class="mini-agent-row"><span class="avatar avatar-small" aria-hidden="true">✦</span><p class="bubble bubble-agent">Pay here in the chat?</p></div><PaidOrderBadge /></div></div></div>
+      <div class="flow-card"><div class="flow-title"><FlowIcon variant="customer" /><span>Your customer</span></div><div class="mini-browser"><div class="browser-bar"><span>yourstore.com.au</span><span><span aria-hidden="true">✦ </span>your brand</span></div><div class="mini-chat"><p class="bubble bubble-customer">Do you have the Sapphire Blue Midi in size 10?</p><div class="mini-agent-row"><span class="avatar avatar-small" aria-hidden="true">✦</span><p class="bubble bubble-agent">Found it: in stock and in your size.</p></div><div class="product-row"><DressThumbnail variant="sapphire" idPrefix="hero-chat" size="small" /><strong>Sapphire Blue Midi</strong><span class="product-meta">$189 · size 10 · in stock</span></div><div class="mini-agent-row"><span class="avatar avatar-small" aria-hidden="true">✦</span><p class="bubble bubble-agent">Pay here in the chat?</p></div><PaidOrderBadge /></div></div></div>
     </div>
   </section>
 
@@ -74,9 +76,9 @@ const shiftCards = [
     </div><p class="catalogue-close">Fresh feed in, accurate agent out.</p>
   </section>
 
-  <section id="why-now" class="container section dark-band"><h2>Agentic shopping isn’t coming. It’s here.</h2><div class="timeline-grid">{timeline.map((item) => <article class="timeline-card"><span class="timeline-date">{item.date}</span><p class="timeline-stat">{item.stat}</p><p class="timeline-label">{item.label}</p><p class="timeline-text">{item.text}</p><a class="source-link" href={item.href} target="_blank" rel="noreferrer">Source · {item.source} <span aria-hidden="true">↗</span></a></article>)}</div><div class="timeline-close"><strong>Retailers who own the conversation keep the customer.</strong><span>The rest are handing their relationships to someone else’s agent.</span></div></section>
+  <section id="why-now" class="container section dark-band"><h2>Agentic shopping isn’t coming. It’s here.</h2><div class="timeline-grid">{timeline.map((item) => <article class="timeline-card"><span class="timeline-date">{item.date}</span><p class="timeline-stat">{item.stat}</p><p class="timeline-label">{item.label}</p><p class="timeline-text">{item.text}</p><SourceLink href={item.href} source={item.source} /></article>)}</div><div class="timeline-close"><strong>Retailers who own the conversation keep the customer.</strong><span>The rest are handing their relationships to someone else’s agent.</span></div></section>
 
-  <section class="container section"><div class="section-intro"><p class="eyebrow">the shift</p><h2>Your customers will talk to an AI agent. Make sure it’s yours.</h2><p>When shopping moves into a third-party chat, the platform owns the relationship, the data, and the follow-up sale. A shopping agent you own keeps discovery, checkout, and after-sales support on your site, in your brand, answering from your catalogue.</p></div><div class="shift-grid">{shiftCards.map((card) => <article class="shift-card">{card.stat && <><p class="shift-stat">{card.stat}</p><p class="shift-stat-label">{card.statLabel}</p></>}<h3>{card.title}</h3><p>{card.body}</p><a class="source-link source-light" href={card.href} target="_blank" rel="noreferrer">Source · {card.source} <span aria-hidden="true">↗</span></a></article>)}</div></section>
+  <section class="container section"><div class="section-intro"><p class="eyebrow">the shift</p><h2>Your customers will talk to an AI agent. Make sure it’s yours.</h2><p>When shopping moves into a third-party chat, the platform owns the relationship, the data, and the follow-up sale. A shopping agent you own keeps discovery, checkout, and after-sales support on your site, in your brand, answering from your catalogue.</p></div><div class="shift-grid">{shiftCards.map((card) => <article class="shift-card">{card.stat && <><p class="shift-stat">{card.stat}</p><p class="shift-stat-label">{card.statLabel}</p></>}<h3>{card.title}</h3><p>{card.body}</p><SourceLink href={card.href} source={card.source} onLight /></article>)}</div></section>
 
   <section id="proof" class="container section dark-band testimonial"><blockquote>We went from a script tag to a live agent <em>in an afternoon</em>. Customers ask, pay, and track orders without leaving the chat - and it’s <em>our brand doing the talking</em>.</blockquote><footer><strong>Australian retail executive</strong><span>Head of Digital, National Retailer</span></footer></section>
   <CTASection />

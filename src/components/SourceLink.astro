@@ -1,0 +1,24 @@
+---
+// The one "Source · <publisher> ↗" affordance, used by the timeline cards, the
+// shift cards, and the about-page stat cards so all three read at the same size
+// and wrap the same way.
+//
+// The label and the ↗ glyph live inside a single child element on purpose. The
+// link is an inline-flex box (it needs a comfortable tap height), and separate
+// children would make the text and the glyph two flex items: the space between
+// them collapses, and a wrapping label strands the glyph on its own at the far
+// edge of the card. One child keeps the glyph attached to the last word, and the
+// no-break space keeps it there when a long publisher name wraps the label.
+
+interface Props {
+  href: string;
+  source: string;
+  // Set on light surfaces (shift and stat cards); the default suits the dark
+  // timeline band.
+  onLight?: boolean;
+}
+
+const { href, source, onLight = false } = Astro.props;
+---
+
+<a class:list={['source-link', onLight && 'source-light']} href={href} target="_blank" rel="noreferrer"><span>Source · {source}&nbsp;<span aria-hidden="true">↗</span></span></a>

@@ -1,6 +1,7 @@
 ---
 import CTASection from '../../components/CTASection.astro';
 import PageIntro from '../../components/PageIntro.astro';
+import SourceLink from '../../components/SourceLink.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { PageMetadataInput } from '../../lib/metadata.ts';
 
@@ -30,6 +31,6 @@ const stats = [
   <section class="container"><dl class="proof-band"><div class="proof-item"><dt>focus</dt><dd>retailer-owned shopping agents</dd></div><div class="proof-item"><dt>built as</dt><dd>an out-of-the-box agent you deploy</dd></div><div class="proof-item"><dt>based in</dt><dd>Perth + Melbourne</dd></div></dl></section>
   <section class="container prose-grid"><p>Shoppa was built by engineers who spent years building large language model pipelines and enterprise data systems. When agentic shopping emerged - AI agents autonomously researching and purchasing on behalf of consumers - we saw the critical gap: retailers had no way to put their own agent in front of customers without ceding the relationship to a platform. We built Shoppa to close that gap.</p><p>Our approach is engineering-led and outcome-driven. Success is a customer who asks, pays, and gets a straight answer about their order without ever leaving your site.</p></section>
   <section class="container dark-band approach-block"><p class="eyebrow">our approach</p><h2>Built for retail conversations, not generic AI chat</h2><p>Most AI tools bolt a chat window onto a website and stop there. We chose a different path: one product for one problem. Putting a trustworthy agent between a retailer and their customer, on the retailer’s terms, grounded in the retailer’s own product data.</p><div class="capability-grid">{capabilities.map((item) => <article class="capability-card"><p class="index">{item.index}</p><h3>{item.title}</h3><p>{item.body}</p></article>)}</div></section>
-  <section class="container"><dl class="stats-band">{stats.map((stat) => <div class="stat-item"><dt>{stat.source}</dt><dd class="stat-value">{stat.value}</dd><dd>{stat.label}</dd><dd><a href={stat.href} target="_blank" rel="noreferrer">Source · {stat.source} <span aria-hidden="true">↗</span></a></dd></div>)}</dl></section>
+  <section class="container"><dl class="stats-band">{stats.map((stat) => <div class="stat-item"><dt>{stat.source}</dt><dd class="stat-value">{stat.value}</dd><dd>{stat.label}</dd><dd class="stat-source"><SourceLink href={stat.href} source={stat.source} onLight /></dd></div>)}</dl></section>
   <CTASection />
 </BaseLayout>

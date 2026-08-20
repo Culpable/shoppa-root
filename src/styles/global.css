@@ -191,6 +191,12 @@ ul, ol { padding: 0; }
    first bubble instead of the full stack. */
 .message-stack { display: contents; }
 .conversation .message-stack > * { grid-column: 2; max-width: 90%; }
+/* The paid badge reports a settled outcome rather than something the agent
+   said, so it spans both columns and centres in the panel like the time
+   divider, instead of aligning to the message column. The hero mini-chat
+   centres it the same way, so the settled state reads identically on both
+   chat surfaces. */
+.conversation .message-stack > .paid-badge { grid-column: 1 / -1; justify-self: center; max-width: 100%; }
 .conversation-message.customer .message-stack > * { grid-column: 1; }
 .conversation .bubble { font-size: 14px; }
 .order-summary { width: min(100%, 320px); padding: 14px; border: 1px solid var(--colour-border); border-radius: 16px; font-size: 13px; }

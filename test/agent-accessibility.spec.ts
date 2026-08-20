@@ -127,6 +127,21 @@ test('approved colour pairs meet their contrast targets', async () => {
   expect(ratio('#6B4A31', '#FFFBF5')).toBeGreaterThanOrEqual(4.5);
 });
 
+test('the paid badge centres in both chat surfaces', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'networkidle' });
+  // The conversation list, not the padded panel, is the conversation's chat
+  // width, so both surfaces are measured against the box their messages sit in.
+  const badges = await page.evaluate(() => ['.mini-chat', '.conversation-list'].map((selector) => {
+    const chat = document.querySelector(selector);
+    const badge = chat?.querySelector('.paid-badge');
+    const centre = (element: Element) => { const box = element.getBoundingClientRect(); return (box.left + box.right) / 2; };
+    return { selector, offset: chat && badge ? centre(badge) - centre(chat) : null };
+  }));
+  for (const badge of badges) {
+    expect(Math.abs(badge.offset ?? Infinity), `paid badge is off-centre in ${badge.selector}`).toBeLessThanOrEqual(1);
+  }
+});
+
 test('every CTA snippet pill centres its type between the pill edges', async ({ page }) => {
   // The cloud is desktop-only, so pin the width rather than inherit the project viewport.
   await page.setViewportSize({ width: 1440, height: 900 });

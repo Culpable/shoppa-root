@@ -23,7 +23,11 @@
   --colour-band-text: #fff2e2;
   --colour-band-accent: #ffc896;
   --colour-sapphire: #2f4e8c;
+  --colour-sapphire-deep: #243c6d;
+  --colour-sapphire-tint: #e8edf7;
   --colour-blush: #e8a5a0;
+  --colour-blush-deep: #d1786f;
+  --colour-blush-tint: #fbeceb;
   --container: 1140px;
   --gutter: clamp(20px, 4vw, 32px);
   --section-space: clamp(72px, 9vw, 108px);
@@ -141,8 +145,13 @@ ul, ol { padding: 0; }
 .bubble-customer { justify-self: end; color: white; background: var(--colour-ink); border-bottom-right-radius: 5px; }
 .bubble-agent { background: var(--colour-surface-sunken); border-bottom-left-radius: 5px; }
 .product-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 9px; align-items: center; padding: 10px 12px; border: 1px solid var(--colour-border); border-radius: 13px; background: var(--colour-surface); font-size: 12px; }
-.swatch { width: 14px; height: 14px; border-radius: 50%; background: var(--colour-sapphire); }
-.swatch-blush { background: var(--colour-blush); }
+/* Illustrated dress thumbnail (DressThumbnail.astro). The tinted tile reads as
+   a photo backdrop; the two custom properties feed the SVG gradient stops. */
+.dress-thumbnail { overflow: hidden; width: 30px; height: 37px; border-radius: 9px; }
+.dress-thumbnail svg { display: block; width: 100%; height: 100%; }
+.dress-thumbnail-small { width: 22px; height: 27px; border-radius: 7px; }
+.dress-sapphire { --dress-from: var(--colour-sapphire); --dress-to: var(--colour-sapphire-deep); background: var(--colour-sapphire-tint); }
+.dress-blush { --dress-from: var(--colour-blush); --dress-to: var(--colour-blush-deep); background: var(--colour-blush-tint); }
 .product-meta { color: var(--colour-ink-secondary); font-size: 11px; }
 
 /* Render the complete conversation as ordered content with visual speaker cues. */

@@ -39,7 +39,7 @@ Precedence: repository `AGENTS.md` instructions and explicit user decisions over
 
 - Framework and rendering: Astro static export. All pages are prerendered; the production pages ship no browser JavaScript.
 - Styling and token authority: plain CSS with custom properties in `src/styles/global.css`; this document owns their semantic roles and constraints.
-- Components and icons: hand-built Astro components; no UI framework, no icon library. The agent mark is the `✦` glyph. Decorative dots, swatches, and connectors are CSS.
+- Components and icons: hand-built Astro components; no UI framework, no icon library. The agent mark is the `✦` glyph. Decorative dots and connectors are CSS; the dress thumbnails in the chat product rows are inline SVG (`src/components/DressThumbnail.astro`).
 - Fonts and charts: Bricolage Grotesque (display), Figtree (body), Courier Prime (embed code only), self-hosted through Astro Fonts. No charts.
 
 ## Colors
@@ -65,7 +65,8 @@ Approved palette roles. `src/styles/global.css` owns the exact production values
 | Dark band text | `--colour-band-text` #FFF2E2 | Text on dark bands; small text at ≥ 0.75 alpha, never 0.6 |
 | Dark band accent | `--colour-band-accent` #FFC896 | Dates, links, accents on dark bands |
 | Proof gradient | #D6552B → #E76F3C | "See it live" proof panel background |
-| Product swatches | sapphire #2F4E8C, blush #E8A5A0 | Dress colour dots in conversation product rows |
+| Sapphire dress | #2F4E8C → `--colour-sapphire-deep` #243C6D on `--colour-sapphire-tint` #E8EDF7 | Sapphire dress thumbnail gradient and backdrop tile |
+| Blush dress | #E8A5A0 → `--colour-blush-deep` #D1786F on `--colour-blush-tint` #FBECEB | Blush dress thumbnail gradient and backdrop tile |
 
 - Theme status: single light theme. No dark mode is supported or planned; do not add `prefers-color-scheme` variants.
 - Accessibility target: working check of 4.5:1 for normal text and 3:1 for large text on every rendered pair, enforced by `#B8441F` button fill, `#AE3E1B` small accent text, `#6B4A31` small neutral labels, and ≥ 0.75 alpha for small dark-band text. No formal WCAG conformance is claimed; the automated contrast and axe-core checks measure rendered output.
@@ -98,8 +99,8 @@ Approved palette roles. `src/styles/global.css` owns the exact production values
 ## Shapes
 
 - Radius and geometry: pill (999px) for buttons, chips, badges, eyebrow tags, URL pill; 20–28px for cards and panels (conversation widget 28px outer); 44px for the two inset bands; 12–16px for inner rows (product rows, code blocks, chrome bar); chat bubbles 16–20px with a 4–6px "tail" corner pointing at the speaker. Nothing square.
-- Icons: no icon library. `✦` in a terracotta circle is the agent avatar; traffic-light dots, colour swatch circles, and the pulsing status dot are CSS circles. Decorative glyphs are `aria-hidden`.
-- Imagery: no photography. All page visuals are typographic/CSS compositions (flow cards, conversation, receipt-style order summary). Browser identity assets in `public/` use the Warm Sunrise palette and keep the outer corners transparent.
+- Icons: no icon library. `✦` in a terracotta circle is the agent avatar; traffic-light dots and the pulsing status dot are CSS circles. Decorative glyphs and thumbnails are `aria-hidden`.
+- Imagery: no photography. All page visuals are typographic/CSS/SVG compositions (flow cards, conversation, dress thumbnails, receipt-style order summary). Browser identity assets in `public/` use the Warm Sunrise palette and keep the outer corners transparent.
 
 ## Components
 
@@ -128,7 +129,8 @@ Header links: Figtree 600, 15px, ink, hover accent; current page marked by a ter
 - Eyebrow pill: uppercase label on blush fill (`#FDE0D4`, accent text) opening every section.
 - Proof pills (hero): three tinted cards (peach/sage/blush), stat in display 800 over a 12.5px label.
 - Flow cards (hero visual): bordered surface cards joined by uppercase connector labels ("feeds", "answers") over short vertical rules.
-- Conversation widget: surface card, 28px radius, chrome bar (dots + URL pill + brand chip), customer bubbles ink-filled right-aligned, agent bubbles sunken-surface left-aligned with `✦` avatar, product rows with colour swatch + name + meta, receipt-style order list, sage paid badge, dashed "3 days later" divider.
+- Conversation widget: surface card, 28px radius, chrome bar (dots + URL pill + brand chip), customer bubbles ink-filled right-aligned, agent bubbles sunken-surface left-aligned with `✦` avatar, product rows with dress thumbnail + name + meta, receipt-style order list, sage paid badge, dashed "3 days later" divider.
+- Dress thumbnails (chat product rows): illustrated dress silhouettes on a 36x44 SVG canvas over a tinted tile - 30x37px at 9px radius in the conversation, 22x27px at 7px radius in the hero mini-chat. Sapphire is a scoop-neck A-line; blush is a V wrap with a crossover seam. Both are `aria-hidden`; the adjacent product name carries the meaning.
 - Embed panel: `#40291A` card, peach eyebrow, display heading, two-line code block on `#2B1A0F`.
 - Proof panel: terracotta gradient card with cream "See it live." heading and a white pill link to demo.shoppa.au.
 - Timeline cards: translucent cream-on-espresso cards (`rgba(255,242,226,.07)`) with peach date label, display stat, source link underlined in peach.

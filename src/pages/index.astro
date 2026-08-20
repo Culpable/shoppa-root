@@ -1,5 +1,6 @@
 ---
 import CTASection from '../components/CTASection.astro';
+import DressThumbnail from '../components/DressThumbnail.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import type { PageMetadataInput } from '../lib/metadata.ts';
 
@@ -39,7 +40,7 @@ const shiftCards = [
       <div class="flow-connector">feeds</div>
       <div class="flow-card"><div class="flow-title agent-title"><span class="pulse-dot" aria-hidden="true"></span><span>Your agent</span></div><ul class="chip-list"><li>discover</li><li>checkout</li><li>support</li></ul></div>
       <div class="flow-connector">answers</div>
-      <div class="flow-card"><strong>Your customer</strong><div class="mini-browser"><div class="browser-bar"><span>yourstore.com.au</span><span><span aria-hidden="true">✦ </span>your brand</span></div><div class="mini-chat"><p class="bubble bubble-customer">Do you have the Sapphire Blue Midi in size 10?</p><p class="bubble bubble-agent">Found it: in stock and in your size.</p><div class="product-row"><span class="swatch" aria-hidden="true"></span><strong>Sapphire Blue Midi</strong><span class="product-meta">$189 · size 10 · in stock</span></div><p class="bubble bubble-agent">Pay here in the chat?</p><span class="status">Paid · order confirmed</span></div></div></div>
+      <div class="flow-card"><strong>Your customer</strong><div class="mini-browser"><div class="browser-bar"><span>yourstore.com.au</span><span><span aria-hidden="true">✦ </span>your brand</span></div><div class="mini-chat"><p class="bubble bubble-customer">Do you have the Sapphire Blue Midi in size 10?</p><p class="bubble bubble-agent">Found it: in stock and in your size.</p><div class="product-row"><DressThumbnail variant="sapphire" idPrefix="hero-chat" size="small" /><strong>Sapphire Blue Midi</strong><span class="product-meta">$189 · size 10 · in stock</span></div><p class="bubble bubble-agent">Pay here in the chat?</p><span class="status">Paid · order confirmed</span></div></div></div>
     </div>
   </section>
 
@@ -50,7 +51,7 @@ const shiftCards = [
         <div class="browser-bar"><span aria-hidden="true">● ● ●</span><span>yourstore.com.au</span><span><span aria-hidden="true">✦ </span>your brand</span></div>
         <ol class="conversation-list">
           <li class="conversation-message customer"><div class="message-stack"><p class="bubble bubble-customer"><span class="sr-only">Customer: </span>I need a dress for a spring wedding, size 10, under $200</p></div></li>
-          <li class="conversation-message"><span class="avatar" aria-hidden="true">✦</span><div class="message-stack"><p class="bubble bubble-agent"><span class="sr-only">Your agent: </span>Lovely occasion. These two suit an outdoor spring wedding, and both are in your size right now:</p><div class="product-row"><span class="swatch" aria-hidden="true"></span><strong>Sapphire Blue A-Line Midi Dress</strong><span class="product-meta">$189 · size 10 · in stock</span></div><div class="product-row"><span class="swatch swatch-blush" aria-hidden="true"></span><strong>Blush Crepe Wrap Midi Dress</strong><span class="product-meta">$159 · size 10 · 3 left</span></div></div></li>
+          <li class="conversation-message"><span class="avatar" aria-hidden="true">✦</span><div class="message-stack"><p class="bubble bubble-agent"><span class="sr-only">Your agent: </span>Lovely occasion. These two suit an outdoor spring wedding, and both are in your size right now:</p><div class="product-row"><DressThumbnail variant="sapphire" idPrefix="conversation" /><strong>Sapphire Blue A-Line Midi Dress</strong><span class="product-meta">$189 · size 10 · in stock</span></div><div class="product-row"><DressThumbnail variant="blush" idPrefix="conversation" /><strong>Blush Crepe Wrap Midi Dress</strong><span class="product-meta">$159 · size 10 · 3 left</span></div></div></li>
           <li class="conversation-message customer"><div class="message-stack"><p class="bubble bubble-customer"><span class="sr-only">Customer: </span>The sapphire one, with express delivery please. Can I pay here?</p></div></li>
           <li class="conversation-message"><span class="avatar" aria-hidden="true">✦</span><div class="message-stack"><p class="bubble bubble-agent"><span class="sr-only">Your agent: </span>Of course. Here’s your order:</p><dl class="order-summary"><div><dt>Sapphire Blue A-Line Midi</dt><dd>$189.00</dd></div><div><dt>Express delivery</dt><dd>$9.95</dd></div><div><dt>Total</dt><dd>$198.95</dd></div></dl><span class="status">Paid · order confirmed</span></div></li>
           <li class="time-divider">3 days later</li>

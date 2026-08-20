@@ -1,0 +1,62 @@
+---
+// Illustrated dress thumbnail for the demo chat product rows. The conversation
+// sells "your agent answers from your catalogue", so the rows need to read as
+// product imagery rather than a flat colour dot.
+//
+// Pure inline SVG: no client JavaScript and no image request. The gradient id
+// is namespaced by `idPrefix` and variant because several dresses render on the
+// same page, and a duplicate SVG id would make every instance resolve to the
+// first matching gradient in the document. Pass a distinct `idPrefix` per
+// surface (hero mini-chat, conversation).
+
+interface Props {
+  variant: 'sapphire' | 'blush';
+  idPrefix: string;
+  size?: 'small' | 'default';
+}
+
+// Each variant is one dress silhouette on a 36x44 canvas:
+//   - straps: stroked shoulder straps, drawn in the solid dress colour.
+//   - body: the filled outline (neckline -> waist -> flared midi hem).
+//   - seams: white seam strokes that keep the garment readable at thumbnail
+//     size (waist seam on both, plus the crossover panel on the wrap dress).
+// Colours are not set here: global.css owns the exact values and passes them
+// in through the --dress-from and --dress-to custom properties.
+const dressVariants = {
+  // Sapphire Blue A-Line Midi Dress: scoop neckline, fitted bodice, flared
+  // A-line skirt.
+  sapphire: {
+    straps: 'M12.4 7.2 L13.2 3.6 M23.6 7.2 L22.8 3.6',
+    body: 'M12 7 Q18 10.5 24 7 L22.5 19 L29 39 Q18 43.5 7 39 L13.5 19 Z',
+    seams: ['M13.5 19 Q18 21 22.5 19'],
+  },
+  // Blush Crepe Wrap Midi Dress: deep V wrap neckline with a crossover panel
+  // and waist sash.
+  blush: {
+    straps: 'M12.4 7.2 L13.2 3.6 M23.6 7.2 L22.8 3.6',
+    body: 'M12 6.5 L18 14.5 L24 6.5 L22.5 19 L29 39 Q18 43.5 7 39 L13.5 19 Z',
+    seams: ['M12.6 7.2 L20.2 16', 'M13.5 19 Q18 21 22.5 19'],
+  },
+} as const;
+
+const { variant, idPrefix, size = 'default' } = Astro.props;
+const dress = dressVariants[variant];
+const gradientId = `${idPrefix}-${variant}-dress-gradient`;
+---
+
+<!-- Decorative product image: the adjacent text names the dress, so the
+     illustration stays out of the accessibility tree. -->
+<span class:list={['dress-thumbnail', `dress-${variant}`, size === 'small' && 'dress-thumbnail-small']} aria-hidden="true">
+  <svg viewBox="0 0 36 44">
+    <defs>
+      <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--dress-from)" />
+        <stop offset="100%" stop-color="var(--dress-to)" />
+      </linearGradient>
+    </defs>
+    <!-- Straps sit behind the bodice, so draw them first. -->
+    <path d={dress.straps} fill="none" stroke="var(--dress-from)" stroke-width="1.5" stroke-linecap="round" />
+    <path d={dress.body} fill={`url(#${gradientId})`} />
+    {dress.seams.map((seam) => <path d={seam} fill="none" stroke="#fff" stroke-opacity="0.4" stroke-width="1.1" stroke-linecap="round" />)}
+  </svg>
+</span>

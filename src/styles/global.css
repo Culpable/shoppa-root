@@ -1,42 +1,167 @@
-/* Define the Warm Sunrise tokens once so every component uses the approved palette. */
+/* Define the Warm Sunrise tokens once so every component uses the approved
+   palette. Every colour is declared twice on purpose: this block is the sRGB
+   fallback for browsers without oklch, and the @supports block below restates
+   the same colours in oklch so a later edit can move lightness, chroma, and hue
+   independently. scripts/validate-build.mjs converts each oklch token back to
+   sRGB and asserts it matches the hex here, so the two blocks cannot drift. */
 :root {
   --colour-canvas: #fff4e9;
   --colour-surface: #fffbf5;
   --colour-surface-sunken: #fff2e2;
   --colour-ink: #3b2416;
   --colour-ink-secondary: #6b4a31;
-  --colour-ink-muted: #9a7b5f;
   --colour-accent: #d6552b;
   --colour-accent-deep: #b8441f;
   --colour-accent-text: #ae3e1b;
+  --colour-accent-hover: #9f3719;
   --colour-highlight-start: #ffd9b4;
   --colour-highlight-end: #ffc896;
-  --colour-tint-peach: #ffe3c6;
-  --colour-tint-blush: #fde0d4;
-  --colour-tint-sage: #e7efd9;
+  --colour-cta-end: #ffd0b3;
+  /* The three proof pills sit side by side, so they share one lightness and one
+     chroma. 0.036 is the most chroma the blush hue can carry at L 0.93 in sRGB;
+     matching the other two to it is what stops sage reading washed out. */
+  --colour-tint-peach: #f9e4cf;
+  --colour-tint-blush: #fee1d5;
+  --colour-tint-sage: #e3ecd2;
   --colour-success: #4c6b33;
+  --colour-success-border: rgba(76, 107, 51, 0.24);
   --colour-border: #f0dec8;
   --colour-border-strong: #ead3bc;
+  /* Card borders are decorative, but a ghost button's border is the only thing
+     that marks it as a control, so it carries its own 3:1 token. */
+  --colour-control-border: #a78561;
   --colour-band: #3a2414;
   --colour-band-panel: #40291a;
   --colour-band-code: #2b1a0f;
   --colour-band-text: #fff2e2;
   --colour-band-accent: #ffc896;
+  --colour-band-text-soft: rgba(255, 242, 226, 0.82);
+  --colour-band-wash: rgba(255, 242, 226, 0.07);
+  --colour-band-wash-pill: rgba(43, 26, 15, 0.3);
+  --colour-band-rule: rgba(255, 242, 226, 0.2);
+  --colour-band-glow: rgba(231, 111, 60, 0.35);
+  /* The demo panel sits a full step below the accent. Between L 0.56 and L 0.68
+     a terracotta is too light for cream text and too dark for ink text, so the
+     old accent-bright panel could not pass 4.5:1 with either. */
+  --colour-demo-start: #9a3b1d;
+  --colour-demo-end: #a34c27;
   --colour-sapphire: #2f4e8c;
   --colour-sapphire-deep: #243c6d;
   --colour-sapphire-tint: #e8edf7;
   --colour-blush: #e8a5a0;
   --colour-blush-deep: #d1786f;
   --colour-blush-tint: #fbeceb;
+  --colour-snippet-border: rgba(184, 68, 31, 0.2);
+  --colour-snippet-surface: rgba(255, 251, 245, 0.54);
+  --colour-snippet-text: rgba(107, 74, 49, 0.55);
+  --colour-shadow-soft: rgba(107, 74, 49, 0.08);
+  --colour-shadow-medium: rgba(107, 74, 49, 0.12);
+  --colour-shadow-accent: rgba(214, 85, 43, 0.28);
+  --colour-shadow-ink: rgba(59, 36, 22, 0.22);
+  /* The ring and the image edge are the only neutrals in the palette, and they
+     are pure black on purpose. Every other shadow here is warm because it falls
+     on a warm canvas; these two sit directly on the element they separate, so a
+     warm tint would pick up the surface under it and read as dirt on the edge. */
+  --colour-shadow-ring: rgba(0, 0, 0, 0.06);
+  --colour-shadow-ring-soft: rgba(0, 0, 0, 0.04);
+  --colour-image-edge: rgba(0, 0, 0, 0.1);
   --container: 1140px;
   --gutter: clamp(20px, 4vw, 32px);
   --section-space: clamp(72px, 9vw, 108px);
   --radius-card: 24px;
   --radius-panel: 28px;
   --radius-band: 44px;
-  --shadow-card: 0 10px 30px rgba(107, 74, 49, 0.08);
-  --shadow-feature: 0 18px 50px rgba(107, 74, 49, 0.12);
-  --shadow-button: 0 6px 18px rgba(214, 85, 43, 0.28);
+  /* One 1px ring plus a close lift, carried by every card surface. The ring
+     replaces the solid card border: it is transparent, so it holds its weight on
+     the cream canvas and disappears behind a cream card on a dark band, where
+     the card's own contrast is already the edge. A solid border cannot do both,
+     which is why the cards on the about-page band used to carry a cream border
+     and a warm shadow that neither showed nor separated anything. */
+  --shadow-border: 0 0 0 1px var(--colour-shadow-ring), 0 1px 2px -1px var(--colour-shadow-ring), 0 2px 4px 0 var(--colour-shadow-ring-soft);
+  --shadow-card: var(--shadow-border), 0 10px 30px var(--colour-shadow-soft);
+  --shadow-feature: var(--shadow-border), 0 18px 50px var(--colour-shadow-medium);
+  --shadow-button: 0 6px 18px var(--colour-shadow-accent);
+}
+
+/* The same palette in oklch. Identical colours, but lightness, chroma, and hue
+   are now separate numbers, so contrast is a one-channel edit. */
+@supports (color: oklch(0 0 0)) {
+  :root {
+    --colour-canvas: oklch(0.973 0.019 67.604);
+    --colour-surface: oklch(0.99 0.009 78.283);
+    --colour-surface-sunken: oklch(0.967 0.025 73.19);
+    --colour-ink: oklch(0.286 0.042 51.651);
+    --colour-ink-secondary: oklch(0.439 0.059 57.633);
+    --colour-accent: oklch(0.613 0.172 37.782);
+    --colour-accent-deep: oklch(0.542 0.158 37.299);
+    --colour-accent-text: oklch(0.517 0.154 36.965);
+    --colour-accent-hover: oklch(0.483 0.144 36.2);
+    --colour-highlight-start: oklch(0.908 0.064 66.107);
+    --colour-highlight-end: oklch(0.87 0.09 63.478);
+    --colour-cta-end: oklch(0.891 0.066 53.312);
+    --colour-tint-peach: oklch(0.93 0.036 68.15);
+    --colour-tint-blush: oklch(0.93 0.036 43.835);
+    --colour-tint-sage: oklch(0.93 0.036 123.298);
+    --colour-success: oklch(0.49 0.09 132.694);
+    --colour-success-border: oklch(0.49 0.09 132.694 / 0.24);
+    --colour-border: oklch(0.909 0.035 72.877);
+    --colour-border-strong: oklch(0.88 0.04 67.265);
+    --colour-control-border: oklch(0.64 0.065 67.265);
+    --colour-band: oklch(0.284 0.043 56.049);
+    --colour-band-panel: oklch(0.305 0.043 53.569);
+    --colour-band-code: oklch(0.237 0.033 53.332);
+    --colour-band-text: oklch(0.967 0.025 73.19);
+    --colour-band-accent: oklch(0.87 0.09 63.478);
+    --colour-band-text-soft: oklch(0.967 0.025 73.19 / 0.82);
+    --colour-band-wash: oklch(0.967 0.025 73.19 / 0.07);
+    --colour-band-wash-pill: oklch(0.237 0.033 53.332 / 0.3);
+    --colour-band-rule: oklch(0.967 0.025 73.19 / 0.2);
+    --colour-band-glow: oklch(0.676 0.163 42.191 / 0.35);
+    --colour-demo-start: oklch(0.48 0.134 37.782);
+    --colour-demo-end: oklch(0.52 0.125 42.191);
+    --colour-sapphire: oklch(0.433 0.109 262.694);
+    --colour-sapphire-deep: oklch(0.364 0.09 263.021);
+    --colour-sapphire-tint: oklch(0.945 0.014 264.498);
+    --colour-blush: oklch(0.784 0.08 23.841);
+    --colour-blush-deep: oklch(0.668 0.113 26.612);
+    --colour-blush-tint: oklch(0.955 0.016 22.083);
+    --colour-snippet-border: oklch(0.542 0.158 37.299 / 0.2);
+    --colour-snippet-surface: oklch(0.99 0.009 78.283 / 0.54);
+    --colour-snippet-text: oklch(0.439 0.059 57.633 / 0.55);
+    --colour-shadow-soft: oklch(0.439 0.059 57.633 / 0.08);
+    --colour-shadow-medium: oklch(0.439 0.059 57.633 / 0.12);
+    --colour-shadow-accent: oklch(0.613 0.172 37.782 / 0.28);
+    --colour-shadow-ink: oklch(0.286 0.042 51.651 / 0.22);
+    --colour-shadow-ring: oklch(0 0 0 / 0.06);
+    --colour-shadow-ring-soft: oklch(0 0 0 / 0.04);
+    --colour-image-edge: oklch(0 0 0 / 0.1);
+  }
+}
+
+/* Wide-gamut displays only. The warm tokens above are clamped by the sRGB
+   boundary, not by the design: at these lightnesses the peach and amber sit
+   exactly on the wall. Lightness and hue are unchanged, so every contrast pair
+   above holds; only chroma opens up to the same fraction of the P3 boundary. */
+@supports (color: oklch(0 0 0)) {
+  @media (color-gamut: p3) {
+    :root {
+      --colour-accent: oklch(0.613 0.194 37.782);
+      --colour-accent-deep: oklch(0.542 0.178 37.299);
+      --colour-accent-text: oklch(0.517 0.173 36.965);
+      --colour-accent-hover: oklch(0.483 0.162 36.2);
+      --colour-highlight-start: oklch(0.908 0.08 66.107);
+      --colour-highlight-end: oklch(0.87 0.112 63.478);
+      --colour-cta-end: oklch(0.891 0.082 53.312);
+      --colour-tint-peach: oklch(0.93 0.046 68.15);
+      --colour-tint-blush: oklch(0.93 0.046 43.835);
+      --colour-tint-sage: oklch(0.93 0.046 123.298);
+      --colour-band-accent: oklch(0.87 0.112 63.478);
+      --colour-band-glow: oklch(0.676 0.184 42.191 / 0.35);
+      --colour-demo-start: oklch(0.48 0.151 37.782);
+      --colour-demo-end: oklch(0.52 0.141 42.191);
+      --colour-shadow-accent: oklch(0.613 0.194 37.782 / 0.28);
+    }
+  }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -77,7 +202,10 @@ ul, ol { padding: 0; }
   align-items: center;
   min-height: 36px;
   margin-bottom: 22px;
-  padding: 7px 16px;
+  /* letter-spacing adds its 0.18em after the last letter as well as between
+     letters, so a symmetric pill carries 2.16px of dead space on the right and
+     lands the type left of centre. The right padding pays that space back. */
+  padding: 7px calc(16px - 0.18em) 7px 16px;
   border-radius: 999px;
   color: var(--colour-accent-text);
   background: var(--colour-tint-blush);
@@ -90,25 +218,29 @@ ul, ol { padding: 0; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
 /* Keep the shared shell simple and stable at every viewport. */
-.skip-link { position: fixed; z-index: 20; left: 16px; top: 12px; transform: translateY(-150%); padding: 10px 16px; border-radius: 999px; background: var(--colour-ink); color: white; }
+.skip-link { position: fixed; z-index: 20; left: 16px; top: 12px; transform: translateY(-150%); padding: 10px 16px; border-radius: 999px; background: var(--colour-ink); color: white; transition: transform 200ms ease-out; }
 .skip-link:focus { transform: translateY(0); }
 .site-header { padding-block: 18px; }
 .header-inner { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 30px; }
 .wordmark { display: inline-flex; align-items: center; min-height: 44px; color: var(--colour-ink); font-size: 27px; font-weight: 800; text-decoration: none; }
 .wordmark span { color: var(--colour-accent); }
 .header-nav ul { display: flex; justify-content: flex-end; gap: clamp(18px, 2.5vw, 32px); margin: 0; list-style: none; }
-.header-nav a { position: relative; display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; font-weight: 600; text-decoration: none; }
+.header-nav a { position: relative; display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; font-weight: 600; text-decoration: none; transition: color 200ms ease-out; }
 .header-nav a::after { position: absolute; left: 50%; bottom: 4px; width: 5px; height: 5px; border-radius: 50%; background: var(--colour-accent); content: ''; opacity: 0; transform: translateX(-50%); }
 .header-nav a:hover { color: var(--colour-accent-deep); }
 .header-nav a[aria-current='page']::after { opacity: 1; }
-.button { display: inline-flex; justify-content: center; align-items: center; min-height: 48px; padding: 11px 24px; border: 0; border-radius: 999px; font-weight: 700; line-height: 1.2; text-align: center; text-decoration: none; transition: transform 220ms ease-out, background-color 220ms ease-out, border-color 220ms ease-out, box-shadow 220ms ease-out; }
+.button { display: inline-flex; justify-content: center; align-items: center; min-height: 48px; padding: 11px 24px; border: 0; border-radius: 999px; font-weight: 700; line-height: 1.2; text-align: center; text-decoration: none; transition: transform 220ms ease-out, scale 150ms ease-out, background-color 220ms ease-out, border-color 220ms ease-out, box-shadow 220ms ease-out; }
 .button:hover { transform: translateY(-2px); }
+/* The press uses the standalone scale property, not transform, so it composes
+   with the hover lift instead of overwriting it. transition: transform does not
+   cover scale, which is why the list above names it separately. */
+.button:active { scale: 0.96; }
 .button-primary { color: white; background: var(--colour-accent-deep); box-shadow: var(--shadow-button); }
-.button-primary:hover { background: #9f3719; }
+.button-primary:hover { background: var(--colour-accent-hover); }
 .button-compact { min-height: 44px; padding-inline: 20px; font-size: 14px; }
-.button-ghost { border: 1.5px solid var(--colour-border-strong); background: transparent; }
+.button-ghost { border: 1.5px solid var(--colour-control-border); background: transparent; }
 .button-ghost:hover { border-color: var(--colour-accent); }
-.button-dark { color: var(--colour-band-text); background: var(--colour-ink); box-shadow: 0 8px 22px rgba(59, 36, 22, 0.22); }
+.button-dark { color: var(--colour-band-text); background: var(--colour-ink); box-shadow: 0 8px 22px var(--colour-shadow-ink); }
 .button-dark:hover { background: var(--colour-band-code); }
 
 /* Stage the approved hero composition and preserve the highlight regression fix. */
@@ -116,11 +248,31 @@ ul, ol { padding: 0; }
    stack is the tallest hero element, and 116px of lead-in pushed its final card
    past the fold on a 900px-tall viewport. */
 .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(380px, 0.72fr); gap: clamp(48px, 7vw, 96px); align-items: center; padding-block: clamp(68px, 9vw, 104px) 28px; }
-.hero-copy > * { animation: hero-enter 650ms both ease-out; }
+/* The hero enters as one chain rather than two halves: the copy fades up, then
+   the flow stack draws itself top to bottom - catalogue, feeds, agent, answers,
+   customer - so the visual arrives as the sentence its cards spell out. A
+   one-shot sequence, so keyframes are right here; interactive states use
+   transitions instead. Never gate this on a reduced-motion query. */
+.hero-copy > * { animation: hero-enter 400ms both ease-out; }
 .hero-copy > :nth-child(2) { animation-delay: 80ms; }
-.hero-copy > :nth-child(3) { animation-delay: 150ms; }
-.hero-copy > :nth-child(4) { animation-delay: 220ms; }
-@keyframes hero-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+.hero-copy > :nth-child(3) { animation-delay: 160ms; }
+.hero-copy > :nth-child(4) { animation-delay: 240ms; }
+.flow-stack > * { animation: flow-enter 400ms both ease-out; }
+.flow-stack > :nth-child(1) { animation-delay: 300ms; }
+.flow-stack > :nth-child(2) { animation-delay: 360ms; }
+.flow-stack > :nth-child(3) { animation-delay: 420ms; }
+.flow-stack > :nth-child(4) { animation-delay: 480ms; }
+.flow-stack > :nth-child(5) { animation-delay: 540ms; }
+@keyframes hero-enter { from { opacity: 0; transform: translateY(18px); filter: blur(4px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+/* The stack rises and sharpens at full opacity, where the copy also fades. A
+   fade multiplies every colour inside the element against what is behind it,
+   and the mini browser bar carries 12px secondary ink on the sunken surface -
+   5.9:1 at rest, so it drops under the 4.5:1 floor for most of a fade, which is
+   what the per-element contrast check caught. Nothing in the stack may fade
+   until that pair carries the headroom. Holding the stack opaque also keeps the
+   hero's tallest element in place instead of opening a 300ms hole beside the
+   copy. */
+@keyframes flow-enter { from { transform: translateY(18px); filter: blur(4px); } to { transform: translateY(0); filter: blur(0); } }
 .hero h1 { max-width: 720px; margin-bottom: 26px; }
 /* Size the highlight band in em from the text box top so it wraps the full glyph height (ascenders sit 0.72em above the baseline, descenders 0.19em below)
    while its 0.15em top offset keeps it clear of the descenders on the line above. Wrapped lines stack edge to edge because the band matches line-height. */
@@ -135,7 +287,7 @@ ul, ol { padding: 0; }
 .proof-pill strong { display: block; font-family: var(--font-display); font-size: 23px; line-height: 1.1; }
 .proof-pill span { display: block; margin-top: 8px; font-size: 12.5px; font-weight: 500; }
 .flow-stack { display: grid; justify-items: stretch; }
-.flow-card { padding: 22px 24px; border: 1.5px solid var(--colour-border); border-radius: 22px; background: var(--colour-surface); box-shadow: var(--shadow-card); }
+.flow-card { padding: 22px 24px; border-radius: 22px; background: var(--colour-surface); box-shadow: var(--shadow-card); }
 /* One title idiom for all three flow cards: icon tile, label, then any trailing
    status pill pushed to the far edge. The title owns the gap to whatever the
    card holds below it, so the three cards keep one internal rhythm. */
@@ -148,7 +300,7 @@ ul, ol { padding: 0; }
 .flow-icon-customer { color: var(--colour-ink); background: var(--colour-tint-blush); }
 .flow-meta { margin: 0; color: var(--colour-ink-secondary); font-size: 12.5px; }
 .status { display: inline-flex; width: fit-content; align-items: center; min-height: 29px; padding: 4px 11px; border-radius: 999px; color: var(--colour-success); background: var(--colour-tint-sage); font-size: 12px; font-weight: 700; }
-.flow-connector { display: grid; justify-items: center; gap: 3px; height: 44px; color: var(--colour-ink-secondary); font-size: 11.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.flow-connector { display: grid; justify-items: center; gap: 3px; height: 44px; color: var(--colour-ink-secondary); font-size: 11.5px; font-weight: 700; letter-spacing: 0.16em; text-indent: 0.16em; text-transform: uppercase; }
 .flow-connector::before, .flow-connector::after { width: 1.5px; height: 11px; background: var(--colour-border-strong); content: ''; }
 .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; list-style: none; }
 .chip-list li { padding: 5px 12px; border: 1px solid var(--colour-border-strong); border-radius: 999px; font-size: 12px; font-weight: 600; }
@@ -162,13 +314,20 @@ ul, ol { padding: 0; }
    conversation, bottom-aligned so the two chats share one speaker idiom. */
 .mini-agent-row { display: flex; align-items: flex-end; gap: 7px; }
 .mini-chat .paid-badge { justify-self: center; }
-.avatar-small { width: 22px; height: 22px; font-size: 10px; }
-.product-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 9px; align-items: center; padding: 10px 12px; border: 1px solid var(--colour-border); border-radius: 13px; background: var(--colour-surface); font-size: 13px; }
+/* .avatar is declared further down this file, so at equal specificity it won on
+   order and the hero avatar rendered at the conversation's 30px. The compound
+   selector keeps the small size beside its hero neighbours instead of moving the
+   rule below .avatar. */
+.avatar.avatar-small { width: 22px; height: 22px; font-size: 10px; }
+.product-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 9px; align-items: center; padding: 10px 12px; border-radius: 13px; background: var(--colour-surface); box-shadow: var(--shadow-border); font-size: 13px; }
 /* Illustrated dress thumbnail (DressThumbnail.astro). The tinted tile reads as
    a photo backdrop; the two custom properties feed the SVG gradient stops. It
    spans the name and meta rows, so each text row sizes to its own type and the
    tile centres against the pair rather than against the name alone. */
-.dress-thumbnail { grid-row: span 2; overflow: hidden; width: 30px; height: 37px; border-radius: 9px; }
+/* The inset outline is the image edge treatment: pure black at 0.1 alpha, so the
+   tile separates from the row under it without either surface tinting the edge.
+   outline, not border, so it stays out of the layout box. */
+.dress-thumbnail { grid-row: span 2; overflow: hidden; width: 30px; height: 37px; border-radius: 9px; outline: 1px solid var(--colour-image-edge); outline-offset: -1px; }
 .dress-thumbnail svg { display: block; width: 100%; height: 100%; }
 .dress-thumbnail-small { width: 22px; height: 27px; border-radius: 7px; }
 .dress-sapphire { --dress-from: var(--colour-sapphire); --dress-to: var(--colour-sapphire-deep); background: var(--colour-sapphire-tint); }
@@ -176,7 +335,7 @@ ul, ol { padding: 0; }
 .product-meta { grid-column: 2; margin-top: 4px; color: var(--colour-ink-secondary); font-size: 12px; }
 /* Settled-payment pill. Sage like .status, but with a tick and its own class so
    the neutral and negative .status pills never inherit a confirmation mark. */
-.paid-badge { display: inline-flex; width: fit-content; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid rgba(76, 107, 51, 0.24); border-radius: 999px; color: var(--colour-success); background: var(--colour-tint-sage); font-size: 12px; font-weight: 700; line-height: 1; }
+.paid-badge { display: inline-flex; width: fit-content; align-items: center; gap: 6px; padding: 7px 12px 7px 10px; border: 1px solid var(--colour-success-border); border-radius: 999px; color: var(--colour-success); background: var(--colour-tint-sage); font-size: 12px; font-weight: 700; line-height: 1; }
 .paid-badge svg { width: 1em; height: 1em; flex: none; }
 
 /* Render the complete conversation as ordered content with visual speaker cues. */
@@ -203,26 +362,40 @@ ul, ol { padding: 0; }
 .conversation .message-stack > .paid-badge { grid-column: 1 / -1; justify-self: center; max-width: 100%; }
 .conversation-message.customer .message-stack > * { grid-column: 1; }
 .conversation .bubble { font-size: 14px; }
-.order-summary { width: min(100%, 320px); padding: 14px; border: 1px solid var(--colour-border); border-radius: 16px; font-size: 13px; }
+.order-summary { width: min(100%, 320px); padding: 14px; border-radius: 16px; box-shadow: var(--shadow-border); font-size: 13px; }
 .order-summary > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; padding: 8px 0; border-bottom: 1px dashed var(--colour-border); }
 .order-summary > div:last-child { border-bottom: 0; font-weight: 700; }
 .order-summary dt, .order-summary dd { margin: 0; }
-.time-divider { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; color: var(--colour-ink-secondary); font-size: 11.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+/* The indent matches the letter-spacing: it widens the label box on the left by
+   the same amount the trailing letter-space adds on the right, which puts equal
+   space on both sides of the ink and centres the type between the two rules.
+   Every centred uppercase label in this file carries the same correction. */
+.time-divider { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; color: var(--colour-ink-secondary); font-size: 11.5px; font-weight: 700; letter-spacing: 0.16em; text-indent: 0.16em; text-transform: uppercase; }
 .time-divider::before, .time-divider::after { border-top: 1px dashed var(--colour-border-strong); content: ''; }
 .side-panels { display: grid; gap: 22px; }
 .embed-panel, .demo-panel { padding: clamp(24px, 4vw, 32px); border-radius: var(--radius-card); color: var(--colour-band-text); }
 .embed-panel { background: var(--colour-band-panel); }
-.demo-panel { background: linear-gradient(145deg, var(--colour-accent), #e76f3c); }
-.dark-eyebrow { color: var(--colour-band-accent); background: rgba(255, 242, 226, 0.15); }
-.embed-panel p, .demo-panel p { color: rgba(255, 242, 226, 0.82); }
+.demo-panel { background: linear-gradient(145deg, var(--colour-demo-start), var(--colour-demo-end)); }
+.embed-panel .dark-eyebrow, .demo-panel .dark-eyebrow { color: var(--colour-band-accent); background: var(--colour-band-wash-pill); }
+.embed-panel p { color: var(--colour-band-text-soft); }
+/* The soft cream is calibrated against the espresso bands at L 0.3. The demo
+   panel is far lighter, so the same alpha would drop this copy to 4.09:1; it
+   takes the full-strength cream instead. */
+.demo-panel p { color: var(--colour-band-text); }
 .code-block { margin: 20px 0 0; overflow-x: auto; padding: 16px; border-radius: 14px; background: var(--colour-band-code); color: var(--colour-band-accent); font-family: var(--font-mono), monospace; font-size: 12px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
-.demo-link { display: inline-flex; min-height: 44px; align-items: center; gap: 6px; margin-top: 12px; padding: 8px 18px; border-radius: 999px; color: var(--colour-accent-deep); background: white; font-weight: 700; text-decoration: none; }
+/* Two optical corrections on one pill. The icon side carries 2px less padding
+   than the text side, because a lone glyph reads lighter than type at the same
+   distance. The arrow then drops 0.12em, because its ink centres 1.92px higher
+   above the baseline than the label's does at this size. */
+.demo-link { display: inline-flex; min-height: 44px; align-items: center; gap: 6px; margin-top: 12px; padding: 8px 16px 8px 18px; border-radius: 999px; color: var(--colour-accent-deep); background: white; font-weight: 700; text-decoration: none; transition: scale 150ms ease-out; }
+.demo-link:active { scale: 0.96; }
+.demo-link span { position: relative; top: 0.12em; }
 .capabilities { display: flex; flex-wrap: wrap; gap: 10px; margin: 28px 0 0; list-style: none; }
 .capabilities li { padding: 8px 16px; border: 1.5px solid var(--colour-border-strong); border-radius: 999px; background: var(--colour-surface); font-size: 13px; font-weight: 600; }
 
 /* Compare catalogue quality without adding unverified product-service claims. */
 .catalogue-grid { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(180px, 0.4fr) minmax(0, 1.15fr); gap: 22px; align-items: center; margin-top: 46px; }
-.catalogue-card { min-width: 0; padding: 24px; border: 1.5px solid var(--colour-border); border-radius: var(--radius-card); background: var(--colour-surface); box-shadow: var(--shadow-card); }
+.catalogue-card { min-width: 0; padding: 24px; border-radius: var(--radius-card); background: var(--colour-surface); box-shadow: var(--shadow-card); }
 .catalogue-card.after { box-shadow: var(--shadow-feature); }
 .catalogue-card-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
 /* The eyebrow carries a 22px bottom margin for its stacked section-intro use.
@@ -242,28 +415,33 @@ ul, ol { padding: 0; }
 .trend-row { margin-top: 16px; color: var(--colour-accent-deep); font-weight: 700; }
 .footnote { margin: 18px 0 0; color: var(--colour-ink-secondary); font-size: 12px; }
 .feed-fields { text-align: center; }
-.feed-fields p { font-size: 11.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+/* This label wraps, and text-indent only pays back the first line. Shifting the
+   whole centring axis by half the letter-space - which is what an inline-start
+   padding does to centred text - corrects every line instead. */
+.feed-fields p { padding-inline-start: 0.16em; font-size: 11.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
 .feed-fields ul { display: grid; gap: 8px; margin: 0; list-style: none; }
 .feed-fields li { padding: 7px 10px; border-radius: 999px; background: var(--colour-tint-peach); font-size: 12px; font-weight: 600; }
 .catalogue-close { margin: 30px 0 0; text-align: center; font-family: var(--font-display); font-size: 24px; font-weight: 700; }
 
 /* Use inset high-contrast bands as the only dark sections in the site. */
-.dark-band { position: relative; overflow: hidden; padding: clamp(46px, 7vw, 78px); border-radius: var(--radius-band); color: var(--colour-band-text); background: radial-gradient(circle at 100% 0%, rgba(231, 111, 60, 0.35), transparent 33%), var(--colour-band); }
+.dark-band { position: relative; overflow: hidden; padding: clamp(46px, 7vw, 78px); border-radius: var(--radius-band); color: var(--colour-band-text); background: radial-gradient(circle at 100% 0%, var(--colour-band-glow), transparent 33%), var(--colour-band); }
 .timeline-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 38px; }
-.timeline-card { display: flex; flex-direction: column; min-height: 310px; padding: 22px; border-radius: 22px; background: rgba(255, 242, 226, 0.07); }
+.timeline-card { display: flex; flex-direction: column; min-height: 310px; padding: 22px; border-radius: 22px; background: var(--colour-band-wash); }
 .timeline-date { color: var(--colour-band-accent); font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
 .timeline-stat { margin: 16px 0 0; font-family: var(--font-display); font-size: 38px; font-weight: 800; line-height: 1; }
-.timeline-label { color: rgba(255, 242, 226, 0.78); font-size: 12px; }
-.timeline-text { margin-top: auto; padding-top: 20px; color: rgba(255, 242, 226, 0.88); font-size: 14px; }
+.timeline-label { color: var(--colour-band-text-soft); font-size: 12px; }
+.timeline-text { margin-top: auto; padding-top: 20px; color: var(--colour-band-text-soft); font-size: 14px; }
 /* SourceLink.astro keeps the label and its ↗ inside one child element, so the
    glyph stays attached to the last word instead of being stranded at the far
    edge of the card when the label wraps. */
 .source-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; color: var(--colour-band-accent); font-size: 12px; font-weight: 700; }
-.timeline-close { display: grid; gap: 4px; margin-top: 34px; padding-top: 30px; border-top: 1px solid rgba(255, 242, 226, 0.2); }
+/* The same arrow correction as .demo-link, in em so it tracks the smaller type. */
+.source-link span span { position: relative; top: 0.12em; }
+.timeline-close { display: grid; gap: 4px; margin-top: 34px; padding-top: 30px; border-top: 1px solid var(--colour-band-rule); }
 .timeline-close strong { font-size: 18px; }
-.timeline-close span { color: rgba(255, 242, 226, 0.8); }
+.timeline-close span { color: var(--colour-band-text-soft); }
 .shift-grid, .capability-grid, .values-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 46px; }
-.shift-card, .capability-card, .value-card { padding: 24px; border: 1.5px solid var(--colour-border); border-radius: var(--radius-card); color: var(--colour-ink); background: var(--colour-surface); box-shadow: var(--shadow-card); }
+.shift-card, .capability-card, .value-card { padding: 24px; border-radius: var(--radius-card); color: var(--colour-ink); background: var(--colour-surface); box-shadow: var(--shadow-card); }
 .shift-card h3, .capability-card h3, .value-card h3 { margin-bottom: 12px; }
 .shift-card p, .capability-card p, .value-card p { color: var(--colour-ink-secondary); }
 /* Grid stretch already gives the cards one height; pushing the source link to
@@ -277,12 +455,12 @@ ul, ol { padding: 0; }
 .testimonial { text-align: center; }
 .testimonial blockquote { max-width: 900px; margin: 0 auto; font-family: var(--font-display); font-size: clamp(27px, 3.6vw, 44px); font-weight: 700; line-height: 1.2; }
 .testimonial em { color: var(--colour-band-accent); font-style: normal; text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 5px; }
-.testimonial footer { margin-top: 28px; color: rgba(255, 242, 226, 0.82); }
+.testimonial footer { margin-top: 28px; color: var(--colour-band-text-soft); }
 .testimonial footer strong { display: block; color: var(--colour-band-text); }
 
 /* Keep the closing action legible above decorative catalogue snippets. */
 .cta-wrap { margin-top: var(--section-space); }
-.cta-band { position: relative; overflow: hidden; min-height: 400px; display: grid; place-items: center; padding: clamp(48px, 7vw, 78px); border-radius: var(--radius-band); background: linear-gradient(135deg, var(--colour-highlight-start), #ffd0b3); }
+.cta-band { position: relative; overflow: hidden; min-height: 400px; display: grid; place-items: center; padding: clamp(48px, 7vw, 78px); border-radius: var(--radius-band); background: linear-gradient(135deg, var(--colour-highlight-start), var(--colour-cta-end)); }
 .cta-content { position: relative; z-index: 1; max-width: 720px; text-align: center; }
 .cta-content p { max-width: 620px; margin: 20px auto 28px; color: var(--colour-ink-secondary); }
 /* Courier Prime reserves 0.78em of ascent against 0.35em of descent, so a
@@ -291,7 +469,7 @@ ul, ol { padding: 0; }
    box to the type size and carry 3px more padding above than below: that offset
    lands the ascender-to-baseline band on the centre, which is what the eye
    reads as level. */
-.snippet-cloud span { position: absolute; padding: 10px 10px 7px; border: 1px solid rgba(184, 68, 31, 0.2); border-radius: 999px; background: rgba(255, 251, 245, 0.54); color: rgba(107, 74, 49, 0.55); font-family: var(--font-mono); font-size: 11.5px; line-height: 1; }
+.snippet-cloud span { position: absolute; padding: 10px 10px 7px; border: 1px solid var(--colour-snippet-border); border-radius: 999px; background: var(--colour-snippet-surface); color: var(--colour-snippet-text); font-family: var(--font-mono); font-size: 11.5px; line-height: 1; }
 .snippet-cloud span:nth-child(1) { left: 4%; top: 12%; transform: rotate(-6deg); }
 .snippet-cloud span:nth-child(2) { right: 4%; top: 14%; transform: rotate(5deg); }
 .snippet-cloud span:nth-child(3) { left: 8%; bottom: 14%; }
@@ -312,8 +490,8 @@ ul, ol { padding: 0; }
 .proof-item dt, .stat-item dt { color: var(--colour-accent-deep); font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
 .proof-item dd { margin-top: 8px; font-family: var(--font-display); font-size: 20px; font-weight: 700; line-height: 1.3; }
 .approach-block { margin-top: var(--section-space); }
-.approach-block .eyebrow { color: var(--colour-band-accent); background: rgba(255, 242, 226, 0.12); }
-.approach-block > p { max-width: 700px; color: rgba(255, 242, 226, 0.84); }
+.approach-block .eyebrow { color: var(--colour-band-accent); background: var(--colour-band-wash-pill); }
+.approach-block > p { max-width: 700px; color: var(--colour-band-text-soft); }
 /* The index numeral labels the card title under it, so it keeps a label-sized
    gap rather than the 1em paragraph margin its 28px type would inherit. */
 .capability-card .index, .stage-number { margin-bottom: 10px; color: var(--colour-accent); font-family: var(--font-display); font-size: 28px; font-weight: 800; }
@@ -321,7 +499,7 @@ ul, ol { padding: 0; }
 .stat-item dd { margin: 0; color: var(--colour-ink-secondary); }
 .stat-item .stat-source { margin-top: auto; }
 .process-stages { display: grid; gap: 28px; margin-top: var(--section-space); }
-.process-stage { display: grid; grid-template-columns: 140px 1fr; gap: 32px; padding: clamp(26px, 5vw, 48px); border: 1.5px solid var(--colour-border); border-radius: var(--radius-panel); background: var(--colour-surface); box-shadow: var(--shadow-card); }
+.process-stage { display: grid; grid-template-columns: 140px 1fr; gap: 32px; padding: clamp(26px, 5vw, 48px); border-radius: var(--radius-panel); background: var(--colour-surface); box-shadow: var(--shadow-card); }
 .stage-label { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
 .stage-copy p { color: var(--colour-ink-secondary); }
 .stage-copy .code-block { max-width: 760px; }
@@ -353,9 +531,11 @@ ul, ol { padding: 0; }
 .site-footer h2 { margin-bottom: 14px; color: var(--colour-band-accent); font-family: var(--font-body); font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; }
 .site-footer ul { margin: 0; list-style: none; }
 .site-footer li + li { margin-top: 4px; }
-.site-footer nav a { display: inline-flex; min-height: 44px; align-items: center; color: rgba(255, 242, 226, 0.82); text-decoration: none; }
+/* min-width, because the shortest labels (proof, perth) set only 40px of type
+   and the anchor is the whole target. */
+.site-footer nav a { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; color: var(--colour-band-text-soft); text-decoration: none; transition: color 200ms ease-out; }
 .site-footer nav a:hover { color: var(--colour-band-accent); }
-.footer-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 46px; padding-top: 22px; border-top: 1px solid rgba(255, 242, 226, 0.18); color: rgba(255, 242, 226, 0.78); }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 46px; padding-top: 22px; border-top: 1px solid var(--colour-band-rule); color: var(--colour-band-text-soft); }
 .wordmark-small { min-height: 0; color: var(--colour-band-text); font-size: 18px; }
 .footer-bottom p { margin: 0; font-size: 13px; }
 

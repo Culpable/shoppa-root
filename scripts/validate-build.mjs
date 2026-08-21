@@ -163,4 +163,73 @@ if (JSON.stringify(frameSizes) !== JSON.stringify(expectedFrameSizes)) throw new
 if (!html.includes('<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">')) throw new Error('Pages must declare the ICO favicon with its exact raster sizes.');
 if (!html.includes('<link rel="icon" href="/icon.svg" type="image/svg+xml" sizes="any">')) throw new Error('Pages must declare the scalable SVG favicon for any size.');
 
-console.log(`Validated ${requiredFiles.length} build artefacts and ${htmlFiles.length} HTML routes.`);
+// The palette is declared three times: an sRGB hex fallback, the same colours in
+// oklch, and a chroma-only widening for Display P3. Nothing stops those blocks
+// drifting apart by hand, so the oklch values are converted back to sRGB here and
+// checked against the fallback, and the P3 block is held to lightness and hue
+// that match its sRGB twin. That last rule is what lets the P3 layer inherit
+// every contrast result measured on the sRGB one.
+const stylesheet = await readFile(resolve(root, 'src/styles/global.css'), 'utf8');
+const declarationsAfter = (marker, label) => {
+  const start = stylesheet.indexOf(marker);
+  assert.notEqual(start, -1, `global.css is missing the ${label} block.`);
+  let depth = 0;
+  let end = start;
+  for (; end < stylesheet.length; end += 1) {
+    if (stylesheet[end] === '{') depth += 1;
+    if (stylesheet[end] === '}' && (depth -= 1) === 0) break;
+  }
+  const body = stylesheet.slice(start, end);
+  return new Map([...body.matchAll(/--(colour-[\w-]+):\s*([^;]+);/g)].map((match) => [match[1], match[2].trim()]));
+};
+
+const srgbChannel = (value) => Math.round(255 * (value <= 0.0031308 ? 12.92 * value : 1.055 * value ** (1 / 2.4) - 0.055));
+const oklchToChannels = ([lightness, chroma, hue, alpha]) => {
+  const a = chroma * Math.cos((hue * Math.PI) / 180);
+  const b = chroma * Math.sin((hue * Math.PI) / 180);
+  const long = (lightness + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+  const medium = (lightness - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+  const short = (lightness - 0.0894841775 * a - 1.2914855480 * b) ** 3;
+  const linear = [
+    4.0767416621 * long - 3.3077115913 * medium + 0.2309699292 * short,
+    -1.2684380046 * long + 2.6097574011 * medium - 0.3413193965 * short,
+    -0.0041960863 * long - 0.7034186147 * medium + 1.7076147010 * short,
+  ];
+  return [...linear.map((channel) => Math.min(255, Math.max(0, srgbChannel(channel)))), alpha];
+};
+
+const readOklch = (value, token) => {
+  const parts = value.match(/^oklch\(([\d.]+) ([\d.]+) ([\d.]+)(?: \/ ([\d.]+))?\)$/);
+  assert.ok(parts, `${token} must be a plain oklch() value, found ${value}.`);
+  return [Number(parts[1]), Number(parts[2]), Number(parts[3]), parts[4] === undefined ? 1 : Number(parts[4])];
+};
+const readFallback = (value, token) => {
+  const hex = value.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
+  if (hex) return [parseInt(hex[1], 16), parseInt(hex[2], 16), parseInt(hex[3], 16), 1];
+  const rgba = value.match(/^rgba?\((\d+), (\d+), (\d+)(?:, ([\d.]+))?\)$/);
+  assert.ok(rgba, `${token} fallback must be a hex or rgba() value, found ${value}.`);
+  return [Number(rgba[1]), Number(rgba[2]), Number(rgba[3]), rgba[4] === undefined ? 1 : Number(rgba[4])];
+};
+
+const fallbackTokens = declarationsAfter(':root {', 'sRGB fallback');
+const oklchTokens = declarationsAfter('@supports (color: oklch(0 0 0)) {', 'oklch');
+const wideGamutTokens = declarationsAfter('@media (color-gamut: p3) {', 'Display P3');
+assert.ok(fallbackTokens.size >= 30, 'The sRGB fallback block lost its colour tokens.');
+assert.deepEqual([...oklchTokens.keys()].sort(), [...fallbackTokens.keys()].sort(), 'The oklch block must restate exactly the sRGB fallback tokens.');
+
+for (const [token, value] of oklchTokens) {
+  const converted = oklchToChannels(readOklch(value, token));
+  const declared = readFallback(fallbackTokens.get(token), token);
+  assert.deepEqual(converted, declared, `--${token}: ${value} converts to rgba(${converted.join(', ')}), but the sRGB fallback declares ${fallbackTokens.get(token)}.`);
+}
+
+for (const [token, value] of wideGamutTokens) {
+  const wide = readOklch(value, token);
+  const narrow = readOklch(oklchTokens.get(token) ?? '', token);
+  assert.equal(wide[0], narrow[0], `--${token} must keep its sRGB lightness on Display P3.`);
+  assert.equal(wide[2], narrow[2], `--${token} must keep its sRGB hue on Display P3.`);
+  assert.equal(wide[3], narrow[3], `--${token} must keep its sRGB alpha on Display P3.`);
+  assert.ok(wide[1] > narrow[1], `--${token} is in the Display P3 block without widening its chroma.`);
+}
+
+console.log(`Validated ${requiredFiles.length} build artefacts, ${htmlFiles.length} HTML routes, and ${fallbackTokens.size} colour tokens across three gamut layers.`);

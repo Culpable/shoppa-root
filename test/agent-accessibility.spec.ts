@@ -1,8 +1,13 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { AGENT_ACCESSIBILITY_RULES } from './agent-accessibility.rules';
 
 const routes = ['/', '/about/', '/process/', '/contact/', '/thank-you/', '/404.html'];
+
+// The hero and flow-stack reveals fade opacity for up to 940ms after load, so a
+// colour read straight after networkidle samples a half-faded element and
+// reports a contrast the reader never sees. Every animation here is finite.
+const settle = (page: Page) => page.evaluate(() => Promise.all(document.getAnimations().map((animation) => animation.finished.catch(() => undefined))));
 
 for (const route of routes) {
   test(`${route} has stable, accessible rendered output`, async ({ page }) => {
@@ -11,6 +16,7 @@ for (const route of routes) {
     page.on('pageerror', (error) => browserErrors.push(error.message));
 
     const response = await page.goto(route, { waitUntil: 'networkidle' });
+    await settle(page);
     expect(response?.status()).toBe(200);
     expect(await page.title()).not.toBe('');
     expect(await page.locator('meta[name="description"]').getAttribute('content')).not.toBe('');
@@ -123,8 +129,104 @@ test('approved colour pairs meet their contrast targets', async () => {
   expect(ratio('#6B4A31', '#FFF4E9')).toBeGreaterThanOrEqual(4.5);
   expect(ratio('#FFFFFF', '#B8441F')).toBeGreaterThanOrEqual(4.5);
   expect(ratio('#FFF2E2', '#3A2414')).toBeGreaterThanOrEqual(4.5);
-  expect(ratio('#AE3E1B', '#FDE0D4')).toBeGreaterThanOrEqual(4.5);
+  expect(ratio('#AE3E1B', '#FEE1D5')).toBeGreaterThanOrEqual(4.5);
   expect(ratio('#6B4A31', '#FFFBF5')).toBeGreaterThanOrEqual(4.5);
+});
+
+// axe-core cannot judge text painted over a gradient: it reports those nodes as
+// "incomplete" rather than as violations, and the assertion above only reads
+// results.violations. On this site that silently excused 48 nodes, including
+// every word in the demo panel, so contrast is measured here from the rendered
+// page instead. Each element is composited through its own ancestor chain, once
+// per gradient colour stop, so the worst point of a gradient is the one scored.
+test('every rendered text element meets its contrast target on its own backdrop', async ({ page }) => {
+  for (const route of routes) {
+    await page.goto(route, { waitUntil: 'networkidle' });
+    await settle(page);
+    const measured = await page.evaluate(() => {
+      const COLOUR = /(?:rgba?|hsla?|oklch|oklab|lab|lch|color)\([^)]*\)|#[0-9a-fA-F]{3,8}/g;
+      const stops = (value: string) => (value === 'none' ? [] : value.match(COLOUR) ?? []);
+
+      // Painting the stack is how the browser itself resolves alpha, so the
+      // measured pixel is the one a reader actually sees.
+      const paint = (layers: string[]) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1;
+        canvas.height = 1;
+        const context = canvas.getContext('2d')!;
+        context.fillStyle = 'white';
+        context.fillRect(0, 0, 1, 1);
+        for (const layer of layers) {
+          context.fillStyle = layer;
+          context.fillRect(0, 0, 1, 1);
+        }
+        const [red, green, blue] = context.getImageData(0, 0, 1, 1).data;
+        return [red, green, blue] as [number, number, number];
+      };
+
+      const luminance = ([red, green, blue]: [number, number, number]) => {
+        const [r, g, b] = [red, green, blue].map((channel) => {
+          const value = channel / 255;
+          return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+        });
+        return r * 0.2126 + g * 0.7152 + b * 0.0722;
+      };
+      const ratio = (a: [number, number, number], b: [number, number, number]) => {
+        const [bright, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+        return (bright + 0.05) / (dark + 0.05);
+      };
+
+      // Every ancestor contributes its background colour; a gradient ancestor
+      // branches the stack so each of its colour stops is scored separately.
+      const backdrops = (element: Element) => {
+        const chain: Element[] = [];
+        for (let node: Element | null = element; node; node = node.parentElement) chain.unshift(node);
+        let branches: string[][] = [[]];
+        for (const node of chain) {
+          const style = getComputedStyle(node);
+          const fill = style.backgroundColor === 'rgba(0, 0, 0, 0)' ? [] : [style.backgroundColor];
+          const gradient = stops(style.backgroundImage);
+          branches = branches.flatMap((branch) => {
+            const base = [...branch, ...fill];
+            return gradient.length ? gradient.map((stop) => [...base, stop]) : [base];
+          });
+        }
+        return branches;
+      };
+
+      return [...document.querySelectorAll('body *')]
+        .filter((element) => ![...element.childNodes].every((node) => node.nodeType !== Node.TEXT_NODE || !(node.textContent ?? '').trim()))
+        .filter((element) => !element.closest('[aria-hidden="true"]') && element.getClientRects().length > 0)
+        .filter((element) => getComputedStyle(element).visibility !== 'hidden')
+        .map((element) => {
+          const style = getComputedStyle(element);
+          const size = Number.parseFloat(style.fontSize);
+          const weight = Number(style.fontWeight) || 400;
+          // WCAG large text: 18pt, or 14pt when bold.
+          const large = size >= 24 || (size >= 18.66 && weight >= 700);
+          const worst = backdrops(element).reduce<{ ratio: number; backdrop: string } | null>((lowest, stack) => {
+            const background = paint(stack);
+            const current = { ratio: ratio(paint([...stack, style.color]), background), backdrop: stack[stack.length - 1] ?? 'white' };
+            return lowest && lowest.ratio <= current.ratio ? lowest : current;
+          }, null)!;
+          return {
+            label: `${element.tagName.toLowerCase()}.${element.className || '(none)'} "${(element.textContent ?? '').trim().slice(0, 30)}"`,
+            colour: style.color,
+            backdrop: worst.backdrop,
+            ratio: worst.ratio,
+            required: large ? 3 : 4.5,
+          };
+        });
+    });
+
+    expect(measured.length, `no text measured on ${route}`).toBeGreaterThan(20);
+    for (const item of measured) {
+      expect(
+        item.ratio,
+        `${route} ${item.label}: ${item.colour} on ${item.backdrop} is ${item.ratio.toFixed(2)}:1`,
+      ).toBeGreaterThanOrEqual(item.required);
+    }
+  }
 });
 
 test('every description detail clears the user-agent indent so it lines up with its term', async ({ page }) => {

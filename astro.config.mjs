@@ -4,6 +4,13 @@ export default defineConfig({
   site: 'https://shoppa.au',
   output: 'static',
   trailingSlash: 'always',
+  build: {
+    // Inline all CSS into each page. The bundled stylesheet is ~7 KiB, and GitHub
+    // Pages caps every response at Cache-Control: max-age=600, so an external
+    // stylesheet costs a render-blocking round trip on most visits while its
+    // cache repays almost nothing.
+    inlineStylesheets: 'always',
+  },
   fonts: [
     {
       provider: fontProviders.fontsource(),

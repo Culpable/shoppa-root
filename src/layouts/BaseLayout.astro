@@ -26,8 +26,12 @@ const { metadata } = Astro.props;
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" sizes="any" />
     <link rel="apple-touch-icon" href="/apple-icon.png" />
+    {/* Preload only the display face: with font-display: swap, preloads cannot
+        improve LCP and only compete with first paint, so the body and mono
+        families load from @font-face and swap against their metric-matched
+        fallbacks. */}
     <Font cssVariable="--font-display" preload />
-    <Font cssVariable="--font-body" preload />
+    <Font cssVariable="--font-body" />
     <Font cssVariable="--font-mono" />
   </head>
   <body>

@@ -300,3 +300,47 @@ test('every CTA snippet pill centres its type between the pill edges', async ({ 
     expect(Math.abs(pill.offset), `"${pill.text}" sits ${pill.offset.toFixed(2)}px off centre`).toBeLessThanOrEqual(1);
   }
 });
+
+// An animated `filter: blur()` held by `animation-fill-mode: both` left the
+// first hero flow card permanently blurred on iOS Safari (user-reported,
+// 2026-08-21): the forwards fill keeps the element on its own compositing layer
+// with the animation's filter owned by the compositor, so a final commit
+// dropped while the page scrolls is never repainted, and no later style change
+// clears it. A rendered screenshot cannot catch that here - every capture path
+// forces the repaint the device skipped - so the guard is structural: no page
+// animation may animate `filter`, and none may keep its animated style after it
+// ends. Both halves must hold, or the stranding is possible again.
+test('no page animation can strand an element in its start frame', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'networkidle' });
+
+  const animations = await page.evaluate(() => [...document.getAnimations()].map((animation) => {
+    const effect = animation.effect as KeyframeEffect;
+    const target = effect.target as Element;
+    return {
+      target: `${target.tagName.toLowerCase()}.${target.className || '(no class)'}`,
+      fill: effect.getTiming().fill,
+      properties: [...new Set(effect.getKeyframes().flatMap((frame) => Object.keys(frame)))],
+    };
+  }));
+
+  expect(animations.length).toBeGreaterThan(0);
+  for (const animation of animations) {
+    expect(animation.properties, `${animation.target} animates a filter`).not.toContain('filter');
+    expect(['none', 'backwards'], `${animation.target} fills ${animation.fill}`).toContain(animation.fill);
+  }
+
+  // The stack ends where its base style already sits, so the backwards fill
+  // costs nothing visually: everything is sharp, opaque and in place.
+  await settle(page);
+  const settled = await page.evaluate(() => [...document.querySelectorAll('.hero-copy > *, .flow-stack > *')]
+    .map((element) => {
+      const style = getComputedStyle(element);
+      return { filter: style.filter, opacity: style.opacity, transform: style.transform };
+    }));
+  expect(settled.length).toBeGreaterThan(0);
+  for (const element of settled) {
+    expect(element.filter).toBe('none');
+    expect(element.opacity).toBe('1');
+    expect(['none', 'matrix(1, 0, 0, 1, 0, 0)']).toContain(element.transform);
+  }
+});

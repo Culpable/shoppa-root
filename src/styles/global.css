@@ -252,19 +252,27 @@ ul, ol { padding: 0; }
    the flow stack draws itself top to bottom - catalogue, feeds, agent, answers,
    customer - so the visual arrives as the sentence its cards spell out. A
    one-shot sequence, so keyframes are right here; interactive states use
-   transitions instead. Never gate this on a reduced-motion query. */
-.hero-copy > * { animation: hero-enter 400ms both ease-out; }
+   transitions instead. Never gate this on a reduced-motion query.
+   Both sequences animate opacity and transform only, and fill backwards only.
+   An animated `filter: blur()` held by `fill-mode: both` stranded the first
+   flow card permanently blurred on iOS Safari (user-reported, 2026-08-21): the
+   forwards fill keeps the element on its own compositing layer with the
+   animation's filter still owned by the compositor, so a final commit dropped
+   under scroll load is never repainted. Opacity and transform carry the same
+   arrival without a filter, and `backwards` returns every element to its base
+   style at the end, which forces the ordinary style update the fill suppressed. */
+.hero-copy > * { animation: hero-enter 400ms backwards ease-out; }
 .hero-copy > :nth-child(2) { animation-delay: 80ms; }
 .hero-copy > :nth-child(3) { animation-delay: 160ms; }
 .hero-copy > :nth-child(4) { animation-delay: 240ms; }
-.flow-stack > * { animation: flow-enter 400ms both ease-out; }
+.flow-stack > * { animation: flow-enter 400ms backwards ease-out; }
 .flow-stack > :nth-child(1) { animation-delay: 300ms; }
 .flow-stack > :nth-child(2) { animation-delay: 360ms; }
 .flow-stack > :nth-child(3) { animation-delay: 420ms; }
 .flow-stack > :nth-child(4) { animation-delay: 480ms; }
 .flow-stack > :nth-child(5) { animation-delay: 540ms; }
-@keyframes hero-enter { from { opacity: 0; transform: translateY(18px); filter: blur(4px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
-/* The stack rises and sharpens at full opacity, where the copy also fades. A
+@keyframes hero-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+/* The stack rises at full opacity, where the copy also fades. A
    fade multiplies every colour inside the element against what is behind it,
    and the mini browser bar carries 12px secondary ink on the sunken surface -
    5.9:1 at rest, so it drops under the 4.5:1 floor for most of a fade, which is
@@ -272,7 +280,7 @@ ul, ol { padding: 0; }
    until that pair carries the headroom. Holding the stack opaque also keeps the
    hero's tallest element in place instead of opening a 300ms hole beside the
    copy. */
-@keyframes flow-enter { from { transform: translateY(18px); filter: blur(4px); } to { transform: translateY(0); filter: blur(0); } }
+@keyframes flow-enter { from { transform: translateY(18px); } to { transform: translateY(0); } }
 .hero h1 { max-width: 720px; margin-bottom: 26px; }
 /* Size the highlight band in em from the text box top so it wraps the full glyph height (ascenders sit 0.72em above the baseline, descenders 0.19em below)
    while its 0.15em top offset keeps it clear of the descenders on the line above. Wrapped lines stack edge to edge because the band matches line-height. */

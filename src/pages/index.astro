@@ -2,6 +2,7 @@
 import CTASection from '../components/CTASection.astro';
 import DressThumbnail from '../components/DressThumbnail.astro';
 import FlowIcon from '../components/FlowIcon.astro';
+import LandingEffects from '../components/LandingEffects.astro';
 import PaidOrderBadge from '../components/PaidOrderBadge.astro';
 import SourceLink from '../components/SourceLink.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -12,6 +13,13 @@ const metadata = {
   titleMode: 'absolute',
   description:
     'An out-of-the-box AI shopping agent you own. Two lines of code put discovery, checkout, and order support on your own site, answering from your catalogue.',
+  socialImage: {
+    src: '/images/shoppa-ai-shopping-agent-og.png',
+    alt: 'Shoppa AI shopping agent finding the Sapphire Blue Midi for a customer and confirming a paid order.',
+    width: 1200,
+    height: 630,
+    type: 'image/png',
+  },
 } satisfies PageMetadataInput;
 
 const embedCode = `<script src="https://api.shoppa.au/embed/shoppa.js"></script>
@@ -88,4 +96,5 @@ const shiftCards = [
 
   <section id="proof" class="container section dark-band testimonial"><blockquote>We went from a script tag to a live agent <em>in an afternoon</em>. Customers ask, pay, and track orders without leaving the chat - and it’s <em>our brand doing the talking</em>.</blockquote><footer><strong>Australian retail executive</strong><span>Head of Digital, National Retailer</span></footer></section>
   <CTASection />
+  <LandingEffects />
 </BaseLayout>

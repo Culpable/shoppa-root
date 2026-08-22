@@ -6,8 +6,15 @@ const routes = ['/', '/about/', '/process/', '/contact/', '/thank-you/', '/404.h
 
 // The hero and flow-stack reveals fade opacity for up to 940ms after load, so a
 // colour read straight after networkidle samples a half-faded element and
-// reports a contrast the reader never sees. Every animation here is finite.
-const settle = (page: Page) => page.evaluate(() => Promise.all(document.getAnimations().map((animation) => animation.finished.catch(() => undefined))));
+// reports a contrast the reader never sees. Every animation that ends is
+// awaited; the home page's infinite decorative loops (typing-dots bounce,
+// motif swing) never finish by design, and both live inside aria-hidden
+// decoration that the colour reads already exempt, so they are excluded.
+const settle = (page: Page) => page.evaluate(() => Promise.all(
+  document.getAnimations()
+    .filter((animation) => Number.isFinite(Number(animation.effect?.getComputedTiming().endTime ?? Infinity)))
+    .map((animation) => animation.finished.catch(() => undefined)),
+));
 
 for (const route of routes) {
   test(`${route} has stable, accessible rendered output`, async ({ page }) => {

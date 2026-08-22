@@ -37,7 +37,7 @@ Precedence: repository `AGENTS.md` instructions and explicit user decisions over
 
 ### Foundations
 
-- Framework and rendering: Astro static export. All pages are prerendered; the production pages ship no browser JavaScript.
+- Framework and rendering: Astro static export. All pages are prerendered. The home page ships exactly one small deferred module (`src/components/LandingEffects.astro`) for the approved landing motion; every other page ships no browser JavaScript, and the home page is complete without it (all hidden states are applied at runtime, so crawlers and no-JS visitors see the full static content).
 - Styling and token authority: plain CSS with custom properties in `src/styles/global.css`; this document owns their semantic roles and constraints.
 - Components and icons: hand-built Astro components; no UI framework, no icon library. The agent mark is the `✦` glyph. Decorative dots and connectors are CSS; the dress thumbnails in the chat product rows and the three hero flow-card marks are inline SVG (`src/components/DressThumbnail.astro`, `src/components/FlowIcon.astro`).
 - Fonts and charts: Bricolage Grotesque (display), Figtree (body), Courier Prime (embed code only), self-hosted through Astro Fonts. No charts.
@@ -77,7 +77,7 @@ Approved palette roles. `src/styles/global.css` owns the exact production values
 
 ## Typography
 
-- Display role: Bricolage Grotesque 700/800 for h1–h3, stat figures, panel headings, brand wordmark ("shoppa" lowercase with a terracotta full stop). Letter-spacing −0.02em to −0.03em.
+- Display role: Bricolage Grotesque 700/800 for h1–h3, stat figures, panel headings, and the brand wordmark. Letter-spacing −0.02em to −0.03em. The wordmark is a named lockup (see Brand wordmark below), not ordinary display type.
 - Body role: Figtree 400 for copy, 500–600 for meta and labels, 700 for buttons and chip text.
 - Label role: Figtree 700, 11.5–12.5px, letter-spacing 0.16–0.2em, uppercase, used in eyebrow pills, timeline dates, connector labels. 11.5px is the floor for the widest-tracked uppercase labels (flow connectors, the time divider, the feed-field heading); everything else starts at 12px. No text on any page renders below 11.5px - the only sub-11.5px value left in the stylesheet is the 10px `✦` glyph inside the 22px hero avatar, which is decorative, not type.
 - Mono role: Courier Prime, embed code blocks and code-flavoured decoration only. Never for body copy.
@@ -85,13 +85,24 @@ Approved palette roles. `src/styles/global.css` owns the exact production values
 - Measure and wrapping: body copy capped near 620px; hero subhead 520px; headings wrap freely with `text-wrap: balance` where supported. No truncation or ellipsis anywhere on the marketing pages.
 - Numerics and locale: en-AU. Currency as `$189` / `$189.00` exactly as the copy contract specifies; en dashes in ranges (`$3–5T`, `$100K – $500K`); `’` apostrophes in all display strings (project rule).
 
+### Brand wordmark
+
+The `shoppa.` lockup is a named brand mark, shared with the product repository (`/Users/sacino/shoppa/DESIGN.md`). Exact CSS lives in `src/styles/global.css`; this section owns the construction.
+
+- Visible string: all-lowercase `shoppa` plus a terracotta full stop. Render as `shoppa<span aria-hidden="true">.</span>`.
+- Face: Bricolage Grotesque 800, tracking −0.025em (inherited from display type), espresso ink (`#3B2416` / `--colour-ink`). The stop uses accent (`#D6552B` / `--colour-accent`).
+- Size: 27px in the header and footer; 24px below 640px; 18px for the footer-bottom compact mark.
+- Accessible name: `aria-label="Shoppa home"` on the header and footer links. The stop is decoration and must stay `aria-hidden`. The compact footer mark is itself `aria-hidden` because the copyright line already names shoppa.
+- Product surfaces in the sibling product repo may append a lowercase product name before the stop (`shoppa console.`). Do not invent other lockup variants on this marketing site.
+- Do not title-case the visible lockup (`Shoppa.`). Do not omit the stop. Do not colour the stop in ink.
+
 ## Layout
 
 - Spacing rhythm: container max-width 1140px with 32px gutters; sections separated by 72–96px; within a section, intro → content gap 46px; card internal padding 22–32px. `src/styles/global.css` owns the exact values.
 - Label-to-content gap: a small label above the thing it names - eyebrow pill in a card head, index numeral, connector - keeps a 10–16px gap, not the 22px the eyebrow uses when it opens a section or the 1em paragraph margin a large numeral would inherit. The wider gaps read as a hole in the card (user-reported, 2026-08-20).
 - Above the fold: the hero visual is the tallest hero element, so its lead-in is capped at 104px. The flow stack must finish inside a 1440×900 viewport; check it after changing hero padding, flow-card padding, or the connector height.
 - Breakpoints and frames: two functional breakpoints - 960px (multi-column grids stack to one column; hero split becomes a single column with the visual below the copy) and 640px (three-up pill grids stack). Full-bleed is never used for content; the dark timeline band and CTA band are rounded 44px blocks inset within the container.
-- Navigation and shell: header = brand wordmark left, inline text links (the agent, the catalogue, our process, about us) centre/right, terracotta pill "Contact us" right; below 960px the inline links hide and the full route list lives in the footer (no JavaScript burger menu). Footer = three columns (offer / company / our offices) plus wordmark and dynamic-year copyright line.
+- Navigation and shell: header = `shoppa.` wordmark left, inline text links (the agent, the catalogue, our process, about us) centre/right, terracotta pill "Contact us" right; below 960px the inline links hide and the full route list lives in the footer (no JavaScript burger menu). Footer = three columns (offer / company / our offices) plus wordmark and dynamic-year copyright line.
 - Overflow and dense data: no horizontal scrolling at any viewport ≥ 320px; the order-summary list and timeline cards reflow by stacking. Code blocks in embed panels are the only permitted `overflow-x: auto` regions.
 - Touch targets: interactive elements at least 44px tall (buttons, header CTA, footer links with padding) and at least 44px wide where the anchor is the whole target - the footer links carry a `min-width` because the shortest labels (proof, perth) set only 40px of type. Source links and small chips at least 24px with surrounding spacing.
 
@@ -99,13 +110,13 @@ Approved palette roles. `src/styles/global.css` owns the exact production values
 
 - Surface hierarchy: canvas → card (`--shadow-border` + `0 10px 30px` warm ambient) → feature card (`--shadow-border` + `0 18px 50px` warm ambient). Dark bands use no shadow of their own; their contrast is the elevation.
 - The card edge is a shadow ring, not a border: `--shadow-border` is a 1px `rgba(0,0,0,.06)` ring plus a close lift, and both card tokens open with it. The ring is transparent, so one rule holds its weight on the cream canvas and disappears behind a cream card inset in a dark band, where the card's own contrast is already the edge. The 1.5px `#F0DEC8` border it replaced could not do both: on the about-page band it drew a cream line on a cream card and separated nothing (user-reported, 2026-08-21). Cards, panels, product rows, and the order summary all carry the ring. Dividers stay borders - dashed receipt rules, the catalogue-data rules, the contact rule, the footer rule - and so does the ghost button, whose border is the only thing marking it as a control.
-- Overlays and stacking: none. No modals, dropdowns, or sticky layers; the header scrolls with the page.
+- Overlays and stacking: no modals, dropdowns, or sticky layers; the header scrolls with the page. Two decorative exceptions on the home page, both `aria-hidden` and pointer-transparent: the motif underlay (a `z-index: -1` layer between the page background and the content - which is why `body` carries no background of its own; `html` paints the canvas) and the typing-dots overlay inside the chat surfaces (see Landing motion).
 - Expressive depth: primary button glow `0 6px 18px rgba(214,85,43,.28)`; the timeline band carries one soft radial warm glow (top-right, `rgba(231,111,60,.35)` fading to transparent). No other glows, blurs, or glass effects.
 
 ## Shapes
 
 - Radius and geometry: pill (999px) for buttons, chips, badges, eyebrow tags, URL pill; 20–28px for cards and panels (conversation widget 28px outer); 44px for the two inset bands; 12–16px for inner rows (product rows, code blocks, chrome bar); chat bubbles 16–20px with a 4–6px "tail" corner pointing at the speaker. Nothing square.
-- Icons: no icon library. `✦` in a terracotta circle is the agent avatar; traffic-light dots and connector rules are CSS. The only line icons are the three hero flow-card marks - product grid, robot face, and shopper - drawn on one 24x24 canvas at one stroke weight so the trio reads as a set. Decorative glyphs, thumbnails, and flow icons are `aria-hidden`; the card label beside each one carries the meaning.
+- Icons: no icon library. `✦` in a terracotta circle is the agent avatar; traffic-light dots and connector rules are CSS. The line-icon set is drawn on one 24x24 canvas at one 1.7 stroke weight so it reads as a single hand: the three hero flow-card marks (product grid, robot face, shopper) and the five decorative shopping motifs (price tag, shopping bag, coat hanger, parcel, receipt) used only by the home page's margin-motif layer. Decorative glyphs, thumbnails, and flow icons are `aria-hidden`; where a glyph carries meaning, the adjacent label does the naming.
 - Imagery: no photography. All page visuals are typographic/CSS/SVG compositions (flow cards, conversation, dress thumbnails, receipt-style order summary). Anything that stands in for a product photo carries the image edge: a 1px `rgba(0,0,0,.1)` outline at `outline-offset: -1px`, so it is inset and stays out of the layout box. Pure black, never a warm neutral, which would pick up the tile tint and read as dirt on the edge. Browser identity assets in `public/` use the Warm Sunrise palette and keep the outer corners transparent.
 
 ## Components
@@ -118,7 +129,7 @@ Approved palette roles. `src/styles/global.css` owns the exact production values
 - Names and announcements: accessible names match visible labels; external links (sources, demo.shoppa.au) carry normal link semantics with the `↗` glyph `aria-hidden`. No live regions until the contact form phase.
 - Motion: 200–300ms ease-out transitions for hover lift (−1 to −2px translate) and colour. Every hover that changes colour names its own duration - header links, footer links - and the skip link transitions its `transform`, so no interactive state snaps. Transitions name their exact properties; `transition: all` is never used.
 - Press: filled and pill controls scale to `0.96` on `:active` (`.button`, `.demo-link`), through the standalone `scale` property so the press composes with the hover lift rather than overwriting its `transform`. `transition: transform` does not cover `scale`, so the shorthand lists it separately. The contact-page `.email-link` is deliberately excluded: it is display-size text, not a filled control, and scaling a 34px line reads as a jump.
-- Hero enter: one CSS-only staggered sequence covering both halves of the hero. The copy fades up at 0/80/160/240ms, then the flow stack draws itself top to bottom at 300/360/420/480/540ms, so the visual arrives as the chain its cards spell out. Each step combines `opacity` and an 18px `translateY` over 400ms, and fills `backwards` only. No enter animation may animate `filter` or fill `forwards`/`both`: an animated 4px `blur` held by `fill-mode: both` stranded the first hero flow card permanently blurred on iOS Safari (user-reported, 2026-08-21), because the forwards fill keeps the element composited with the animation's filter owned by the compositor and a final commit dropped under scroll load is never repainted. Keyframes are correct here because it runs once; interactive states use transitions, which stay interruptible. Optional scroll-triggered reveals via a small IntersectionObserver script remain approved and unimplemented.
+- Hero enter: one CSS-only staggered sequence covering both halves of the hero. The copy fades up at 0/80/160/240ms, then the flow stack draws itself top to bottom at 300/360/420/480/540ms, so the visual arrives as the chain its cards spell out. Each step combines `opacity` and an 18px `translateY` over 400ms, and fills `backwards` only. No enter animation may animate `filter` or fill `forwards`/`both`: an animated 4px `blur` held by `fill-mode: both` stranded the first hero flow card permanently blurred on iOS Safari (user-reported, 2026-08-21), because the forwards fill keeps the element composited with the animation's filter owned by the compositor and a final commit dropped under scroll load is never repainted. Keyframes are correct here because it runs once; interactive states use transitions, which stay interruptible. Scroll-triggered reveals are implemented as part of Landing motion (see Components); they use transitions plus one-shot classes, never fill modes.
 - Project rule (from `AGENTS.md` lineage): never gate any animation behind `prefers-reduced-motion` or equivalent conditionals.
 
 ### Actions and buttons
@@ -131,7 +142,7 @@ Current scope: none rendered. The contact page publishes a `mailto:` email block
 
 ### Navigation and search
 
-Header links: Figtree 600, 15px, ink, hover accent; current page marked by a terracotta dot, not colour alone. Footer columns use lowercase link labels matching the nav voice (the agent, why now, the catalogue, proof / our process, about us, contact us). No search.
+Header wordmark: the `shoppa.` lockup, left, linking `/` (see Brand wordmark). Header links: Figtree 600, 15px, ink, hover accent; current page marked by a terracotta dot, not colour alone. Footer columns use lowercase link labels matching the nav voice (the agent, why now, the catalogue, proof / our process, about us, contact us). No search.
 
 ### Cards, badges, and statuses
 
@@ -152,6 +163,15 @@ Header links: Figtree 600, 15px, ink, hover accent; current page marked by a ter
 - Snippet cloud (CTA band): translucent Courier Prime pills scattered behind the closing action, two of them tilted 5-6deg. Courier Prime reserves 0.78em of ascent against 0.35em of descent, so a symmetrically padded pill centres the font's metrics box and leaves the ink about 2px above the middle (user-reported, 2026-08-20). The pills run at line-height 1 and carry 3px more padding above than below, which puts the ascender-to-baseline band on the pill's centre. Any future pill of centred monospace type needs the same correction; Figtree pills do not.
 - Status badges always combine fill + words (see Colors).
 
+### Landing motion (home page only)
+
+The "Live Sale" direction, approved 2026-08-22 after five prototype rounds: the product demo sells itself. One deferred module (`src/components/LandingEffects.astro`) owns all of it; `src/styles/global.css` owns the exact values. Three systems:
+
+- Chat replay: the hero mini-chat replays on load (starting at 600ms, timed to its flow card's enter) and the conversation panel replays once when it scrolls into view. Messages hide with opacity plus a 10px lift only, so every message keeps its layout space and nothing on the page moves while the sale plays - the in-flow typing indicator that resized the chat and recentred the hero every agent turn must never return (user-reported, 2026-08-22). The typing dots are an `aria-hidden` absolute overlay positioned on the upcoming bubble's reserved spot via bounding-rect difference, never `offsetLeft`/`offsetTop`: the hidden message carries a transform, which makes it the `offsetParent` of its own bubble and strands the dots at the top of the chat. The paid badge stamps on (scale 1.7 → 1 with a -7° settle, backwards fill only).
+- Scroll reveals: one-shot staggered fade-and-rise (26px, 90ms steps capped at 5) on section blocks, via IntersectionObserver plus transitions - interruptible, no fill modes, no filter, and a block already inside the viewport is never hidden.
+- Margin motifs: twelve of the five shopping glyphs on two rails in the side whitespace, hugging the container edges and alternating down the page - decoration in the spare margin, never behind the content column. Field centred and capped at 1560px so the motifs come in toward the content on wide screens; colour `--colour-border-strong` at 0.55 opacity; deterministic placement (no randomness, every load identical); gentle 9s swing and per-motif scroll parallax. The layer only exists at viewports ≥ 1360px, where a real side band (~110px+) is available - below that it is skipped at mount and hidden by media query, because without spare whitespace the motifs sit behind text and read as noise (user decision, 2026-08-22).
+- Test invariant: every finite animation is awaited by the browser suite before colour reads; infinite loops (typing-dots bounce, motif swing) are allowed only inside `aria-hidden` decoration, which the contrast checker already exempts.
+
 ### Tables and dense data
 
 Only the order summary: a definition-style list with dashed row dividers and a bold total row. Left-align labels, right-align amounts, minimum 14px gap between them (prototype defect fixed by decision 2026-08-18). No tables elsewhere.
@@ -167,6 +187,7 @@ The 404 page is the only error surface: display numeral, heading, one-line body,
 ## Do's and Don'ts
 
 - Do render the hero highlight as a background gradient on the `actually yours` span, sized `100% 1.06em` at background position `0 0.15em` with `box-decoration-break: clone` and zero vertical padding, with hero line-height 1.06. The band must cover the whole glyph height of its own line (ascenders 0.72em above the baseline, descenders 0.19em below) and still clear the descenders on the line above: the prototype's full-height padded highlight collided with the line above (user-reported overlap, 2026-08-18) and a 72%-height band left the ascenders of `actually yours` uncovered (user-reported gap, 2026-08-19). Neither must be reproduced.
+- Do render the brand lockup as lowercase `shoppa.` with a terracotta `aria-hidden` stop.
 - Do pair every status with words; never colour alone.
 - Do keep every capability claim traceable to `/Users/sacino/shoppa/AGENTS.md` / the approved copy contract before publishing it.
 - Do keep small text on dark bands at the single 0.82 alpha, and only where the background sits at L ≤ 0.31. Keep filled primary buttons on `#B8441F`.
@@ -175,6 +196,7 @@ The 404 page is the only error surface: display numeral, heading, one-line body,
 - Do keep a `dd` flush with the `dt` above it. The user agent indents every `dd` by 40px, and the global reset zeroed only its top margin, so the proof band details sat 40px right of their labels (user-reported, 2026-08-20). `global.css` now resets `margin-inline-start` on `dd` once; a definition list sets its own inline start on top of that.
 - Do let a card that is shorter than its neighbours stay short. Where a stretched card would end in empty space, either bottom-anchor its last row (source links) or stop the stretch (`align-items: start` on the contact grid).
 - Don't add dark sections, glass effects, purple gradients, photography, icon libraries, or a second accent hue. Hand-built inline SVG marks are allowed and must join the existing set: one canvas size, one stroke weight, `aria-hidden`, meaning carried by adjacent text.
+- Don't title-case the `shoppa.` wordmark, omit its terracotta stop, or recolour the stop to ink.
 - Don't gate any animation behind `prefers-reduced-motion` or similar conditionals.
 - Don't introduce horizontal scrolling anywhere except code blocks.
 - Don't use `#9A7B5F` for normal-size text on canvas.
@@ -183,7 +205,7 @@ The 404 page is the only error surface: display numeral, heading, one-line body,
 
 - The site is a one-scroll persuasion flow (home) plus three supporting routes (`/about/`, `/process/`, `/contact/`) and utility routes (`/thank-you/`, 404). Section order on home is fixed: hero → the agent → the catalogue → agentic timeline → why now → testimonial → CTA band.
 - Copy is a fixed contract, not a styling variable: wording was ported from the embeddings site and adapted to Shoppa product positioning by explicit user decisions (2026-08-18). The full approved wording lives in the implementation plan (`documents/todo/` of this repository). Do not invent, extend, or "improve" user-facing copy to fit a layout; remove the slot instead.
-- Terminology: "your agent" (the retailer's), "the catalogue"/"your feed", "two-line embed", "agentic shopping". Nav and eyebrow labels are lowercase (the agent, the catalogue, proof, our process, about us, contact us); headings are sentence case. British English, `’` apostrophes.
+- Terminology: "your agent" (the retailer’s), "the catalogue"/"your feed", "two-line embed", "agentic shopping". Nav and eyebrow labels are lowercase (the agent, the catalogue, proof, our process, about us, contact us); headings are sentence case except the brand wordmark, which is always lowercase `shoppa.`. British English, `’` apostrophes.
 - Never disclose internals in copy: the unauthenticated API, mock mode, MVP staging, repository structure, or Convex.
 - The conversation script (spring-wedding dress → checkout → order #8412) is verbatim from the approved contract and mirrors the real Harlow demo; do not alter its wording, prices, or order number.
 
@@ -192,6 +214,7 @@ The 404 page is the only error surface: display numeral, heading, one-line body,
 - Approved exceptions: the production implementation uses the approved contrast refinements: button fill `#B8441F`, one 0.82 alpha for small text on the espresso bands, the deepened proof panel, and the non-overlapping hero-highlight construction.
 - Known implementation drift: none.
 - Card borders were replaced by the `--shadow-border` ring on 2026-08-21, and the hero enter sequence was extended over the flow stack on the same date. Both are recorded above as design rules, not drift.
+- The "Live Sale" landing motion (chat replay, scroll reveals, margin motifs) was approved on 2026-08-22 through a five-variant prototype session and is recorded under Landing motion. It introduced the home page's single deferred script and the transparent `body` background; both are design rules, not drift.
 - Placeholder content: the testimonial quote is user-approved marketing placeholder attributed to an anonymous role, awaiting a real customer quote.
 
 ## Design Verification
@@ -204,5 +227,6 @@ Current proof: the production site was built and screenshot-reviewed on 2026-08-
 | 390×844 mobile | Same routes with stacked grids, collapsed header, and inset bands | Passed full-page visual review; single-column reflow and no horizontal overflow |
 | Contrast and keyboard pass | Approved colour pairs and representative links | Passed automated contrast targets and visible-focus checks |
 | Interface-detail pass, 2026-08-21 | `/`, `/about/`, `/process/`, `/contact/` at 1440×900 and 390×844 | Measured: hero mini-chat avatar 22×22 at 10px against the conversation's 30×30; every tracked-out label centres within 0.01px, including the wrapping feed-fields label; `.button` presses to `scale(0.96)` and releases; no horizontal overflow on any route. Reviewed: the shadow ring reads on the cream canvas and leaves no drawn edge behind the cards on the about-page band; the demo pill's `↗` sits on the label's optical centre |
+| Landing-motion pass, 2026-08-22 | `/` at 1440×900, 1720×900, and 390×844 | Measured: the headline and document height hold one value (254px / 6526px) through the whole hero replay; typing dots land on the upcoming bubble's exact x and settled y in both chat surfaces; 12 motifs at 1440 and 1720 with no glyph ink inside the content column (one 2px rotated-corner bounding-box graze at 1440) and motifs inset 106px from the edge at 1720; 0 motifs and no overflow at 390; replay completes with every message shown and both paid badges stamped; no console errors. Evidence in `documents/verification/screenshots/landing-effects-*.png` |
 
 For future UI changes, repeat the full route and viewport pass, then run the default completion gate in `AGENTS.md`. Keep detailed server, browser, and evidence procedures in `documents/AGENTS/testing.md`.

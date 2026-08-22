@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // Boots `pnpm dev` with the Node inspector attached, then opens Chrome
+      // on the printed local URL. Breakpoints work in Astro frontmatter,
+      // config, and client-side scripts.
+      "name": "Debug Shoppa",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"],
+      "serverReadyAction": {
+        "pattern": "Local\\s+https?://\\S+:([0-9]+)",
+        "uriFormat": "http://localhost:%s",
+        "action": "debugWithChrome",
+        "webRoot": "${workspaceFolder}/src"
+      }
+    }
+  ]
+}

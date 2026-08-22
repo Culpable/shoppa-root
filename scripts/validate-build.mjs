@@ -37,7 +37,15 @@ assert.throws(() => resolveCanonicalURL({ canonicalPath: 'http://localhost:4321/
 assert.throws(() => resolveCanonicalURL({ canonicalPath: '/contact/?preview=true', currentPath: '/contact/', siteURL: productionSite }), /query string or fragment/);
 
 const identityFiles = ['favicon.ico', 'icon.svg', 'apple-icon.png'];
-const requiredFiles = ['index.html', 'about/index.html', 'process/index.html', 'contact/index.html', 'thank-you/index.html', '404.html', 'CNAME', 'robots.txt', 'llms.txt', 'sitemap.xml', ...identityFiles];
+const socialImageFiles = [
+  'images/shoppa-ai-shopping-agent-og.png',
+  'images/shoppa-brand-first-poster-og.png',
+  'images/shoppa-catalogue-to-checkout-og.png',
+  'images/shoppa-keep-the-relationship-og.png',
+  'images/shoppa-one-conversation-end-to-end-og.png',
+  'images/shoppa-two-lines-to-live-og.png',
+];
+const requiredFiles = ['index.html', 'about/index.html', 'process/index.html', 'contact/index.html', 'thank-you/index.html', '404.html', 'CNAME', 'robots.txt', 'llms.txt', 'sitemap.xml', ...identityFiles, ...socialImageFiles];
 for (const file of requiredFiles) await stat(resolve(dist, file));
 const sitemapFiles = (await readdir(dist, { recursive: true })).filter((file) => file.endsWith('.xml') && file.includes('sitemap')).sort();
 assert.deepEqual(sitemapFiles, ['sitemap.xml']);
@@ -57,7 +65,7 @@ assert.throws(() => createSitemapPlan({ siteRoot: `https://shoppa.au/${'x'.repea
 if ((await read('CNAME')).trim() !== 'shoppa.au') throw new Error('dist/CNAME must contain exactly shoppa.au.');
 
 const htmlRoutes = [
-  { file: 'index.html', title: 'Shoppa: The AI Shopping Agent Australian Retailers Own', canonical: 'https://shoppa.au/', indexable: true },
+  { file: 'index.html', title: 'Shoppa: The AI Shopping Agent Australian Retailers Own', canonical: 'https://shoppa.au/', indexable: true, socialImage: 'https://shoppa.au/images/shoppa-ai-shopping-agent-og.png' },
   { file: 'about/index.html', title: 'About Us / Shoppa', canonical: 'https://shoppa.au/about/', indexable: true },
   { file: 'process/index.html', title: 'From Catalogue to Live Agent / Shoppa', canonical: 'https://shoppa.au/process/', indexable: true },
   { file: 'contact/index.html', title: 'Contact Us / Shoppa', canonical: 'https://shoppa.au/contact/', indexable: true },
@@ -89,6 +97,7 @@ for (const route of htmlRoutes) {
   const openGraphTitle = readSingleMetadataValue(page, /<meta property="og:title" content="([^"]+)">/g, 'Open Graph title', route.file);
   const openGraphDescription = readSingleMetadataValue(page, /<meta property="og:description" content="([^"]+)">/g, 'Open Graph description', route.file);
   const openGraphUrl = readSingleMetadataValue(page, /<meta property="og:url" content="([^"]+)">/g, 'Open Graph URL', route.file);
+  const twitterCard = readSingleMetadataValue(page, /<meta name="twitter:card" content="([^"]+)">/g, 'Twitter card', route.file);
   const twitterTitle = readSingleMetadataValue(page, /<meta name="twitter:title" content="([^"]+)">/g, 'Twitter title', route.file);
   const twitterDescription = readSingleMetadataValue(page, /<meta name="twitter:description" content="([^"]+)">/g, 'Twitter description', route.file);
 
@@ -99,6 +108,21 @@ for (const route of htmlRoutes) {
   assert.equal(openGraphDescription, description, `${route.file} must reuse its description for Open Graph.`);
   assert.equal(twitterDescription, description, `${route.file} must reuse its description for Twitter.`);
   assert.equal(openGraphUrl, canonical, `${route.file} must reuse its canonical URL for Open Graph.`);
+
+  const openGraphImages = [...page.matchAll(/<meta property="og:image" content="([^"]+)">/g)].map((match) => match[1]);
+  const twitterImages = [...page.matchAll(/<meta name="twitter:image" content="([^"]+)">/g)].map((match) => match[1]);
+  if (route.socialImage) {
+    assert.deepEqual(openGraphImages, [route.socialImage], `${route.file} has an unexpected Open Graph image.`);
+    assert.deepEqual(twitterImages, [route.socialImage], `${route.file} has an unexpected Twitter image.`);
+    assert.equal(twitterCard, 'summary_large_image', `${route.file} must use the large-image Twitter card.`);
+    assert.match(page, /<meta property="og:image:width" content="1200">/);
+    assert.match(page, /<meta property="og:image:height" content="630">/);
+    assert.match(page, /<meta property="og:image:type" content="image\/png">/);
+  } else {
+    assert.deepEqual(openGraphImages, [], `${route.file} must not emit an Open Graph image.`);
+    assert.deepEqual(twitterImages, [], `${route.file} must not emit a Twitter image.`);
+    assert.equal(twitterCard, 'summary', `${route.file} must use the summary Twitter card.`);
+  }
 
   const robotsValues = [...page.matchAll(/<meta name="robots" content="([^"]+)">/g)].map((match) => match[1]);
   assert.deepEqual(robotsValues, route.indexable ? [] : ['noindex'], `${route.file} has an unexpected robots policy.`);
@@ -129,6 +153,11 @@ if (!llms.startsWith('# Shoppa\n\n> ') || !llms.includes('## Primary')) throw ne
 for (const file of identityFiles) {
   const [source, built] = await Promise.all([readFile(resolve(root, 'public', file)), readBuffer(file)]);
   if (!source.equals(built)) throw new Error(`Built identity asset differs from public/${file}.`);
+}
+
+for (const file of socialImageFiles) {
+  const [source, built] = await Promise.all([readFile(resolve(root, 'public', file)), readBuffer(file)]);
+  if (!source.equals(built)) throw new Error(`Built social image differs from public/${file}.`);
 }
 
 const favicon = await readBuffer('favicon.ico');

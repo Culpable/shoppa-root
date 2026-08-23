@@ -80,11 +80,31 @@
     });
   };
 
-  /* Hero mini-chat: replays on load, timed to begin as its flow card lands
-     (the hero enter finishes drawing the stack at ~940ms). */
+  /* Hide the messages the moment the script runs, then hold the replay until
+     the chat itself reaches the viewport, so it always plays under the
+     reader's eye. Both chats use this: a load-timed replay only looks like the
+     page introducing itself while the chat is already on screen, which the
+     hero mini-chat is on desktop but not on a phone. The single-column mobile
+     hero stacks the copy above the flow cards and pushes the mini-chat below
+     the fold (user-reported, 2026-08-23), where a load-timed replay spent its
+     typing beats and bubbles on an empty viewport and left a finished chat for
+     whoever scrolled down. Where the chat is on screen at load the observer
+     fires on the first frame, so the desktop lead-in is unchanged. */
+  const playWhenVisible = (items: Element[], opts: ReplayOptions): void => {
+    items.forEach((item) => item.classList.add('replay-hidden'));
+    const replayObserver = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      replayObserver.disconnect();
+      playChat(items, opts);
+    }, { threshold: 0.22 });
+    replayObserver.observe(opts.container);
+  };
+
+  /* Hero mini-chat: the lead-in is timed to begin as its flow card lands (the
+     hero enter finishes drawing the stack at ~940ms). */
   const miniChat = document.querySelector('.mini-chat');
   if (miniChat) {
-    playChat([...miniChat.children], {
+    playWhenVisible([...miniChat.children], {
       container: miniChat,
       step: 460,
       typeBeat: 640,
@@ -94,24 +114,17 @@
     });
   }
 
-  /* Conversation panel: replays once, when it scrolls into view. */
+  /* Conversation panel: always well below the fold, on every viewport. */
   const conversationList = document.querySelector('.conversation-list');
   if (conversationList) {
-    const items = [...conversationList.children];
-    items.forEach((item) => item.classList.add('replay-hidden'));
-    const replayObserver = new IntersectionObserver((entries) => {
-      if (!entries.some((entry) => entry.isIntersecting)) return;
-      replayObserver.disconnect();
-      playChat(items, {
-        container: conversationList,
-        step: 560,
-        typeBeat: 820,
-        startAt: 260,
-        isAgent: (item) => item.querySelector(':scope > .avatar') !== null,
-        bubbleFor: (item) => item.querySelector('.bubble-agent'),
-      });
-    }, { threshold: 0.22 });
-    replayObserver.observe(conversationList);
+    playWhenVisible([...conversationList.children], {
+      container: conversationList,
+      step: 560,
+      typeBeat: 820,
+      startAt: 260,
+      isAgent: (item) => item.querySelector(':scope > .avatar') !== null,
+      bubbleFor: (item) => item.querySelector('.bubble-agent'),
+    });
   }
 
   /* ---- one-shot scroll reveals ----------------------------------------- */

@@ -351,3 +351,28 @@ test('no page animation can strand an element in its start frame', async ({ page
     expect(['none', 'matrix(1, 0, 0, 1, 0, 0)']).toContain(element.transform);
   }
 });
+
+// On desktop the hero mini-chat sits beside the copy, on screen from the first
+// frame, so a replay timed off load reads as the page introducing itself. The
+// single-column mobile hero drops that same card below the fold (user-reported,
+// 2026-08-23): the replay ran out its typing beats and bubbles against an empty
+// viewport, and every reader who scrolled down met a chat that had already
+// finished. The replay must therefore wait for the chat itself, not for load.
+test('the hero mini-chat waits until it is on screen before it replays', async ({ page }) => {
+  // Pin the phone viewport: the bug only exists where the hero stacks.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/', { waitUntil: 'networkidle' });
+
+  const shownCount = () => page.evaluate(() => [...document.querySelector('.mini-chat')!.children]
+    .filter((item) => item.classList.contains('replay-shown')).length);
+
+  expect(await page.evaluate(() => document.querySelector('.mini-chat')!.getBoundingClientRect().top >= innerHeight),
+    'the mobile hero no longer pushes the mini-chat below the fold').toBe(true);
+
+  // Longer than the whole replay: 600ms lead-in, five steps, two typing beats.
+  await page.waitForTimeout(4000);
+  expect(await shownCount(), 'the replay played itself out while the chat was off screen').toBe(0);
+
+  await page.locator('.mini-chat').scrollIntoViewIfNeeded();
+  await expect.poll(shownCount, { timeout: 8000 }).toBe(await page.evaluate(() => document.querySelector('.mini-chat')!.children.length));
+});

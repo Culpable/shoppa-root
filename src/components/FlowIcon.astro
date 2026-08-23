@@ -32,13 +32,16 @@ const { variant } = Astro.props;
     )}
     {variant === 'agent' && (
       <>
-        {/* Robot face: antenna, rounded head, two eyes, and a mouth line. */}
-        <path d="M12 5.9V3.6" />
-        <circle cx="12" cy="2.5" r="1.2" fill="currentColor" stroke="none" />
-        <rect x="3.9" y="5.9" width="16.2" height="13.4" rx="4.2" />
-        <circle cx="9.1" cy="11.7" r="1.15" fill="currentColor" stroke="none" />
-        <circle cx="14.9" cy="11.7" r="1.15" fill="currentColor" stroke="none" />
-        <path d="M9.7 15.6h4.6" />
+        {/* Robot face: antenna, rounded head, two eyes, and a mouth line.
+            The antenna adds ink above the head, so the whole glyph sits 1.2
+            units lower than the canvas midline to keep the ink span (antenna
+            tip to chin, strokes included) centred at y=12 like its siblings. */}
+        <path d="M12 7.1V4.8" />
+        <circle cx="12" cy="3.7" r="1.2" fill="currentColor" stroke="none" />
+        <rect x="3.9" y="7.1" width="16.2" height="13.4" rx="4.2" />
+        <circle cx="9.1" cy="12.9" r="1.15" fill="currentColor" stroke="none" />
+        <circle cx="14.9" cy="12.9" r="1.15" fill="currentColor" stroke="none" />
+        <path d="M9.7 16.8h4.6" />
       </>
     )}
     {variant === 'customer' && (

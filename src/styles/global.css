@@ -322,7 +322,7 @@ ul, ol { padding: 0; }
 .bubble { width: fit-content; max-width: 88%; margin: 0; padding: 9px 12px; border-radius: 15px; line-height: 1.45; }
 .bubble-customer { justify-self: end; color: white; background: var(--colour-ink); border-bottom-right-radius: 5px; }
 .bubble-agent { background: var(--colour-surface-sunken); border-bottom-left-radius: 5px; }
-/* Hero mini-chat agent replies carry the same ✦ avatar as the full
+/* Hero mini-chat agent replies carry the same spark avatar as the full
    conversation, bottom-aligned so the two chats share one speaker idiom. */
 .mini-agent-row { display: flex; align-items: flex-end; gap: 7px; }
 .mini-chat .paid-badge { justify-self: center; }
@@ -330,7 +330,8 @@ ul, ol { padding: 0; }
    order and the hero avatar rendered at the conversation's 30px. The compound
    selector keeps the small size beside its hero neighbours instead of moving the
    rule below .avatar. */
-.avatar.avatar-small { width: 22px; height: 22px; font-size: 10px; }
+.avatar.avatar-small { width: 22px; height: 22px; }
+.avatar.avatar-small svg { width: 9px; height: 9px; }
 .product-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 9px; align-items: center; padding: 10px 12px; border-radius: 13px; background: var(--colour-surface); box-shadow: var(--shadow-border); font-size: 13px; }
 /* Illustrated dress thumbnail (DressThumbnail.astro). The tinted tile reads as
    a photo backdrop; the two custom properties feed the SVG gradient stops. It
@@ -360,7 +361,10 @@ ul, ol { padding: 0; }
 /* The avatar is pinned to row 1 and bottom-aligned, so it sits at the
    bottom-left corner of the speech bubble like a chat tail rather than level
    with the top of the message. */
-.avatar { grid-column: 1; grid-row: 1; align-self: end; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: white; background: var(--colour-accent); font-size: 13px; }
+.avatar { grid-column: 1; grid-row: 1; align-self: end; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: white; background: var(--colour-accent); }
+/* The spark is SVG (AgentAvatar.astro), not a font glyph, so its centring
+   never depends on platform fallback-font metrics. */
+.avatar svg { width: 12px; height: 12px; }
 /* display: contents lifts the bubble, product rows, and receipt into the
    message grid as their own rows, which is what lets the avatar align to the
    first bubble instead of the full stack. */

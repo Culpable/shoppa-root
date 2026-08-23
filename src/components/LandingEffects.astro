@@ -27,8 +27,11 @@
   /* Position the dots via rect difference, never offsetLeft/Top: the hidden
      message carries a transform, which silently makes it the offsetParent
      of its bubble and would strand the dots at the top of the chat. The
-     10px subtraction cancels the hidden state's translateY so the dots sit
-     exactly where the bubble lands. */
+     10px subtraction cancels the hidden state's translateY. The pill is
+     shorter than the bubble it stands in for, so it anchors to the bubble's
+     settled BOTTOM edge (translateY(-100%) lifts it by its own height):
+     its tail then sits exactly where the landed bubble's tail and the
+     bottom-aligned avatar end up, instead of floating high on the top edge. */
   const makeTypingDots = (anchor: Element, container: Element): HTMLElement => {
     const dots = document.createElement('li');
     dots.className = 'typing-dots';
@@ -37,7 +40,8 @@
     const anchorRect = anchor.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
     dots.style.left = `${Math.round(anchorRect.left - containerRect.left)}px`;
-    dots.style.top = `${Math.round(anchorRect.top - containerRect.top - 10)}px`;
+    dots.style.top = `${Math.round(anchorRect.bottom - containerRect.top - 10)}px`;
+    dots.style.transform = 'translateY(-100%)';
     return dots;
   };
 

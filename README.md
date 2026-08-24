@@ -23,7 +23,9 @@ The workflow in `.github/workflows/deploy.yml` builds the static export and publ
 
 ## Status
 
-The Astro landing site is implemented as a fully static export. It includes the home, about, process, contact, thank-you, and 404 pages, plus sitemap, robots, and LLM discovery files.
+The Astro landing site is implemented as a fully static export. It includes the home, about, process, contact, privacy, thank-you, and 404 pages, plus sitemap, robots, LLM discovery, Markdown sibling routes, HTML alternate links, and homepage JSON-LD identity data.
+
+GitHub Pages cannot vary a canonical URL by the request `Accept` header. Agents can use the explicit Markdown URLs advertised by each HTML page and `llms.txt`; full same-URL Markdown negotiation would require an authorised request-time edge in front of GitHub Pages.
 
 ## Local development
 

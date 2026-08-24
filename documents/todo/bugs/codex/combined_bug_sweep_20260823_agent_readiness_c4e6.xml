@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bug_1>
+<summary>
+<title>[404 Testing] Resolved: missing paths now return the built recovery document</title>
+<one_line_description>The audit found that local tests split the 404 status and Shoppa recovery body across two responses; the corrected server and test now prove both requirements on one missing-path response.</one_line_description>
+</summary>
+
+<file_locations>
+- /Users/sacino/shoppa-root/scripts/serve-build.mjs - static request handler and custom 404 fallback
+- /Users/sacino/shoppa-root/playwright.config.ts - `webServer.command`
+- /Users/sacino/shoppa-root/test/agent-readiness.spec.ts - test: `a missing path returns Shoppa recovery content with HTTP 404`
+</file_locations>
+
+<issue_description>
+<description>The first audit reproduced a verification gap in Python’s unmodified SimpleHTTPRequestHandler. An unknown route returned HTTP 404 with Python’s generic error page, while the test opened /404.html separately with HTTP 200 before checking Shoppa’s recovery links. The implementation now uses scripts/serve-build.mjs, which serves dist/404.html for an unknown route while retaining status 404 and preserves the required Markdown MIME type. The test navigates directly to the unknown route and checks the response status, HTML media type, Shoppa heading, metadata, and recovery links on that one response. A fresh independent pass confirmed that the response body exactly equals dist/404.html, /404.html remains HTTP 200, /index.md remains text/markdown, and the focused desktop and mobile test passes.</description>
+
+<code_example>
+
+```text
+Unknown path
+  -> HTTP 404
+  -> dist/404.html body
+  -> /sitemap.xml and /llms.txt recovery links
+```
+
+</code_example>
+
+<expected_vs_actual>
+| Aspect | Expected | Actual |
+|--------|----------|--------|
+| **Missing-path status** | HTTP 404 | HTTP 404 |
+| **Missing-path body** | Built Shoppa 404 content | Response body exactly matches dist/404.html |
+| **Recovery links** | /sitemap.xml and /llms.txt in the 404 response | Both links are present in the same 404 response |
+| **Test coverage** | One response proves the status and custom body together | Desktop and mobile tests assert the combined response contract |
+</expected_vs_actual>
+</issue_description>
+</bug_1>

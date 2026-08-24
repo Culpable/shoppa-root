@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bug_1>
+<summary>
+<title>[Agent metadata] No defects found</title>
+<one_line_description>The scoped agent-discovery, Markdown sibling, JSON-LD, llms.txt, sitemap, and 404 integrations have no reproducible code defect.</one_line_description>
+</summary>
+
+<file_locations>
+- /Users/sacino/shoppa-root/src/config/site.ts
+- /Users/sacino/shoppa-root/src/lib/metadata.ts
+- /Users/sacino/shoppa-root/src/components/head/PageMetadata.astro
+- /Users/sacino/shoppa-root/src/data/site.ts - exports: `homeStructuredData`, `llmsDocument`
+- /Users/sacino/shoppa-root/src/data/agentContent.ts - export: `agentMarkdownDocuments`
+- /Users/sacino/shoppa-root/src/pages/[...document].md.ts - function: `getStaticPaths`, Lines 13-18
+- /Users/sacino/shoppa-root/src/pages/llms.txt.ts - handler: `GET`, Lines 7-17
+- /Users/sacino/shoppa-root/scripts/validate-build.mjs
+- /Users/sacino/shoppa-root/test/agent-readiness.spec.ts
+</file_locations>
+
+<issue_description>
+<description>The audit found no concrete defect in the requested partition or its immediate integration boundaries. The static build generated seven HTML routes and seven page-specific Markdown siblings. Each HTML document advertised exactly one existing Markdown sibling. The focused browser suite confirmed Markdown responses as text/markdown, homepage JSON-LD identities, precise llms.txt guidance, discovery membership, and the explicit 404 recovery artefact. The documented inability of GitHub Pages to perform same-URL Accept negotiation or emit request-dependent Vary: Accept is a hosting capability limit, not a defect in this static sibling-route implementation.</description>
+
+<code_example>
+
+```text
+No defect code example applies.
+```
+
+</code_example>
+
+<expected_vs_actual>
+| Aspect | Expected | Actual |
+|--------|----------|--------|
+| **Static routes** | Seven HTML routes advertise seven prerendered Markdown siblings | Seven one-to-one HTML-to-Markdown mappings were generated and verified |
+| **Agent identity** | Homepage publishes Organization, WebSite, and SoftwareApplication JSON-LD | One valid JSON-LD graph contains all three linked entities and the available contact and city-level address facts |
+| **Discovery guidance** | llms.txt states specific best-fit use cases and direct Markdown links | The generated document follows the expected heading and link structure and names product discovery, checkout, order support, retailer fit, and direct Markdown URLs |
+| **Hosting boundary** | Static siblings are used without claiming same-URL Accept negotiation | README and source comments state the GitHub Pages limitation and make no unsupported negotiation claim |
+</expected_vs_actual>
+</issue_description>
+</bug_1>

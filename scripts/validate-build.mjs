@@ -45,7 +45,16 @@ const socialImageFiles = [
   'images/shoppa-one-conversation-end-to-end-og.png',
   'images/shoppa-two-lines-to-live-og.png',
 ];
-const requiredFiles = ['index.html', 'about/index.html', 'process/index.html', 'contact/index.html', 'thank-you/index.html', '404.html', 'CNAME', 'robots.txt', 'llms.txt', 'sitemap.xml', ...identityFiles, ...socialImageFiles];
+const markdownFiles = [
+  'index.md',
+  'about/index.md',
+  'process/index.md',
+  'contact/index.md',
+  'privacy/index.md',
+  'thank-you/index.md',
+  '404.md',
+];
+const requiredFiles = ['index.html', 'about/index.html', 'process/index.html', 'contact/index.html', 'privacy/index.html', 'thank-you/index.html', '404.html', 'CNAME', 'robots.txt', 'llms.txt', 'sitemap.xml', ...markdownFiles, ...identityFiles, ...socialImageFiles];
 for (const file of requiredFiles) await stat(resolve(dist, file));
 const sitemapFiles = (await readdir(dist, { recursive: true })).filter((file) => file.endsWith('.xml') && file.includes('sitemap')).sort();
 assert.deepEqual(sitemapFiles, ['sitemap.xml']);
@@ -65,12 +74,13 @@ assert.throws(() => createSitemapPlan({ siteRoot: `https://shoppa.au/${'x'.repea
 if ((await read('CNAME')).trim() !== 'shoppa.au') throw new Error('dist/CNAME must contain exactly shoppa.au.');
 
 const htmlRoutes = [
-  { file: 'index.html', title: 'Shoppa: The AI Shopping Agent Australian Retailers Own', canonical: 'https://shoppa.au/', indexable: true, socialImage: 'https://shoppa.au/images/shoppa-ai-shopping-agent-og.png' },
-  { file: 'about/index.html', title: 'About Us / Shoppa', canonical: 'https://shoppa.au/about/', indexable: true },
-  { file: 'process/index.html', title: 'From Catalogue to Live Agent / Shoppa', canonical: 'https://shoppa.au/process/', indexable: true },
-  { file: 'contact/index.html', title: 'Contact Us / Shoppa', canonical: 'https://shoppa.au/contact/', indexable: true },
-  { file: 'thank-you/index.html', title: 'Thank You / Shoppa', canonical: 'https://shoppa.au/thank-you/', indexable: false },
-  { file: '404.html', title: 'Page Not Found / Shoppa', canonical: 'https://shoppa.au/404.html', indexable: false },
+  { file: 'index.html', title: 'Shoppa: The AI Shopping Agent Australian Retailers Own', canonical: 'https://shoppa.au/', markdown: '/index.md', indexable: true, socialImage: 'https://shoppa.au/images/shoppa-ai-shopping-agent-og.png' },
+  { file: 'about/index.html', title: 'About Us / Shoppa', canonical: 'https://shoppa.au/about/', markdown: '/about/index.md', indexable: true },
+  { file: 'process/index.html', title: 'From Catalogue to Live Agent / Shoppa', canonical: 'https://shoppa.au/process/', markdown: '/process/index.md', indexable: true },
+  { file: 'contact/index.html', title: 'Contact Us / Shoppa', canonical: 'https://shoppa.au/contact/', markdown: '/contact/index.md', indexable: true },
+  { file: 'privacy/index.html', title: 'Privacy / Shoppa', canonical: 'https://shoppa.au/privacy/', markdown: '/privacy/index.md', indexable: true },
+  { file: 'thank-you/index.html', title: 'Thank You / Shoppa', canonical: 'https://shoppa.au/thank-you/', markdown: '/thank-you/index.md', indexable: false },
+  { file: '404.html', title: 'Page Not Found / Shoppa', canonical: 'https://shoppa.au/404.html', markdown: '/404.md', indexable: false },
 ];
 const htmlFiles = htmlRoutes.map(({ file }) => file);
 const html = (await Promise.all(htmlFiles.map(read))).join('\n');
@@ -94,15 +104,20 @@ for (const route of htmlRoutes) {
   const title = readSingleMetadataValue(page, /<title>([^<]+)<\/title>/g, 'title', route.file);
   const description = readSingleMetadataValue(page, /<meta name="description" content="([^"]+)">/g, 'description', route.file);
   const canonical = readSingleMetadataValue(page, /<link rel="canonical" href="([^"]+)">/g, 'canonical', route.file);
+  const markdown = readSingleMetadataValue(page, /<link rel="alternate" type="text\/markdown" href="([^"]+)">/g, 'Markdown alternate', route.file);
   const openGraphTitle = readSingleMetadataValue(page, /<meta property="og:title" content="([^"]+)">/g, 'Open Graph title', route.file);
   const openGraphDescription = readSingleMetadataValue(page, /<meta property="og:description" content="([^"]+)">/g, 'Open Graph description', route.file);
   const openGraphUrl = readSingleMetadataValue(page, /<meta property="og:url" content="([^"]+)">/g, 'Open Graph URL', route.file);
+  const openGraphType = readSingleMetadataValue(page, /<meta property="og:type" content="([^"]+)">/g, 'Open Graph type', route.file);
   const twitterCard = readSingleMetadataValue(page, /<meta name="twitter:card" content="([^"]+)">/g, 'Twitter card', route.file);
   const twitterTitle = readSingleMetadataValue(page, /<meta name="twitter:title" content="([^"]+)">/g, 'Twitter title', route.file);
   const twitterDescription = readSingleMetadataValue(page, /<meta name="twitter:description" content="([^"]+)">/g, 'Twitter description', route.file);
 
   assert.equal(title, route.title, `${route.file} has an unexpected document title.`);
   assert.equal(canonical, route.canonical, `${route.file} has an unexpected canonical URL.`);
+  assert.equal(markdown, route.markdown, `${route.file} has an unexpected Markdown alternate.`);
+  assert.equal(openGraphType, 'website', `${route.file} must identify as an Open Graph website.`);
+  assert.match(page, /<html lang="en-AU">/, `${route.file} must declare the en-AU document language.`);
   assert.equal(openGraphTitle, title, `${route.file} must reuse its document title for Open Graph.`);
   assert.equal(twitterTitle, title, `${route.file} must reuse its document title for Twitter.`);
   assert.equal(openGraphDescription, description, `${route.file} must reuse its description for Open Graph.`);
@@ -136,11 +151,58 @@ for (const route of htmlRoutes) {
 }
 assert.equal(new Set(descriptions).size, descriptions.length, 'Every route requires a unique description.');
 
+for (const file of markdownFiles) {
+  const document = await read(file);
+  assert.match(document, /^#\s+\S/m, `${file} must start with a Markdown H1.`);
+}
+
+const home = await read('index.html');
+const structuredDataDocuments = [...home.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+  .map((match) => JSON.parse(match[1]));
+assert.equal(structuredDataDocuments.length, 1, 'The homepage requires exactly one JSON-LD document.');
+const structuredGraph = structuredDataDocuments[0]['@graph'];
+assert.ok(Array.isArray(structuredGraph), 'Homepage JSON-LD must use an @graph.');
+const organization = structuredGraph.find((entry) => entry['@type'] === 'Organization');
+const website = structuredGraph.find((entry) => entry['@type'] === 'WebSite');
+const software = structuredGraph.find((entry) => entry['@type'] === 'SoftwareApplication');
+assert.deepEqual(
+  { id: organization?.['@id'], name: organization?.name, url: organization?.url, email: organization?.email },
+  { id: 'https://shoppa.au/#organization', name: 'Shoppa', url: 'https://shoppa.au/', email: 'hello@shoppa.au' },
+);
+assert.deepEqual(organization?.contactPoint, {
+  '@type': 'ContactPoint',
+  contactType: 'sales',
+  email: 'hello@shoppa.au',
+  areaServed: 'AU',
+  availableLanguage: 'en-AU',
+});
+assert.deepEqual(organization?.address, [
+  { '@type': 'PostalAddress', addressLocality: 'Perth', addressRegion: 'WA', addressCountry: 'AU' },
+  { '@type': 'PostalAddress', addressLocality: 'Melbourne', addressRegion: 'VIC', addressCountry: 'AU' },
+]);
+assert.deepEqual(
+  { id: website?.['@id'], name: website?.name, url: website?.url },
+  { id: 'https://shoppa.au/#website', name: 'Shoppa', url: 'https://shoppa.au/' },
+);
+assert.deepEqual(
+  { id: software?.['@id'], name: software?.name, url: software?.url, category: software?.applicationCategory, operatingSystem: software?.operatingSystem },
+  { id: 'https://shoppa.au/#software', name: 'Shoppa', url: 'https://shoppa.au/', category: 'BusinessApplication', operatingSystem: 'Web' },
+);
+
+const notFound = await read('404.html');
+for (const href of ['/', '/sitemap.xml', '/llms.txt']) {
+  assert.match(notFound, new RegExp(`href="${href.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`), `404.html must link to ${href}.`);
+}
+const privacy = await read('privacy/index.html');
+assert.match(privacy, /<h1>Privacy at Shoppa<\/h1>/);
+assert.ok((privacy.match(/<h2>/g) ?? []).length >= 6, 'The privacy page requires at least six substantive sections.');
+assert.match(privacy, /mailto:hello@shoppa\.au/);
+
 const sitemap = await read('sitemap.xml');
 if (!sitemap.startsWith('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')) throw new Error('sitemap.xml must be a direct XML URL set.');
 if (sitemap.includes('<sitemapindex') || sitemap.includes('localhost') || sitemap.includes('github.io')) throw new Error('sitemap.xml contains an invalid topology or origin.');
 const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
-const expectedUrls = ['https://shoppa.au/', 'https://shoppa.au/about/', 'https://shoppa.au/contact/', 'https://shoppa.au/process/'];
+const expectedUrls = ['https://shoppa.au/', 'https://shoppa.au/about/', 'https://shoppa.au/contact/', 'https://shoppa.au/privacy/', 'https://shoppa.au/process/'];
 if (JSON.stringify(sitemapUrls.sort()) !== JSON.stringify(expectedUrls.sort())) throw new Error(`Unexpected sitemap membership: ${sitemapUrls.join(', ')}`);
 if (new Set(sitemapUrls).size !== sitemapUrls.length) throw new Error('sitemap.xml contains duplicate URLs.');
 if (Buffer.byteLength(sitemap, 'utf8') > 45 * 1024 * 1024) throw new Error('sitemap.xml exceeds the 45 MiB operational limit.');
@@ -148,7 +210,10 @@ if (Buffer.byteLength(sitemap, 'utf8') > 45 * 1024 * 1024) throw new Error('site
 const robots = await read('robots.txt');
 if (!robots.includes('Allow: /') || !robots.includes('Sitemap: https://shoppa.au/sitemap.xml')) throw new Error('robots.txt has an invalid production policy.');
 const llms = await read('llms.txt');
-if (!llms.startsWith('# Shoppa\n\n> ') || !llms.includes('## Primary')) throw new Error('llms.txt does not follow the required v2 structure.');
+if (!llms.startsWith('# Shoppa\n\n> ') || !llms.includes('## When to use Shoppa') || !llms.includes('## Primary')) throw new Error('llms.txt does not follow the required v2 structure.');
+for (const requiredGuidance of ['Australian retailer', 'product discovery', 'checkout', 'order support', 'https://shoppa.au/privacy/index.md']) {
+  if (!llms.includes(requiredGuidance)) throw new Error(`llms.txt is missing required guidance: ${requiredGuidance}`);
+}
 
 for (const file of identityFiles) {
   const [source, built] = await Promise.all([readFile(resolve(root, 'public', file)), readBuffer(file)]);

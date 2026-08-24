@@ -6,6 +6,7 @@ import FlowIcon from '../components/FlowIcon.astro';
 import LandingEffects from '../components/LandingEffects.astro';
 import PaidOrderBadge from '../components/PaidOrderBadge.astro';
 import SourceLink from '../components/SourceLink.astro';
+import { homeStructuredData } from '../data/site.ts';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import type { PageMetadataInput } from '../lib/metadata.ts';
 
@@ -14,6 +15,8 @@ const metadata = {
   titleMode: 'absolute',
   description:
     'An out-of-the-box AI shopping agent you own. Two lines of code put discovery, checkout, and order support on your own site, answering from your catalogue.',
+  markdownPath: '/index.md',
+  structuredData: homeStructuredData,
   socialImage: {
     src: '/images/shoppa-ai-shopping-agent-og.png',
     alt: 'Shoppa AI shopping agent finding the Sapphire Blue Midi for a customer and confirming a paid order.',

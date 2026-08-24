@@ -2,7 +2,7 @@
 
 ## Test environments and isolation
 
-- Development runs locally with `pnpm dev`. Browser tests serve the built `dist/` directory on `127.0.0.1:4321` through the Playwright-owned server in `playwright.config.ts`.
+- Development runs locally with `pnpm dev`. Browser tests serve the built `dist/` directory through `scripts/serve-build.mjs`; the default is `127.0.0.1:4321`, and `PLAYWRIGHT_PORT` selects an isolated port when 4321 is occupied. The test server maps a missing path to `dist/404.html` with status 404 so one response proves the deployed GitHub Pages contract.
 - The site has no database, authentication, credentials, or production service calls. Do not use production deployment as a test environment.
 
 ## Test selection
@@ -18,7 +18,7 @@
 
 - Default completion gate: `pnpm build && pnpm test`.
 - `pnpm test:agent-a11y` runs the browser suite directly when `dist/` is already current.
-- `pnpm test:build-output` checks required HTML routes, `CNAME`, sitemap, robots, `llms.txt`, and identity files.
+- `pnpm test:build-output` checks required HTML and Markdown routes, `CNAME`, sitemap, robots, `llms.txt`, alternate links, and JSON-LD identity data.
 
 ## Fixtures and identities
 
@@ -39,7 +39,8 @@
 ## Browser verification
 
 - Primary browser tool: Ego Browser for page state, structure, and interaction. Use Playwright for deterministic screenshots or when Ego Browser capture fails without an application error.
-- Routes and states: `/`, `/about/`, `/process/`, `/contact/`, `/thank-you/`, and `/404.html`, all unauthenticated and fully rendered.
+- Routes and states: `/`, `/about/`, `/process/`, `/contact/`, `/privacy/`, `/thank-you/`, and `/404.html`, all unauthenticated and fully rendered. Also verify the matching `.md` routes, `llms.txt`, `sitemap.xml`, and `robots.txt` as raw responses.
+- Trust anchors: `/about/`, `/contact/`, and `/privacy/` must each expose at least 500 characters of substantive rendered `<main>` text.
 - Viewports: 1440×900 desktop and 390×844 mobile for every route. Check the hero at 1440, 960, 640, 390, and 320 pixels after headline or typography changes.
 - Evidence: inspect titles, headings, navigation collapse, keyboard focus, contrast, horizontal overflow, fonts, console errors, external requests, and full-page screenshots. Store implementation evidence in `documents/verification/screenshots/`.
 

@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { AGENT_ACCESSIBILITY_RULES } from './agent-accessibility.rules';
 
-const routes = ['/', '/about/', '/process/', '/contact/', '/thank-you/', '/404.html'];
+const routes = ['/', '/about/', '/process/', '/contact/', '/privacy/', '/thank-you/', '/404.html'];
 
 // The hero and flow-stack reveals fade opacity for up to 940ms after load, so a
 // colour read straight after networkidle samples a half-faded element and

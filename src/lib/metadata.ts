@@ -15,6 +15,8 @@ export interface SocialImageMetadata {
   type?: string;
 }
 
+export type JsonLdDocument = Readonly<Record<string, unknown>>;
+
 export interface PageMetadataInput {
   title: string;
   description: string;
@@ -23,6 +25,8 @@ export interface PageMetadataInput {
   robots?: string;
   contentType?: 'website' | 'article';
   socialImage?: SocialImageMetadata;
+  markdownPath?: string;
+  structuredData?: JsonLdDocument;
 }
 
 export interface ResolvedPageMetadata extends PageMetadataInput {
@@ -114,6 +118,9 @@ export function resolvePageMetadata(
         alt: requireNonEmpty(input.socialImage.alt, 'Social image alternative text'),
       }
     : undefined;
+  const markdownPath = input.markdownPath
+    ? requireNonEmpty(input.markdownPath, 'Markdown alternate path')
+    : undefined;
 
   return {
     ...input,
@@ -123,5 +130,6 @@ export function resolvePageMetadata(
     titleMode,
     contentType: input.contentType ?? 'website',
     socialImage,
+    markdownPath,
   };
 }

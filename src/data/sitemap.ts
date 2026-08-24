@@ -4,6 +4,7 @@ const sitemapEntries = [
   { path: "/" },
   { path: "/about/" },
   { path: "/contact/" },
+  { path: "/privacy/" },
   { path: "/process/" },
 ] satisfies SitemapSourceEntry[];
 

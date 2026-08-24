@@ -1,0 +1,44 @@
+---
+import PageIntro from '../../components/PageIntro.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { PageMetadataInput } from '../../lib/metadata.ts';
+
+const metadata = {
+  title: 'Privacy',
+  description:
+    'How the Shoppa marketing site and direct email enquiries handle personal information.',
+  markdownPath: '/privacy/index.md',
+} satisfies PageMetadataInput;
+---
+
+<BaseLayout metadata={metadata}>
+  <PageIntro eyebrow="privacy" title="Privacy at Shoppa">
+    <p>This notice covers the Shoppa marketing site at shoppa.au and direct business enquiries sent by email.</p>
+  </PageIntro>
+
+  <section class="container">
+    <article class="utility-card">
+      <p><strong>Last updated:</strong> 23 August 2026</p>
+
+      <h2>What this notice covers</h2>
+      <p>shoppa.au is Shoppa’s public marketing site. This notice explains the information handled when you visit this site or email Shoppa. The live demo and other sites linked from Shoppa are outside the scope of this notice.</p>
+
+      <h2>Information handled by this site</h2>
+      <p>This site is static. It has no user accounts, enquiry form, payment form, advertising tracker, or audience-measurement tracker. Shoppa does not intentionally set cookies on this site.</p>
+      <p>GitHub Pages hosts the site. GitHub says it logs visitors’ IP addresses for security, whether or not a visitor signs in. GitHub handles that information under its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy statement</a>.</p>
+
+      <h2>Email enquiries</h2>
+      <p>If you email Shoppa, we receive the email address, contact details, and message that you choose to send. We use that information to answer your enquiry, assess a potential business relationship, maintain business records, meet legal duties, and resolve disputes.</p>
+
+      <h2>Sharing and retention</h2>
+      <p>Shoppa does not sell personal information. Information may be handled by providers that support website hosting, email, security, or professional advice. Shoppa may also disclose information when law requires it.</p>
+      <p>Shoppa keeps enquiry information only for as long as it is reasonably needed for those purposes. Service providers can process information outside Australia under their own terms and safeguards.</p>
+
+      <h2>Your choices and contact</h2>
+      <p>To ask about, correct, or request deletion of personal information you sent to Shoppa, email <a href="mailto:hello@shoppa.au">hello@shoppa.au</a>. Shoppa will respond subject to applicable legal obligations.</p>
+
+      <h2>Changes to this notice</h2>
+      <p>Shoppa may update this notice when the site, service providers, or legal obligations change. The date at the top shows the latest published version.</p>
+    </article>
+  </section>
+</BaseLayout>

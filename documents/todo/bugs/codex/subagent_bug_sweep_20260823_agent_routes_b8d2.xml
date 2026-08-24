@@ -1,0 +1,43 @@
+<bug_1>
+<summary>
+<title>[404 Testing] Missing paths return Python’s generic error page during local verification</title>
+<one_line_description>The Playwright server does not serve the built Shoppa 404 document for an unknown URL, while the test checks the 404 status and custom content in separate responses.</one_line_description>
+</summary>
+
+<file_locations>
+- /Users/sacino/shoppa-root/playwright.config.ts - `webServer.command`, Lines 19-26
+- /Users/sacino/shoppa-root/test/agent-readiness.spec.ts - test: `the static 404 artefact gives agents explicit discovery recovery paths`, Lines 13-30
+</file_locations>
+
+<issue_description>
+<description>The local browser server uses Python’s unmodified `SimpleHTTPRequestHandler`. For `/agent-readiness-missing-page/`, that handler returns HTTP 404 with its own `Error response` HTML and no links to `/sitemap.xml` or `/llms.txt`; it never reads `dist/404.html`. The test still passes because it asserts the status on the missing URL, then opens `/404.html` as a separate HTTP 200 URL before checking the Shoppa content. This does not exercise the required contract that one missing-path response combines a real 404 status with Shoppa’s recovery body, and it leaves that deployed behaviour unverified without a production service. Reproduce after `pnpm build` by starting the configured Python handler and requesting an unknown route: the response title and heading are `Error response`, and neither required recovery link is present. Use a local static handler that maps unknown paths to `dist/404.html` while retaining status 404, then make the test assert the status and recovery links from that same missing-path response.</description>
+
+<code_example>
+
+```ts
+// File: playwright.config.ts, Lines 19-26
+webServer: {
+  command: `python3 -c "import functools,http.server,mimetypes; mimetypes.add_type('text/markdown', '.md'); handler=functools.partial(http.server.SimpleHTTPRequestHandler, directory='dist'); http.server.test(HandlerClass=handler, port=${port}, bind='127.0.0.1')"`,
+}
+
+// File: test/agent-readiness.spec.ts, Lines 13-29
+const missingResponse = await request.get('/agent-readiness-missing-page/');
+expect(missingResponse.status()).toBe(404);
+
+const artefactResponse = await request.get('/404.html');
+expect(artefactResponse.status()).toBe(200);
+// Recovery links are checked on /404.html, not on missingResponse.
+```
+
+</code_example>
+
+<expected_vs_actual>
+| Aspect | Expected | Actual |
+|--------|----------|--------|
+| **Missing-path status** | HTTP 404 | HTTP 404 |
+| **Missing-path body** | Built Shoppa 404 content | Python `SimpleHTTPRequestHandler` generic error document |
+| **Recovery links** | `/sitemap.xml` and `/llms.txt` in the 404 response | Neither link appears in the missing-path response |
+| **Test coverage** | One response proves the status and custom recovery body together | Separate `/agent-readiness-missing-page/` and `/404.html` requests let the test pass without proving the combined contract |
+</expected_vs_actual>
+</issue_description>
+</bug_1>

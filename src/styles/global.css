@@ -306,7 +306,10 @@ ul, ol { padding: 0; }
 .flow-title { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: 700; }
 .flow-title .status { margin-left: auto; }
 .flow-icon { display: grid; flex: none; place-items: center; width: 28px; height: 28px; border-radius: 9px; }
-.flow-icon svg { width: 17px; height: 17px; }
+/* The glyph fills the tile and carries its inset in the viewBox (FlowIcon.astro).
+   A smaller centred svg left a 5.5px pad it could not round evenly, so the mark
+   snapped off-centre; sharing the tile's rect removes that rounding entirely. */
+.flow-icon svg { width: 100%; height: 100%; }
 .flow-icon-catalogue { color: var(--colour-accent-text); background: var(--colour-tint-peach); }
 .flow-icon-agent { color: white; background: var(--colour-accent); }
 .flow-icon-customer { color: var(--colour-ink); background: var(--colour-tint-blush); }
@@ -331,7 +334,6 @@ ul, ol { padding: 0; }
    selector keeps the small size beside its hero neighbours instead of moving the
    rule below .avatar. */
 .avatar.avatar-small { width: 22px; height: 22px; }
-.avatar.avatar-small svg { width: 9px; height: 9px; }
 .product-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 9px; align-items: center; padding: 10px 12px; border-radius: 13px; background: var(--colour-surface); box-shadow: var(--shadow-border); font-size: 13px; }
 /* Illustrated dress thumbnail (DressThumbnail.astro). The tinted tile reads as
    a photo backdrop; the two custom properties feed the SVG gradient stops. It
@@ -363,8 +365,10 @@ ul, ol { padding: 0; }
    with the top of the message. */
 .avatar { grid-column: 1; grid-row: 1; align-self: end; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: white; background: var(--colour-accent); }
 /* The spark is SVG (AgentAvatar.astro), not a font glyph, so its centring
-   never depends on platform fallback-font metrics. */
-.avatar svg { width: 12px; height: 12px; }
+   never depends on platform fallback-font metrics. It fills the circle and
+   carries its inset in the viewBox, so it shares the circle’s own rect and
+   cannot round to a different pixel than the circle at any size or zoom. */
+.avatar svg { width: 100%; height: 100%; }
 /* display: contents lifts the bubble, product rows, and receipt into the
    message grid as their own rows, which is what lets the avatar align to the
    first bubble instead of the full stack. */
@@ -538,6 +542,10 @@ ul, ol { padding: 0; }
 .contact-details a { display: inline-flex; min-height: 44px; align-items: center; color: var(--colour-accent-deep); font-weight: 700; }
 .utility-card { max-width: 720px; margin-top: 44px; padding: clamp(28px, 5vw, 44px); border-radius: var(--radius-panel); background: var(--colour-surface); box-shadow: var(--shadow-feature); }
 .utility-card p { color: var(--colour-ink-secondary); }
+/* Privacy headings need a clear section break without leaving a large hole
+   before the paragraph they introduce. Keep this rhythm local to the utility
+   card so supporting pages retain their established heading spacing. */
+.utility-card > h2 { margin: 30px 0 14px; }
 .not-found { min-height: 58vh; display: grid; align-content: center; justify-items: start; }
 .not-found-number { margin-bottom: 8px; color: var(--colour-accent); font-family: var(--font-display); font-size: clamp(76px, 13vw, 150px); font-weight: 800; line-height: 0.8; }
 

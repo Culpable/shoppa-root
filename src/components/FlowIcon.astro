@@ -9,6 +9,15 @@
 // image request, no client JavaScript. Every glyph is drawn on the same 24x24
 // canvas at the same stroke weight so the trio reads as one set. Colours live
 // in global.css; the paths only use currentColor.
+//
+// The svg fills the whole tile and carries its inset in the viewBox rather than
+// being a smaller centred box. A 17px glyph inside a 28px tile left 5.5px of
+// padding either side, so the glyph could not land on a pixel boundary and the
+// browser snapped it down and right - visible as an off-centre mark (measured
+// and user-reported, 2026-08-23). Padding the viewBox instead makes the glyph
+// share the tile's own rect, so it stays centred at any position or zoom.
+// Geometry: 24 * 28/17 = 39.5294 units wide, inset -7.7647, which reproduces
+// the previous 17px glyph size and 1.2px stroke exactly.
 
 interface Props {
   variant: 'catalogue' | 'agent' | 'customer';
@@ -20,7 +29,7 @@ const { variant } = Astro.props;
 <!-- Decorative: the adjacent card label names the step, so the glyph stays out
      of the accessibility tree. -->
 <span class:list={['flow-icon', `flow-icon-${variant}`]} aria-hidden="true">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <svg viewBox="-7.7647 -7.7647 39.5294 39.5294" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
     {variant === 'catalogue' && (
       <>
         {/* Product grid: four rounded tiles, the shape of a catalogue listing. */}
@@ -33,15 +42,18 @@ const { variant } = Astro.props;
     {variant === 'agent' && (
       <>
         {/* Robot face: antenna, rounded head, two eyes, and a mouth line.
-            The antenna adds ink above the head, so the whole glyph sits 1.2
-            units lower than the canvas midline to keep the ink span (antenna
-            tip to chin, strokes included) centred at y=12 like its siblings. */}
-        <path d="M12 7.1V4.8" />
-        <circle cx="12" cy="3.7" r="1.2" fill="currentColor" stroke="none" />
-        <rect x="3.9" y="7.1" width="16.2" height="13.4" rx="4.2" />
-        <circle cx="9.1" cy="12.9" r="1.15" fill="currentColor" stroke="none" />
-        <circle cx="14.9" cy="12.9" r="1.15" fill="currentColor" stroke="none" />
-        <path d="M9.7 16.8h4.6" />
+            Placed by optical weight, not by its ink box. The head is the mass
+            and the antenna is a thin appendage, so centring the full
+            antenna-to-chin span drops the head visibly below the tile centre
+            (user-reported, 2026-08-23). At this offset the glyph's rendered ink
+            centroid sits on the tile centre and the head box is within 0.25px
+            of it; its siblings need no offset because they carry no appendage. */}
+        <path d="M12 5.65V3.35" />
+        <circle cx="12" cy="2.25" r="1.2" fill="currentColor" stroke="none" />
+        <rect x="3.9" y="5.65" width="16.2" height="13.4" rx="4.2" />
+        <circle cx="9.1" cy="11.45" r="1.15" fill="currentColor" stroke="none" />
+        <circle cx="14.9" cy="11.45" r="1.15" fill="currentColor" stroke="none" />
+        <path d="M9.7 15.35h4.6" />
       </>
     )}
     {variant === 'customer' && (

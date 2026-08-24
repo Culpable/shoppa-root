@@ -164,7 +164,7 @@ export const agentMarkdownDocuments: readonly AgentMarkdownDocument[] = [
       '',
       `- [Shoppa overview](${absoluteURL('/index.md')})`,
       `- [Implementation process](${absoluteURL('/process/index.md')})`,
-      `- [Site map](${absoluteURL('/sitemap.xml')})`,
+      `- [Sitemap](${absoluteURL('/sitemap.xml')})`,
       `- [Agent guide](${absoluteURL('/llms.txt')})`,
     ),
   },

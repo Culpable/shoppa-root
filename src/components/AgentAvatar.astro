@@ -4,11 +4,17 @@
 // pulled it from a platform fallback font whose baseline metrics decided where
 // the spark sat inside the circle - visibly high on some machines. Drawing the
 // mark as inline SVG removes the font dependency: the path ink is exactly
-// symmetric about the 24x24 canvas centre, so grid centring is pixel-true
-// everywhere.
+// symmetric about the artwork centre, so centring is pure geometry.
+//
+// The svg fills the circle and carries its inset in the viewBox rather than
+// being a smaller centred box, because a centred 12px svg inside a 30px circle
+// is positioned and rounded independently of the circle and drifted down and
+// right of it (measured and user-reported, 2026-08-23). Sharing the circle's
+// own rect removes that rounding, and the spark scales with the circle: 40% of
+// the diameter at every size, so both chat surfaces match without a second rule.
 //
 // Hand-built like FlowIcon and DressThumbnail: no icon library, no image
-// request, no client JavaScript. Sizes live in global.css.
+// request, no client JavaScript. Circle sizes live in global.css.
 
 interface Props {
   size?: 'small' | 'default';
@@ -20,8 +26,9 @@ const { size = 'default' } = Astro.props;
 <!-- Decorative speaker cue: the bubble carries the sr-only speaker label, so
      the avatar stays out of the accessibility tree. -->
 <span class:list={['avatar', size === 'small' && 'avatar-small']} aria-hidden="true">
-  <svg viewBox="0 0 24 24" fill="currentColor">
-    {/* Four-point spark with concave sides, mirroring the ✦ it replaces. */}
+  <svg viewBox="-18 -18 60 60" fill="currentColor">
+    {/* Four-point spark with concave sides, mirroring the ✦ it replaces. Every
+        control point is symmetric about x=12 and y=12, the artwork centre. */}
     <path d="M12 2.6C12.9 7.7 14.5 9.9 21.4 12C14.5 14.1 12.9 16.3 12 21.4C11.1 16.3 9.5 14.1 2.6 12C9.5 9.9 11.1 7.7 12 2.6Z" />
   </svg>
 </span>

@@ -21,7 +21,7 @@ for (const route of trustAnchorPages) {
   });
 }
 
-test('a missing path returns Shoppa recovery content with HTTP 404', async ({ page }) => {
+test('a missing path returns Shoppa recovery content with HTTP 404', async ({ page, request }) => {
   const missingResponse = await page.goto('/agent-readiness-missing-page/');
   expect(missingResponse?.status()).toBe(404);
   expect(missingResponse?.headers()['content-type']).toMatch(/^text\/html(?:;.*)?$/i);
@@ -34,6 +34,10 @@ test('a missing path returns Shoppa recovery content with HTTP 404', async ({ pa
     links.map((link) => link.getAttribute('href')),
   );
   expect(recoveryLinks).toEqual(expect.arrayContaining(['/', '/sitemap.xml', '/llms.txt']));
+  await expect(page.locator('main a[href="/sitemap.xml"]')).toHaveText('sitemap');
+
+  const markdown404 = await (await request.get('/404.md')).text();
+  expect(markdown404).toContain('[Sitemap](https://shoppa.au/sitemap.xml)');
 });
 
 test('canonical pages publish explicit Markdown siblings with the correct media type', async ({ request }) => {
@@ -151,6 +155,23 @@ test('a substantive privacy page is public and included in site discovery', asyn
   expect(await page.locator('main h2').count()).toBeGreaterThanOrEqual(4);
   expect((await page.locator('main').innerText()).length).toBeGreaterThan(800);
   await expect(page.locator('main a[href="mailto:hello@shoppa.au"]')).toHaveCount(1);
+
+  const headingSpacing = await page.locator('.utility-card > h2').evaluateAll((headings) =>
+    headings.map((heading) => {
+      const previous = heading.previousElementSibling;
+      const next = heading.nextElementSibling;
+      if (!previous || !next) throw new Error('Privacy headings must sit between content blocks');
+
+      return {
+        above: heading.getBoundingClientRect().top - previous.getBoundingClientRect().bottom,
+        below: next.getBoundingClientRect().top - heading.getBoundingClientRect().bottom,
+      };
+    }),
+  );
+  for (const spacing of headingSpacing) {
+    expect(spacing.above).toBeCloseTo(30, 3);
+    expect(spacing.below).toBeCloseTo(14, 3);
+  }
 
   await page.goto('/');
   await expect(page.locator('footer a[href="/privacy/"]')).toHaveCount(1);

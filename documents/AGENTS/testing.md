@@ -18,7 +18,7 @@
 
 - Default completion gate: `pnpm build && pnpm test`.
 - `pnpm test:agent-a11y` runs the browser suite directly when `dist/` is already current.
-- `pnpm test:build-output` checks required HTML and Markdown routes, `CNAME`, sitemap, robots, `llms.txt`, alternate links, and JSON-LD identity data.
+- `pnpm test:build-output` checks required HTML routes, `CNAME`, sitemap, robots, `llms.txt` canonical HTML destinations, JSON-LD identity data, and that `dist/` contains no page Markdown files or Markdown alternate links.
 
 ## Fixtures and identities
 
@@ -39,7 +39,7 @@
 ## Browser verification
 
 - Primary browser tool: Ego Browser for page state, structure, and interaction. Use Playwright for deterministic screenshots or when Ego Browser capture fails without an application error.
-- Routes and states: `/`, `/about/`, `/process/`, `/contact/`, `/privacy/`, `/thank-you/`, and `/404.html`, all unauthenticated and fully rendered. Also verify the matching `.md` routes, `llms.txt`, `sitemap.xml`, and `robots.txt` as raw responses.
+- Routes and states: `/`, `/about/`, `/process/`, `/contact/`, `/privacy/`, `/thank-you/`, and `/404.html`, all unauthenticated and fully rendered. Also verify `/llms.txt`, `/sitemap.xml`, and `/robots.txt` as raw HTTP 200 responses, and that the former `.md` paths return the Shoppa HTML 404.
 - Trust anchors: `/about/`, `/contact/`, and `/privacy/` must each expose at least 500 characters of substantive rendered `<main>` text.
 - Viewports: 1440×900 desktop and 390×844 mobile for every route. Check the hero at 1440, 960, 640, 390, and 320 pixels after headline or typography changes.
 - Evidence: inspect titles, headings, navigation collapse, keyboard focus, contrast, horizontal overflow, fonts, console errors, external requests, and full-page screenshots. Store implementation evidence in `documents/verification/screenshots/`.

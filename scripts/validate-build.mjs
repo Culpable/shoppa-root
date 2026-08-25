@@ -45,18 +45,12 @@ const socialImageFiles = [
   'images/shoppa-one-conversation-end-to-end-og.png',
   'images/shoppa-two-lines-to-live-og.png',
 ];
-const markdownFiles = [
-  'index.md',
-  'about/index.md',
-  'process/index.md',
-  'contact/index.md',
-  'privacy/index.md',
-  'thank-you/index.md',
-  '404.md',
-];
-const requiredFiles = ['index.html', 'about/index.html', 'process/index.html', 'contact/index.html', 'privacy/index.html', 'thank-you/index.html', '404.html', 'CNAME', 'robots.txt', 'llms.txt', 'sitemap.xml', ...markdownFiles, ...identityFiles, ...socialImageFiles];
+const requiredFiles = ['index.html', 'about/index.html', 'process/index.html', 'contact/index.html', 'privacy/index.html', 'thank-you/index.html', '404.html', 'CNAME', 'robots.txt', 'llms.txt', 'sitemap.xml', ...identityFiles, ...socialImageFiles];
 for (const file of requiredFiles) await stat(resolve(dist, file));
-const sitemapFiles = (await readdir(dist, { recursive: true })).filter((file) => file.endsWith('.xml') && file.includes('sitemap')).sort();
+const distEntries = await readdir(dist, { recursive: true });
+const markdownOutputs = distEntries.filter((file) => file.endsWith('.md'));
+assert.deepEqual(markdownOutputs, [], `dist/ must contain no Markdown files, found: ${markdownOutputs.join(', ')}`);
+const sitemapFiles = distEntries.filter((file) => file.endsWith('.xml') && file.includes('sitemap')).sort();
 assert.deepEqual(sitemapFiles, ['sitemap.xml']);
 
 const directPlan = createSitemapPlan({ siteRoot: 'https://shoppa.au/', entries: [{ path: '/' }, { path: '/about/' }] });
@@ -74,13 +68,13 @@ assert.throws(() => createSitemapPlan({ siteRoot: `https://shoppa.au/${'x'.repea
 if ((await read('CNAME')).trim() !== 'shoppa.au') throw new Error('dist/CNAME must contain exactly shoppa.au.');
 
 const htmlRoutes = [
-  { file: 'index.html', title: 'Shoppa: The AI Shopping Agent Australian Retailers Own', canonical: 'https://shoppa.au/', markdown: '/index.md', indexable: true, socialImage: 'https://shoppa.au/images/shoppa-ai-shopping-agent-og.png' },
-  { file: 'about/index.html', title: 'About Us / Shoppa', canonical: 'https://shoppa.au/about/', markdown: '/about/index.md', indexable: true },
-  { file: 'process/index.html', title: 'From Catalogue to Live Agent / Shoppa', canonical: 'https://shoppa.au/process/', markdown: '/process/index.md', indexable: true },
-  { file: 'contact/index.html', title: 'Contact Us / Shoppa', canonical: 'https://shoppa.au/contact/', markdown: '/contact/index.md', indexable: true },
-  { file: 'privacy/index.html', title: 'Privacy / Shoppa', canonical: 'https://shoppa.au/privacy/', markdown: '/privacy/index.md', indexable: true },
-  { file: 'thank-you/index.html', title: 'Thank You / Shoppa', canonical: 'https://shoppa.au/thank-you/', markdown: '/thank-you/index.md', indexable: false },
-  { file: '404.html', title: 'Page Not Found / Shoppa', canonical: 'https://shoppa.au/404.html', markdown: '/404.md', indexable: false },
+  { file: 'index.html', title: 'Shoppa: The AI Shopping Agent Australian Retailers Own', canonical: 'https://shoppa.au/', indexable: true, socialImage: 'https://shoppa.au/images/shoppa-ai-shopping-agent-og.png' },
+  { file: 'about/index.html', title: 'About Us / Shoppa', canonical: 'https://shoppa.au/about/', indexable: true },
+  { file: 'process/index.html', title: 'From Catalogue to Live Agent / Shoppa', canonical: 'https://shoppa.au/process/', indexable: true },
+  { file: 'contact/index.html', title: 'Contact Us / Shoppa', canonical: 'https://shoppa.au/contact/', indexable: true },
+  { file: 'privacy/index.html', title: 'Privacy / Shoppa', canonical: 'https://shoppa.au/privacy/', indexable: true },
+  { file: 'thank-you/index.html', title: 'Thank You / Shoppa', canonical: 'https://shoppa.au/thank-you/', indexable: false },
+  { file: '404.html', title: 'Page Not Found / Shoppa', canonical: 'https://shoppa.au/404.html', indexable: false },
 ];
 const htmlFiles = htmlRoutes.map(({ file }) => file);
 const html = (await Promise.all(htmlFiles.map(read))).join('\n');
@@ -104,7 +98,8 @@ for (const route of htmlRoutes) {
   const title = readSingleMetadataValue(page, /<title>([^<]+)<\/title>/g, 'title', route.file);
   const description = readSingleMetadataValue(page, /<meta name="description" content="([^"]+)">/g, 'description', route.file);
   const canonical = readSingleMetadataValue(page, /<link rel="canonical" href="([^"]+)">/g, 'canonical', route.file);
-  const markdown = readSingleMetadataValue(page, /<link rel="alternate" type="text\/markdown" href="([^"]+)">/g, 'Markdown alternate', route.file);
+  const markdownAlternates = [...page.matchAll(/<link rel="alternate" type="text\/markdown"[^>]*>/g)];
+  assert.equal(markdownAlternates.length, 0, `${route.file} must not emit a Markdown alternate.`);
   const openGraphTitle = readSingleMetadataValue(page, /<meta property="og:title" content="([^"]+)">/g, 'Open Graph title', route.file);
   const openGraphDescription = readSingleMetadataValue(page, /<meta property="og:description" content="([^"]+)">/g, 'Open Graph description', route.file);
   const openGraphUrl = readSingleMetadataValue(page, /<meta property="og:url" content="([^"]+)">/g, 'Open Graph URL', route.file);
@@ -115,7 +110,6 @@ for (const route of htmlRoutes) {
 
   assert.equal(title, route.title, `${route.file} has an unexpected document title.`);
   assert.equal(canonical, route.canonical, `${route.file} has an unexpected canonical URL.`);
-  assert.equal(markdown, route.markdown, `${route.file} has an unexpected Markdown alternate.`);
   assert.equal(openGraphType, 'website', `${route.file} must identify as an Open Graph website.`);
   assert.match(page, /<html lang="en-AU">/, `${route.file} must declare the en-AU document language.`);
   assert.equal(openGraphTitle, title, `${route.file} must reuse its document title for Open Graph.`);
@@ -150,10 +144,8 @@ for (const route of htmlRoutes) {
   }
 }
 assert.equal(new Set(descriptions).size, descriptions.length, 'Every route requires a unique description.');
-
-for (const file of markdownFiles) {
-  const document = await read(file);
-  assert.match(document, /^#\s+\S/m, `${file} must start with a Markdown H1.`);
+if (html.includes('rel="alternate" type="text/markdown"')) {
+  throw new Error('Built HTML must not contain Markdown alternate links.');
 }
 
 const home = await read('index.html');
@@ -211,8 +203,21 @@ const robots = await read('robots.txt');
 if (!robots.includes('Allow: /') || !robots.includes('Sitemap: https://shoppa.au/sitemap.xml')) throw new Error('robots.txt has an invalid production policy.');
 const llms = await read('llms.txt');
 if (!llms.startsWith('# Shoppa\n\n> ') || !llms.includes('## When to use Shoppa') || !llms.includes('## Primary')) throw new Error('llms.txt does not follow the required v2 structure.');
-for (const requiredGuidance of ['Australian retailer', 'product discovery', 'checkout', 'order support', 'https://shoppa.au/privacy/index.md']) {
+for (const requiredGuidance of ['Australian retailer', 'product discovery', 'checkout', 'order support']) {
   if (!llms.includes(requiredGuidance)) throw new Error(`llms.txt is missing required guidance: ${requiredGuidance}`);
+}
+const requiredLlmsUrls = [
+  'https://shoppa.au/',
+  'https://shoppa.au/about/',
+  'https://shoppa.au/process/',
+  'https://shoppa.au/contact/',
+  'https://shoppa.au/privacy/',
+];
+for (const url of requiredLlmsUrls) {
+  if (!llms.includes(`](${url})`)) throw new Error(`llms.txt is missing canonical HTML link: ${url}`);
+}
+if (/https:\/\/shoppa\.au\/[^)\s]+\.md/.test(llms)) {
+  throw new Error('llms.txt must not link to Markdown paths.');
 }
 
 for (const file of identityFiles) {

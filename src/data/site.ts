@@ -114,19 +114,19 @@ export const llmsDocument = {
       links: [
         {
           label: 'Evaluate Shoppa for a retailer',
-          href: '/index.md',
+          href: '/',
           description:
             'Use when an Australian retailer needs catalogue-grounded product discovery, checkout, and order support in one branded on-site conversation.',
         },
         {
           label: 'Plan a Shoppa deployment',
-          href: '/process/index.md',
+          href: '/process/',
           description:
             'Use when the retailer has a product feed and wants to understand the catalogue, two-line embed, and live-agent path.',
         },
         {
           label: 'Start a business enquiry',
-          href: '/contact/index.md',
+          href: '/contact/',
           description:
             'Use to contact Shoppa. Include the retailer’s storefront URL, catalogue format, commerce platform, and target customer journey.',
         },
@@ -137,27 +137,27 @@ export const llmsDocument = {
       links: [
         {
           label: 'Shoppa overview',
-          href: '/index.md',
+          href: '/',
           description: 'Product capabilities, catalogue grounding, live demo, and market context.',
         },
         {
           label: 'Implementation process',
-          href: '/process/index.md',
+          href: '/process/',
           description: 'How a retailer connects its catalogue and deploys the agent.',
         },
         {
           label: 'About Shoppa',
-          href: '/about/index.md',
+          href: '/about/',
           description: 'The team, product focus, and retailer-owned approach.',
         },
         {
           label: 'Contact Shoppa',
-          href: '/contact/index.md',
+          href: '/contact/',
           description: 'Business enquiry details for Australian retailers.',
         },
         {
           label: 'Privacy',
-          href: '/privacy/index.md',
+          href: '/privacy/',
           description: 'How the Shoppa marketing site and direct email enquiries handle personal information.',
         },
       ],

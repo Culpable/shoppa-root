@@ -23,9 +23,9 @@ The workflow in `.github/workflows/deploy.yml` builds the static export and publ
 
 ## Status
 
-The Astro landing site is implemented as a fully static export. It includes the home, about, process, contact, privacy, thank-you, and 404 pages, plus sitemap, robots, LLM discovery, Markdown sibling routes, HTML alternate links, and homepage JSON-LD identity data.
+The Astro landing site is implemented as a fully static export. It publishes canonical HTML for the home, about, process, contact, privacy, thank-you, and 404 pages, plus fixed `/llms.txt`, sitemap, and robots files, and homepage JSON-LD identity data. There are no page `.md` routes or Markdown alternate links.
 
-GitHub Pages cannot vary a canonical URL by the request `Accept` header. Agents can use the explicit Markdown URLs advertised by each HTML page and `llms.txt`; full same-URL Markdown negotiation would require an authorised request-time edge in front of GitHub Pages.
+GitHub Pages cannot return Markdown from a canonical URL for `Accept: text/markdown`, cannot emit cache-safe `Vary: Accept`, and cannot return a Markdown recovery body at the original missing URL. Missing paths use the existing Shoppa HTML 404.
 
 ## Local development
 

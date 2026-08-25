@@ -1,13 +1,15 @@
 import { expect, test } from '@playwright/test';
 
-const canonicalPages = [
-  { html: '/', markdown: '/index.md' },
-  { html: '/about/', markdown: '/about/index.md' },
-  { html: '/process/', markdown: '/process/index.md' },
-  { html: '/contact/', markdown: '/contact/index.md' },
-  { html: '/privacy/', markdown: '/privacy/index.md' },
-  { html: '/thank-you/', markdown: '/thank-you/index.md' },
-  { html: '/404.html', markdown: '/404.md' },
+const canonicalPages = ['/', '/about/', '/process/', '/contact/', '/privacy/', '/thank-you/', '/404.html'] as const;
+
+const formerMarkdownPaths = [
+  '/index.md',
+  '/about/index.md',
+  '/process/index.md',
+  '/contact/index.md',
+  '/privacy/index.md',
+  '/thank-you/index.md',
+  '/404.md',
 ] as const;
 
 const trustAnchorPages = ['/about/', '/contact/', '/privacy/'] as const;
@@ -21,7 +23,7 @@ for (const route of trustAnchorPages) {
   });
 }
 
-test('a missing path returns Shoppa recovery content with HTTP 404', async ({ page, request }) => {
+test('a missing path returns Shoppa recovery content with HTTP 404', async ({ page }) => {
   const missingResponse = await page.goto('/agent-readiness-missing-page/');
   expect(missingResponse?.status()).toBe(404);
   expect(missingResponse?.headers()['content-type']).toMatch(/^text\/html(?:;.*)?$/i);
@@ -35,29 +37,28 @@ test('a missing path returns Shoppa recovery content with HTTP 404', async ({ pa
   );
   expect(recoveryLinks).toEqual(expect.arrayContaining(['/', '/sitemap.xml', '/llms.txt']));
   await expect(page.locator('main a[href="/sitemap.xml"]')).toHaveText('sitemap');
-
-  const markdown404 = await (await request.get('/404.md')).text();
-  expect(markdown404).toContain('[Sitemap](https://shoppa.au/sitemap.xml)');
 });
 
-test('canonical pages publish explicit Markdown siblings with the correct media type', async ({ request }) => {
-  // GitHub Pages cannot negotiate one URL by Accept. Explicit sibling files are
-  // the verifiable static fallback, so they must be real Markdown responses.
-  for (const route of canonicalPages) {
-    const response = await request.get(route.markdown);
-    expect(response.status(), route.markdown).toBe(200);
-    expect(response.headers()['content-type'], route.markdown).toMatch(/^text\/markdown(?:;.*)?$/i);
-    expect(await response.text(), route.markdown).toMatch(/^#\s+\S/m);
+test('former Markdown routes return HTTP 404 with Shoppa HTML recovery', async ({ request }) => {
+  for (const path of formerMarkdownPaths) {
+    const response = await request.get(path);
+    expect(response.status(), path).toBe(404);
+    expect(response.headers()['content-type'], path).toMatch(/^text\/html(?:;.*)?$/i);
+
+    const body = await response.text();
+    expect(body, path).toContain('<h1>Page not found</h1>');
+    expect(body, path).toContain('href="/sitemap.xml"');
+    expect(body, path).toContain('href="/llms.txt"');
   }
 });
 
-test('canonical HTML pages advertise their explicit Markdown siblings', async ({ page }) => {
+test('canonical HTML pages do not advertise Markdown alternates', async ({ page }) => {
   for (const route of canonicalPages) {
-    await page.goto(route.html);
+    await page.goto(route);
     await expect(
-      page.locator(`link[rel="alternate"][type="text/markdown"][href="${route.markdown}"]`),
-      `${route.html} must advertise ${route.markdown}`,
-    ).toHaveCount(1);
+      page.locator('link[rel="alternate"][type="text/markdown"]'),
+      `${route} must not advertise a Markdown alternate`,
+    ).toHaveCount(0);
   }
 });
 
@@ -130,6 +131,26 @@ test('llms.txt explains specifically when an agent should use Shoppa', async ({ 
   expect(document).toMatch(/checkout/i);
   expect(document).toMatch(/order support/i);
   expect(document).toMatch(/Australian retailer/i);
+
+  const destinations = [
+    'https://shoppa.au/',
+    'https://shoppa.au/about/',
+    'https://shoppa.au/process/',
+    'https://shoppa.au/contact/',
+    'https://shoppa.au/privacy/',
+  ];
+  for (const url of destinations) {
+    expect(document).toContain(`](${url})`);
+  }
+  expect(document).not.toMatch(/https:\/\/shoppa\.au\/[^)\s]+\.md/);
+
+  const shoppaLinks = [...document.matchAll(/https:\/\/shoppa\.au\/[^)\s]*/g)].map((match) => match[0]);
+  expect(shoppaLinks.length).toBeGreaterThan(0);
+  for (const url of shoppaLinks) {
+    const path = new URL(url).pathname || '/';
+    const linkResponse = await request.get(path);
+    expect(linkResponse.status(), url).toBe(200);
+  }
 });
 
 test('the homepage publishes a usable Open Graph image response', async ({ page, request }) => {
@@ -179,5 +200,5 @@ test('a substantive privacy page is public and included in site discovery', asyn
   const sitemap = await (await request.get('/sitemap.xml')).text();
   expect(sitemap).toContain('<loc>https://shoppa.au/privacy/</loc>');
   const llms = await (await request.get('/llms.txt')).text();
-  expect(llms).toContain('[Privacy](https://shoppa.au/privacy/index.md)');
+  expect(llms).toContain('[Privacy](https://shoppa.au/privacy/)');
 });

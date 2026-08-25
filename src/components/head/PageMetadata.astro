@@ -27,14 +27,6 @@ const socialImageURL = resolved.socialImage
   ? new URL(resolved.socialImage.src, Astro.site).toString()
   : undefined;
 
-const markdownURL = resolved.markdownPath
-  ? resolveCanonicalURL({
-      canonicalPath: resolved.markdownPath,
-      currentPath: Astro.url.pathname,
-      siteURL: Astro.site,
-    })
-  : undefined;
-
 // JSON-LD is fixed, trusted build data. Escaping "<" prevents a future value
 // from closing the script element if route metadata ever contains HTML-like text.
 const structuredDataJSON = resolved.structuredData
@@ -45,9 +37,6 @@ const structuredDataJSON = resolved.structuredData
 <title>{resolved.documentTitle}</title>
 <meta name="description" content={resolved.description} />
 <link rel="canonical" href={canonicalURL.toString()} />
-{markdownURL && (
-  <link rel="alternate" type="text/markdown" href={markdownURL.pathname} />
-)}
 {resolved.robots && <meta name="robots" content={resolved.robots} />}
 
 <meta property="og:title" content={resolved.documentTitle} />

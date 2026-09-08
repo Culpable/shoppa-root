@@ -85,8 +85,9 @@ function curl(args) {
 // string can legitimately report HIT; the contract is that the asset is
 // cacheable at the edge, not which state the first probe observes.
 {
-  const assetPath = curl([`${origin}/`]).stdout.match(/\/_astro\/[^"']+\.css/)?.[0]
-  if (!assetPath) failures.push('no fingerprinted stylesheet found to probe edge caching')
+  const html = curl([`${origin}/`]).stdout
+  const assetPath = html.match(/\/_astro\/[^"']+\.(?:css|js)/)?.[0]
+  if (!assetPath) failures.push('no fingerprinted /_astro asset found to probe edge caching')
   else {
     const bust = `${origin}${assetPath}?cache-probe=${Date.now()}`
     const cold = /cf-cache-status:\s*(\S+)/i.exec(curl(['-D', '-', '-o', '/dev/null', bust]).stdout)?.[1] ?? 'none'

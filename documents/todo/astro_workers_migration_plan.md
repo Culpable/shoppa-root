@@ -1,4 +1,4 @@
-# Shoppa on Cloudflare Workers Migration Plan
+# Shoppa on Cloudflare Workers Migration Plan 🔄 **IN PROGRESS**
 
 <critical_warning>
 > **CRITICAL WARNING:** Production cutover changes DNS and one zone setting for `shoppa.au` only. Immediately before that write, record the complete live state of every record in zone `dae30eef9757b84c7217dbd9dd624ff9`, every Workers custom domain, every zone ruleset, the `always_use_https` setting, the bot-management object, and the GitHub Pages site state in `documents/guides/_hosting.md`, then commit it. Only the four apex `A` records, the one `www` `CNAME` record, and the `always_use_https` setting may change at cutover. The three Cloudflare Email Routing `MX` records, the apex SPF `TXT`, the `cf2024-1._domainkey` DKIM `TXT`, every `notifications.shoppa.au` record (Resend and Amazon SES), the `api`, `app`, and `demo` CNAMEs to Vercel, the Google Search Console `TXT`, and the `_github-pages-challenge-culpable` `TXT` must remain byte-identical. GitHub Pages stays live and undisabled until the Worker passes every production check so the recorded records can restore the previous host within minutes.
@@ -300,7 +300,7 @@ flowchart LR
 
 ## 5. Implementation Plan
 
-### Step 1: Revalidate authority, snapshot the baseline, and create the hosting evidence document
+### ~~Step 1: Revalidate authority, snapshot the baseline, and create the hosting evidence document~~ ✅ **COMPLETED**
 **Objective:** Fix the exact inputs before any write and give later steps a single evidence document.
 
 #### 1.1 High-Level Approach

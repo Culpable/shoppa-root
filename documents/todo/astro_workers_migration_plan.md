@@ -347,7 +347,7 @@ flowchart LR
 - `test/agent-accessibility.spec.ts`, `test/agent-readiness.spec.ts`, and `test/landing-effects-regression-reproduction.spec.ts` pass against `wrangler dev` at both viewports with zero violations.
 - Every route reports zero CSP violations, zero console errors, zero failed first-party requests, zero horizontal overflow; the homepage landing-effects module executes (the same runtime-applied state the regression spec asserts).
 
-### Step 4: Provision the Workers, the build token, and Workers Builds 🔄 **IN PROGRESS**
+### ~~Step 4: Provision the Workers, the build token, and Workers Builds~~ ✅ **COMPLETED**
 **Objective:** Create the minimum Cloudflare resources and the Git-connected release path without any custom domain.
 
 #### 4.1 High-Level Approach
@@ -367,7 +367,7 @@ flowchart LR
 - The first production build reports `success` and its version equals the version served by `shoppa-root`; the throwaway-branch build uploads a version to `shoppa-root-preview` and promotes nothing; the branch no longer exists locally or remotely.
 - No DNS record, GitHub Pages setting, or custom domain changed (DNS export diff: zero differences).
 
-### Step 5: Attach `staging.shoppa.au`, fix the zone bot settings, run the hosted proof, and request approval
+### Step 5: Attach `staging.shoppa.au`, fix the zone bot settings, run the hosted proof, and request approval 🔄 **IN PROGRESS**
 **Objective:** Put the production Worker on a real zone hostname and give the user everything needed to decide.
 
 #### 5.1 High-Level Approach

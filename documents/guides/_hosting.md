@@ -9,12 +9,12 @@ Shoppa Root is migrating its public marketing site from GitHub Pages to Cloudfla
 | Baseline snapshot (plan Step 1) | Complete - 8 September 2026 |
 | Worker runtime in the repository | Complete - 8 September 2026 |
 | Local Worker contract | Complete - 8 September 2026 |
-| Workers provisioning | Not started |
+| Workers provisioning | Complete - 8 September 2026 |
 | Staging proof | Not started |
 | Production cutover | Not started |
 | Decommission | Not started |
 
-`https://shoppa.au/` is still served by GitHub Pages. The Worker exists only locally until Step 4.
+`https://shoppa.au/` is still served by GitHub Pages. Workers `shoppa-root` and `shoppa-root-preview` exist with no custom domain yet.
 
 ## Final topology
 
@@ -172,11 +172,10 @@ Captured `2026-09-08T04:22:53Z`. Decoded-body SHA-256 values for the six HTML ro
 Secrets live only in the macOS Keychain under account `jake.sacino@gmail.com`. Values are never printed, logged or committed.
 
 | Purpose | Keychain service | Created |
-| --- | --- | --- |
 | Cloudflare Global API Key (pre-existing, all accounts) | `cloudflare-global-api-key` | before this migration |
-| Workers Builds deploy token value | `shoppa-root-cloudflare-build-api-token` | not created (plan Step 4) |
-| Workers Builds deploy token ID | `shoppa-root-cloudflare-build-api-token-id` | not created (plan Step 4) |
-| Workers Builds token registry UUID | `shoppa-root-cloudflare-build-api-token-uuid` | not created (plan Step 4) |
+| Workers Builds deploy token value | `shoppa-root-cloudflare-build-api-token` | plan Step 4 |
+| Workers Builds deploy token ID | `shoppa-root-cloudflare-build-api-token-id` | plan Step 4 |
+| Workers Builds token registry UUID | `shoppa-root-cloudflare-build-api-token-uuid` | plan Step 4 |
 
 ## Root validation baseline
 
@@ -207,3 +206,50 @@ Run against `wrangler dev` (`http://127.0.0.1:8787`) on 8 September 2026 with `p
 - `PLAYWRIGHT_BASE_URL=http://127.0.0.1:8787 playwright test` - 60 passed at `1440x900` and `390x844`, including the landing-effects regression (external module executes).
 - `scripts/verify-browser-runtime.mjs` - 14 of 14 route/viewport pairs: zero console errors, zero page errors, zero CSP violations, zero failed first-party requests, zero horizontal overflow.
 - GitHub Pages deploy `34187563410` for `151c26d` succeeded. Production remains `server: GitHub.com`.
+
+## Release path
+
+Workers Builds is the sole intended release controller. Created on 8 September 2026. GitHub Pages still deploys `pnpm build` in parallel until Step 7.
+
+| Field | Value |
+| --- | --- |
+| API token name | `shoppa-root-cloudflare-build-api-token` |
+| API token ID | `c44eb43e27eab75a464b6ecff08768bf` |
+| API token status | Active; verified through `/user/tokens/verify` |
+| Account permissions | `Workers CI Write` (`2e095cf436e2455fa62c9a9c2e18c478`), `Workers Scripts Write` (`e086da7e2179491d91ee5f35b3ca210a`), `Account Settings Read` (`c1fde68c7bcc44588cbb6ddbc16d6480`) |
+| Zone permission | `Workers Routes Write` (`28f4b596e7d643029c524985477ae49a`), scoped only to `shoppa.au` |
+| Builds token registry UUID | `25242576-556c-4c18-8a1a-fda12c660c48` |
+| Repository connection | `Culpable/shoppa-root`, GitHub account ID `31677655`, repository ID `1337853951` |
+| Repository connection UUID | `f30a1af6-9b79-4e5b-9d97-cb7160ef6828`, created `2026-09-08T04:44:24.809Z` |
+| Production Worker | `shoppa-root`, script tag `6183324c7ea64aa4b7a6720782168958`, first Wrangler version `9e80bf1c-deb9-4ab0-a954-549f200ecc56` |
+| Preview Worker | `shoppa-root-preview`, script tag `bcb40a15063945e89a3303b2853e646a`, bootstrap version `847b59e9-4310-4910-9869-e23b191eb312` |
+| Preview migration version | `e0affa6c-c848-4ea5-820a-5f7b305cf8bd` |
+| Version preview URL | `https://e0affa6c-shoppa-root-preview.webpop.workers.dev` |
+| Version preview alias | `https://migration-shoppa-root-preview.webpop.workers.dev/` |
+| Production trigger | `9e22741b-0ac5-4a05-9c21-0beee04fef34`; script tag `6183324c7ea64aa4b7a6720782168958`; `main`; `pnpm build:worker`; `pnpm deploy` |
+| Preview trigger | `948138fc-8271-47f1-8f7d-9f06ee374160`; script tag `bcb40a15063945e89a3303b2853e646a`; every branch except `main`; `pnpm build:worker`; `pnpm deploy:preview` |
+| Trigger root and paths | Root `/`; include `*` |
+| Build variables | `NODE_VERSION=22.23.1`; `PNPM_VERSION=11.22.0` |
+
+Each trigger is attached to its own script tag, so a preview build can never upload a version to the production Worker.
+
+Permission groups were revalidated by name against `GET /accounts/{account_id}/tokens/permission_groups` immediately before the token write. `POST /accounts/{account_id}/builds/tokens` required `build_token_name`, `build_token_secret`, and `cloudflare_token_id`.
+
+### Preview Worker verification
+
+Against `https://migration-shoppa-root-preview.webpop.workers.dev/` on 8 September 2026:
+
+- All 20 HTTP contract cases pass.
+- `X-Robots-Tag: noindex` is present alongside the CSP, `Permissions-Policy`, `Referrer-Policy`, `X-Content-Type-Options`, `X-Frame-Options`, `Vary: Accept` and `cache-control: public, max-age=0, must-revalidate`.
+- Playwright 60 passed at `1440x900` and `390x844`.
+- `GET /accounts/{account_id}/workers/scripts/shoppa-root/subdomain` returns `enabled: false, previews_enabled: false`; the preview Worker returns both `true`.
+- `GET /accounts/{account_id}/workers/domains` still lists only `taxgenie.com.au`, `fintrace.com.au`, and `bulma.com.au`. DNS remains 19 records, IDs unchanged.
+
+### First Git-connected builds
+
+| Build | Trigger | Commit | Outcome |
+| --- | --- | --- | --- |
+| `b6edfa9c-5d40-4117-a68e-d3ef84a64a7d` | production | `main` (manual) | success; production now serves version `6ee3f9a9-8d0e-4d96-8e89-3638d6de1c67` at 100% |
+| `35fce291-4309-4053-be02-6532e672cd6f` | preview | `8d6fc80` on `claude/astro-workers-preview-check` | success; uploaded version `09274b03-5bb0-4470-88d8-83bfd557b59a` with alias `claude-astro-workers-preview-check` |
+
+The preview build uploaded a version and promoted nothing: `shoppa-root-preview` stayed on bootstrap deployment `fb98d340-a511-4469-9151-e6143d23daf3` serving version `847b59e9-4310-4910-9869-e23b191eb312`. The throwaway branch was deleted locally and remotely.

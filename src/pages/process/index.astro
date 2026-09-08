@@ -23,7 +23,7 @@ const values: { icon: IconName; title: string; body: string }[] = [
 ];
 ---
 
-<BaseLayout metadata={metadata}>
+<BaseLayout metadata={metadata} includeMonoFont>
   <PageIntro eyebrow="our process" title="How Shoppa takes you from catalogue to live agent"><p>It starts with your product data, because your agent is only as good as what it knows. Then the embed puts the agent on your site, and the conversation does the rest.</p></PageIntro>
   <section class="container process-stages" aria-label="Shoppa implementation stages">
     <article class="process-stage"><div><Icon name="plug" tile="peach" size={44} class="stage-icon" /><p class="stage-number">01</p><p class="stage-label">Connect</p></div><div class="stage-copy"><h2>Point Shoppa at the feed you already have</h2><p>Shoppa ingests your product feed - JSON or CSV - and turns it into the knowledge your agent sells from. Titles, descriptions, categories, prices, sizes, colours, stock, and images: the fields you already maintain are all it needs.</p><p>Updates are incremental: re-ingest the feed and only changed products are touched. Mark a product out of stock and it leaves the agent’s in-stock answers - your agent never recommends what you can’t sell.</p><h3>Included in this phase</h3><ul class="stage-tags"><li>Product Feed</li><li>JSON or CSV</li><li>Prices in AUD</li><li>Sizes &amp; Colours</li><li>Stock &amp; Availability</li><li>Images</li></ul></div></article>

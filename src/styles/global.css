@@ -420,7 +420,7 @@ ul, ol { padding: 0; }
    panel is far lighter, so the same alpha would drop this copy to 4.09:1; it
    takes the full-strength cream instead. */
 .demo-panel p { color: var(--colour-band-text); }
-.code-block { margin: 20px 0 0; overflow-x: auto; padding: 16px; border-radius: 14px; background: var(--colour-band-code); color: var(--colour-band-accent); font-family: var(--font-mono), monospace; font-size: 12px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+.code-block { margin: 20px 0 0; overflow-x: auto; padding: 16px; border-radius: 14px; background: var(--colour-band-code); color: var(--colour-band-accent); font-family: var(--font-mono, 'Courier New'), monospace; font-size: 12px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
 /* Two optical corrections on one pill. The icon side carries 2px less padding
    than the text side, because a lone glyph reads lighter than type at the same
    distance. The arrow then drops 0.12em, because its ink centres 1.92px higher
@@ -507,7 +507,7 @@ ul, ol { padding: 0; }
    box to the type size and carry 3px more padding above than below: that offset
    lands the ascender-to-baseline band on the centre, which is what the eye
    reads as level. */
-.snippet-cloud span { position: absolute; padding: 10px 10px 7px; border: 1px solid var(--colour-snippet-border); border-radius: 999px; background: var(--colour-snippet-surface); color: var(--colour-snippet-text); font-family: var(--font-mono); font-size: 11.5px; line-height: 1; }
+.snippet-cloud span { position: absolute; padding: 10px 10px 7px; border: 1px solid var(--colour-snippet-border); border-radius: 999px; background: var(--colour-snippet-surface); color: var(--colour-snippet-text); font-family: var(--font-mono, 'Courier New'), monospace; font-size: 11.5px; line-height: 1; }
 .snippet-cloud span:nth-child(1) { left: 4%; top: 12%; transform: rotate(-6deg); }
 .snippet-cloud span:nth-child(2) { right: 4%; top: 14%; transform: rotate(5deg); }
 .snippet-cloud span:nth-child(3) { left: 8%; bottom: 14%; }

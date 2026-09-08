@@ -331,4 +331,17 @@ for (const [token, value] of wideGamutTokens) {
   assert.ok(wide[1] > narrow[1], `--${token} is in the Display P3 block without widening its chroma.`);
 }
 
+const woff2Files = distEntries.filter((file) => file.endsWith('.woff2'));
+assert.equal(woff2Files.length, 4, `dist must ship exactly four font files, found: ${woff2Files.join(', ')}`);
+const homePreloads = [...home.matchAll(/<link rel="preload"[^>]*>/g)].map((match) => match[0]);
+assert.equal(homePreloads.length, 1, 'Home must preload exactly one resource.');
+assert.match(homePreloads[0], /as="font"/);
+assert.match(homePreloads[0], /type="font\/woff2"/);
+assert.match(home, /Courier Prime/);
+assert.match(await read('about/index.html'), /Courier Prime/);
+assert.match(await read('process/index.html'), /Courier Prime/);
+for (const file of ['contact/index.html', 'privacy/index.html', 'thank-you/index.html', '404.html']) {
+  assert.doesNotMatch(await read(file), /Courier Prime/, `${file} must not ship Courier Prime.`);
+}
+
 console.log(`Validated ${requiredFiles.length} build artefacts, ${htmlFiles.length} HTML routes, and ${fallbackTokens.size} colour tokens across three gamut layers.`);

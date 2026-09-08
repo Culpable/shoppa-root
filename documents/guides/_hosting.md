@@ -7,13 +7,14 @@ Shoppa Root is migrating its public marketing site from GitHub Pages to Cloudfla
 | Stage | State |
 | --- | --- |
 | Baseline snapshot (plan Step 1) | Complete - 8 September 2026 |
-| Worker runtime in the repository | Not started |
+| Worker runtime in the repository | Complete - 8 September 2026 |
+| Local Worker contract | Complete - 8 September 2026 |
 | Workers provisioning | Not started |
 | Staging proof | Not started |
 | Production cutover | Not started |
 | Decommission | Not started |
 
-`https://shoppa.au/` is still served by GitHub Pages. Nothing in this snapshot changed a Cloudflare resource, GitHub Pages setting, or DNS record.
+`https://shoppa.au/` is still served by GitHub Pages. The Worker exists only locally until Step 4.
 
 ## Final topology
 
@@ -194,4 +195,15 @@ Run at local `HEAD` `9a57700` on 8 September 2026:
 - six files under `/images/`
 - `/favicon.ico`, `/icon.svg`, `/apple-icon.png`
 
-Every HTML hash equals the local `dist/` hash. Production is therefore the current source, even though `origin/main` is one commit behind local `HEAD` (that commit is this plan file only).
+Every HTML hash equalled the local `dist/` hash at the Step 1 snapshot. After the Step 2 Pages deploy of `151c26d`, `/about/` still matches that snapshot; `/` changed because the landing module is now `/_astro/LandingEffects.astro_astro_type_script_index_0_lang.BRopPWLb.js` (`200`, `application/javascript`). `https://shoppa.au/_headers` returns `404`.
+
+## Local Worker contract
+
+Run against `wrangler dev` (`http://127.0.0.1:8787`) on 8 September 2026 with `pnpm build:worker` output from commit `151c26d`:
+
+- `wrangler deploy --dry-run --env=""` and `--env preview` both exit 0 with `main: src/worker.ts`, one `ASSETS` binding, and no other binding.
+- 20 of 20 `test/http-contract.json` cases pass: six documents as HTML and Markdown, both cache orders, slashless `307` to `/about/`, unknown-path `404` in both representations, `406` for `image/png`, Markdown `HEAD`, blocked `/_agent-markdown/`, `robots.txt`, `sitemap.xml`, `llms.txt` with charset and `’` intact, fingerprinted `/_astro/*.js` immutable, favicon icon type.
+- `scripts/verify-negotiated-content.mjs` passes: built Markdown equals the Worker body on all six routes; HTML `304` and Markdown `200` at the same URL; slashless `307`; `HEAD` empty.
+- `PLAYWRIGHT_BASE_URL=http://127.0.0.1:8787 playwright test` - 60 passed at `1440x900` and `390x844`, including the landing-effects regression (external module executes).
+- `scripts/verify-browser-runtime.mjs` - 14 of 14 route/viewport pairs: zero console errors, zero page errors, zero CSP violations, zero failed first-party requests, zero horizontal overflow.
+- GitHub Pages deploy `34187563410` for `151c26d` succeeded. Production remains `server: GitHub.com`.

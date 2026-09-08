@@ -317,7 +317,7 @@ flowchart LR
 - `pnpm build && pnpm test` exits 0.
 - No Cloudflare resource, GitHub setting, or DNS record changed (re-query the DNS export and diff against the recorded table: zero differences).
 
-### Step 2: Add the Worker, negotiated Markdown, headers, Wrangler configuration, and test updates 🔄 **IN PROGRESS**
+### ~~Step 2: Add the Worker, negotiated Markdown, headers, Wrangler configuration, and test updates~~ ✅ **COMPLETED**
 **Objective:** Deliver the Workers runtime contract locally before any hosted resource exists, without changing what GitHub Pages serves.
 
 #### 2.1 High-Level Approach
@@ -336,7 +336,7 @@ flowchart LR
 - Generated Markdown for each route contains that route's `<h1>` text and every `<main>` paragraph (compared with the rendered text extracted from `dist/`).
 - `pnpm build && pnpm test` and `pnpm build:worker && pnpm test` both exit 0; the GitHub Pages deploy for the pushed commit succeeds and `https://shoppa.au/about/` still hashes equal to the baseline.
 
-### Step 3: Local browser proof against the Worker
+### ~~Step 3: Local browser proof against the Worker~~ ✅ **COMPLETED**
 **Objective:** Prove the rendered site behaves identically under the Worker before hosting anything.
 
 #### 3.1 High-Level Approach
@@ -347,7 +347,7 @@ flowchart LR
 - `test/agent-accessibility.spec.ts`, `test/agent-readiness.spec.ts`, and `test/landing-effects-regression-reproduction.spec.ts` pass against `wrangler dev` at both viewports with zero violations.
 - Every route reports zero CSP violations, zero console errors, zero failed first-party requests, zero horizontal overflow; the homepage landing-effects module executes (the same runtime-applied state the regression spec asserts).
 
-### Step 4: Provision the Workers, the build token, and Workers Builds
+### Step 4: Provision the Workers, the build token, and Workers Builds 🔄 **IN PROGRESS**
 **Objective:** Create the minimum Cloudflare resources and the Git-connected release path without any custom domain.
 
 #### 4.1 High-Level Approach

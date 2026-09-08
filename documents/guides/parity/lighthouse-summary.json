@@ -1,0 +1,1185 @@
+{
+  "lighthouseVersion": "13.4.1",
+  "generatedAt": "2026-09-08T05:20:59.916Z",
+  "releases": {
+    "production": "c23297d",
+    "staging": "00722e95"
+  },
+  "forceFresh": false,
+  "performanceReportCount": 96,
+  "stagingCategoryReportCount": 6,
+  "performanceSummary": [
+    {
+      "mode": "mobile",
+      "route": "/",
+      "production": {
+        "score": {
+          "median": 100,
+          "min": 97,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 1256.0545,
+          "min": 1201.086,
+          "max": 1459.877
+        },
+        "lcpMs": {
+          "median": 1406.0545,
+          "min": 1351.086,
+          "max": 1609.877
+        },
+        "speedIndexMs": {
+          "median": 1256.0545,
+          "min": 1201.086,
+          "max": 4135.025362052967
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 6
+        },
+        "cls": {
+          "median": 0.0001698417742366586,
+          "min": 0,
+          "max": 0.0001698417742366586
+        }
+      },
+      "staging": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 1222.2365,
+          "min": 1220.905,
+          "max": 1283.5475000000001
+        },
+        "lcpMs": {
+          "median": 1372.2365,
+          "min": 1370.905,
+          "max": 1433.5475000000001
+        },
+        "speedIndexMs": {
+          "median": 1276.194,
+          "min": 1220.905,
+          "max": 1474.8362880024433
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 11
+        },
+        "cls": {
+          "median": 0.0001698417742366586,
+          "min": 0.0001698417742366586,
+          "max": 0.0001698417742366586
+        }
+      },
+      "deltas": {
+        "score": {
+          "absolute": 0,
+          "percent": 0
+        },
+        "fcpMs": {
+          "absolute": -33.817999999999984,
+          "percent": -2.6923990957398733
+        },
+        "lcpMs": {
+          "absolute": -33.817999999999984,
+          "percent": -2.4051699276237146
+        },
+        "speedIndexMs": {
+          "absolute": 20.139499999999998,
+          "percent": 1.6033938017816902
+        },
+        "tbtMs": {
+          "absolute": 0,
+          "percent": null
+        },
+        "cls": {
+          "absolute": 0,
+          "percent": 0
+        }
+      }
+    },
+    {
+      "mode": "mobile",
+      "route": "/about/",
+      "production": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 1050.777,
+          "min": 1050.216,
+          "max": 1080
+        },
+        "lcpMs": {
+          "median": 1200.777,
+          "min": 1200.216,
+          "max": 1230
+        },
+        "speedIndexMs": {
+          "median": 1050.777,
+          "min": 1050.216,
+          "max": 2261.8540200676925
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.0001698417742366586,
+          "min": 0,
+          "max": 0.0001698417742366586
+        }
+      },
+      "staging": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 1072.1105,
+          "min": 1066.4470000000001,
+          "max": 1079.3455
+        },
+        "lcpMs": {
+          "median": 1222.1105,
+          "min": 1216.4470000000001,
+          "max": 1229.3455
+        },
+        "speedIndexMs": {
+          "median": 1072.1105,
+          "min": 1066.4470000000001,
+          "max": 1079.3455
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0,
+          "min": 0,
+          "max": 0.0001698417742366586
+        }
+      },
+      "deltas": {
+        "score": {
+          "absolute": 0,
+          "percent": 0
+        },
+        "fcpMs": {
+          "absolute": 21.333499999999958,
+          "percent": 2.0302595127224863
+        },
+        "lcpMs": {
+          "absolute": 21.333499999999958,
+          "percent": 1.7766412914304621
+        },
+        "speedIndexMs": {
+          "absolute": 21.333499999999958,
+          "percent": 2.0302595127224863
+        },
+        "tbtMs": {
+          "absolute": 0,
+          "percent": null
+        },
+        "cls": {
+          "absolute": -0.0001698417742366586,
+          "percent": -100
+        }
+      }
+    },
+    {
+      "mode": "mobile",
+      "route": "/process/",
+      "production": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 1230,
+          "min": 1200.601,
+          "max": 1230
+        },
+        "lcpMs": {
+          "median": 1230,
+          "min": 1200.601,
+          "max": 1380
+        },
+        "speedIndexMs": {
+          "median": 1230,
+          "min": 1200.601,
+          "max": 1230
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.0001698417742366586,
+          "min": 0,
+          "max": 0.0001704117130763789
+        }
+      },
+      "staging": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 1219.846,
+          "min": 1075.937,
+          "max": 1223.223
+        },
+        "lcpMs": {
+          "median": 1223.223,
+          "min": 1219.846,
+          "max": 1230.171
+        },
+        "speedIndexMs": {
+          "median": 1219.846,
+          "min": 1075.937,
+          "max": 1223.223
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.0001704117130763789,
+          "min": 0,
+          "max": 0.0001704117130763789
+        }
+      },
+      "deltas": {
+        "score": {
+          "absolute": 0,
+          "percent": 0
+        },
+        "fcpMs": {
+          "absolute": -10.153999999999996,
+          "percent": -0.8255284552845527
+        },
+        "lcpMs": {
+          "absolute": -6.777000000000044,
+          "percent": -0.550975609756101
+        },
+        "speedIndexMs": {
+          "absolute": -10.153999999999996,
+          "percent": -0.8255284552845527
+        },
+        "tbtMs": {
+          "absolute": 0,
+          "percent": null
+        },
+        "cls": {
+          "absolute": 5.699388397203086e-7,
+          "percent": 0.33557046979864463
+        }
+      }
+    },
+    {
+      "mode": "mobile",
+      "route": "/contact/",
+      "production": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 1050.5320000000002,
+          "min": 1050.4535,
+          "max": 1080
+        },
+        "lcpMs": {
+          "median": 1200.5320000000002,
+          "min": 1200.4535,
+          "max": 1230
+        },
+        "speedIndexMs": {
+          "median": 1050.5320000000002,
+          "min": 1050.4535,
+          "max": 1080
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.0001704117130763789,
+          "min": 0,
+          "max": 0.0001704117130763789
+        }
+      },
+      "staging": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 1073.5205,
+          "min": 1067.458,
+          "max": 1080.0005
+        },
+        "lcpMs": {
+          "median": 1223.5205,
+          "min": 1217.458,
+          "max": 1230.0005
+        },
+        "speedIndexMs": {
+          "median": 1073.5205,
+          "min": 1067.458,
+          "max": 1080.0005
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.0001704117130763789,
+          "min": 0,
+          "max": 0.0001704117130763789
+        }
+      },
+      "deltas": {
+        "score": {
+          "absolute": 0,
+          "percent": 0
+        },
+        "fcpMs": {
+          "absolute": 22.98849999999993,
+          "percent": 2.188272227785534
+        },
+        "lcpMs": {
+          "absolute": 22.98849999999993,
+          "percent": 1.9148594123271956
+        },
+        "speedIndexMs": {
+          "absolute": 22.98849999999993,
+          "percent": 2.188272227785534
+        },
+        "tbtMs": {
+          "absolute": 0,
+          "percent": null
+        },
+        "cls": {
+          "absolute": 0,
+          "percent": 0
+        }
+      }
+    },
+    {
+      "mode": "mobile",
+      "route": "/privacy/",
+      "production": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 1050.4045,
+          "min": 1050.1115,
+          "max": 1051.0785
+        },
+        "lcpMs": {
+          "median": 1200.4045,
+          "min": 1200.1115,
+          "max": 1201.0785
+        },
+        "speedIndexMs": {
+          "median": 1050.4045,
+          "min": 1050.1115,
+          "max": 1051.0785
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.0003217466286084575,
+          "min": 0,
+          "max": 0.0003217466286084575
+        }
+      },
+      "staging": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 1076.6415,
+          "min": 1073.3654999999999,
+          "max": 1080.1215
+        },
+        "lcpMs": {
+          "median": 1226.6415,
+          "min": 1223.3654999999999,
+          "max": 1230.1215
+        },
+        "speedIndexMs": {
+          "median": 1076.6415,
+          "min": 1073.3654999999999,
+          "max": 1080.1215
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.0003217466286084575,
+          "min": 0,
+          "max": 0.0003217466286084575
+        }
+      },
+      "deltas": {
+        "score": {
+          "absolute": 0,
+          "percent": 0
+        },
+        "fcpMs": {
+          "absolute": 26.236999999999853,
+          "percent": 2.497799657179672
+        },
+        "lcpMs": {
+          "absolute": 26.236999999999853,
+          "percent": 2.185679910396858
+        },
+        "speedIndexMs": {
+          "absolute": 26.236999999999853,
+          "percent": 2.497799657179672
+        },
+        "tbtMs": {
+          "absolute": 0,
+          "percent": null
+        },
+        "cls": {
+          "absolute": 0,
+          "percent": 0
+        }
+      }
+    },
+    {
+      "mode": "mobile",
+      "route": "/thank-you/",
+      "production": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 1050.9915,
+          "min": 1050.519,
+          "max": 1317.0545
+        },
+        "lcpMs": {
+          "median": 1200.9915,
+          "min": 1200.519,
+          "max": 1467.0545
+        },
+        "speedIndexMs": {
+          "median": 1050.9915,
+          "min": 1050.519,
+          "max": 2436.8288639762873
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.01070943467592802,
+          "min": 0,
+          "max": 0.01070943467592802
+        }
+      },
+      "staging": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 1072.958,
+          "min": 1070.1385,
+          "max": 1074.2265
+        },
+        "lcpMs": {
+          "median": 1222.958,
+          "min": 1220.1385,
+          "max": 1224.2265
+        },
+        "speedIndexMs": {
+          "median": 1072.958,
+          "min": 1070.1385,
+          "max": 1317.6511260639668
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0,
+          "min": 0,
+          "max": 0.01070943467592802
+        }
+      },
+      "deltas": {
+        "score": {
+          "absolute": 0,
+          "percent": 0
+        },
+        "fcpMs": {
+          "absolute": 21.966499999999996,
+          "percent": 2.0900739920351397
+        },
+        "lcpMs": {
+          "absolute": 21.966499999999996,
+          "percent": 1.8290304302736526
+        },
+        "speedIndexMs": {
+          "absolute": 21.966499999999996,
+          "percent": 2.0900739920351397
+        },
+        "tbtMs": {
+          "absolute": 0,
+          "percent": null
+        },
+        "cls": {
+          "absolute": -0.01070943467592802,
+          "percent": -100
+        }
+      }
+    },
+    {
+      "mode": "desktop",
+      "route": "/",
+      "production": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 293.7425,
+          "min": 281.137,
+          "max": 293.9065
+        },
+        "lcpMs": {
+          "median": 333.7425,
+          "min": 321.137,
+          "max": 333.9065
+        },
+        "speedIndexMs": {
+          "median": 293.9065,
+          "min": 293.7425,
+          "max": 416.05127065286456
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.0002853144885531861,
+          "min": 0.0002853144885531861,
+          "max": 0.0003801933126264892
+        }
+      },
+      "staging": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 304.2635,
+          "min": 301.4875,
+          "max": 315.3145
+        },
+        "lcpMs": {
+          "median": 344.2635,
+          "min": 341.4875,
+          "max": 355.3145
+        },
+        "speedIndexMs": {
+          "median": 316.8187328015215,
+          "min": 301.4875,
+          "max": 415.24476031443686
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.0002853144885531861,
+          "min": 0.0002853144885531861,
+          "max": 0.0002853144885531861
+        }
+      },
+      "deltas": {
+        "score": {
+          "absolute": 0,
+          "percent": 0
+        },
+        "fcpMs": {
+          "absolute": 10.521000000000015,
+          "percent": 3.581708469152409
+        },
+        "lcpMs": {
+          "absolute": 10.521000000000015,
+          "percent": 3.1524303916941996
+        },
+        "speedIndexMs": {
+          "absolute": 22.912232801521498,
+          "percent": 7.7957557255526835
+        },
+        "tbtMs": {
+          "absolute": 0,
+          "percent": null
+        },
+        "cls": {
+          "absolute": 0,
+          "percent": 0
+        }
+      }
+    },
+    {
+      "mode": "desktop",
+      "route": "/about/",
+      "production": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 280.971,
+          "min": 280.089,
+          "max": 281.057
+        },
+        "lcpMs": {
+          "median": 320.971,
+          "min": 320.089,
+          "max": 321.057
+        },
+        "speedIndexMs": {
+          "median": 281.057,
+          "min": 280.089,
+          "max": 326.77851750690934
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.000260558199871485,
+          "min": 0.000260558199871485,
+          "max": 0.000260558199871485
+        }
+      },
+      "staging": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 304.305,
+          "min": 299.158,
+          "max": 305.767
+        },
+        "lcpMs": {
+          "median": 344.305,
+          "min": 339.158,
+          "max": 345.767
+        },
+        "speedIndexMs": {
+          "median": 304.305,
+          "min": 299.158,
+          "max": 305.767
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0,
+          "min": 0,
+          "max": 0.000260558199871485
+        }
+      },
+      "deltas": {
+        "score": {
+          "absolute": 0,
+          "percent": 0
+        },
+        "fcpMs": {
+          "absolute": 23.334000000000003,
+          "percent": 8.304771666826827
+        },
+        "lcpMs": {
+          "absolute": 23.334000000000003,
+          "percent": 7.269815653127543
+        },
+        "speedIndexMs": {
+          "absolute": 23.24799999999999,
+          "percent": 8.271631733064819
+        },
+        "tbtMs": {
+          "absolute": 0,
+          "percent": null
+        },
+        "cls": {
+          "absolute": -0.000260558199871485,
+          "percent": -100
+        }
+      }
+    },
+    {
+      "mode": "desktop",
+      "route": "/process/",
+      "production": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 280.411,
+          "min": 280.355,
+          "max": 283.51
+        },
+        "lcpMs": {
+          "median": 320.411,
+          "min": 320.355,
+          "max": 323.51
+        },
+        "speedIndexMs": {
+          "median": 280.411,
+          "min": 280.355,
+          "max": 324.29983565590777
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.000260558199871485,
+          "min": 0.000260558199871485,
+          "max": 0.000260558199871485
+        }
+      },
+      "staging": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 305.73,
+          "min": 304.118,
+          "max": 305.96299999999997
+        },
+        "lcpMs": {
+          "median": 345.73,
+          "min": 344.118,
+          "max": 345.96299999999997
+        },
+        "speedIndexMs": {
+          "median": 305.73,
+          "min": 304.118,
+          "max": 305.96299999999997
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.000260558199871485,
+          "min": 0,
+          "max": 0.000260558199871485
+        }
+      },
+      "deltas": {
+        "score": {
+          "absolute": 0,
+          "percent": 0
+        },
+        "fcpMs": {
+          "absolute": 25.319000000000017,
+          "percent": 9.02924635624138
+        },
+        "lcpMs": {
+          "absolute": 25.319000000000017,
+          "percent": 7.902038319533354
+        },
+        "speedIndexMs": {
+          "absolute": 25.319000000000017,
+          "percent": 9.02924635624138
+        },
+        "tbtMs": {
+          "absolute": 0,
+          "percent": null
+        },
+        "cls": {
+          "absolute": 0,
+          "percent": 0
+        }
+      }
+    },
+    {
+      "mode": "desktop",
+      "route": "/contact/",
+      "production": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 280.743,
+          "min": 280.60699999999997,
+          "max": 310
+        },
+        "lcpMs": {
+          "median": 280.743,
+          "min": 280.60699999999997,
+          "max": 310
+        },
+        "speedIndexMs": {
+          "median": 280.743,
+          "min": 280.60699999999997,
+          "max": 310
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.000260558199871485,
+          "min": 0.000260558199871485,
+          "max": 0.000260558199871485
+        }
+      },
+      "staging": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 304.821,
+          "min": 300.31,
+          "max": 305.1655
+        },
+        "lcpMs": {
+          "median": 304.821,
+          "min": 300.31,
+          "max": 305.1655
+        },
+        "speedIndexMs": {
+          "median": 304.821,
+          "min": 300.31,
+          "max": 305.1655
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.000260558199871485,
+          "min": 0,
+          "max": 0.000260558199871485
+        }
+      },
+      "deltas": {
+        "score": {
+          "absolute": 0,
+          "percent": 0
+        },
+        "fcpMs": {
+          "absolute": 24.07800000000003,
+          "percent": 8.576527286521848
+        },
+        "lcpMs": {
+          "absolute": 24.07800000000003,
+          "percent": 8.576527286521848
+        },
+        "speedIndexMs": {
+          "absolute": 24.07800000000003,
+          "percent": 8.576527286521848
+        },
+        "tbtMs": {
+          "absolute": 0,
+          "percent": null
+        },
+        "cls": {
+          "absolute": 0,
+          "percent": 0
+        }
+      }
+    },
+    {
+      "mode": "desktop",
+      "route": "/privacy/",
+      "production": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 280.775,
+          "min": 280.243,
+          "max": 280.95050000000003
+        },
+        "lcpMs": {
+          "median": 280.775,
+          "min": 280.243,
+          "max": 280.95050000000003
+        },
+        "speedIndexMs": {
+          "median": 280.775,
+          "min": 280.243,
+          "max": 280.95050000000003
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.0003704316159307201,
+          "min": 0.0003704316159307201,
+          "max": 0.0003704316159307201
+        }
+      },
+      "staging": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 305.264,
+          "min": 304.536,
+          "max": 307.1755
+        },
+        "lcpMs": {
+          "median": 305.264,
+          "min": 304.536,
+          "max": 307.1755
+        },
+        "speedIndexMs": {
+          "median": 305.264,
+          "min": 304.536,
+          "max": 307.1755
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.0003704316159307201,
+          "min": 0,
+          "max": 0.0003704316159307201
+        }
+      },
+      "deltas": {
+        "score": {
+          "absolute": 0,
+          "percent": 0
+        },
+        "fcpMs": {
+          "absolute": 24.489000000000033,
+          "percent": 8.721930371293753
+        },
+        "lcpMs": {
+          "absolute": 24.489000000000033,
+          "percent": 8.721930371293753
+        },
+        "speedIndexMs": {
+          "absolute": 24.489000000000033,
+          "percent": 8.721930371293753
+        },
+        "tbtMs": {
+          "absolute": 0,
+          "percent": null
+        },
+        "cls": {
+          "absolute": 0,
+          "percent": 0
+        }
+      }
+    },
+    {
+      "mode": "desktop",
+      "route": "/thank-you/",
+      "production": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 280.1385,
+          "min": 280.04200000000003,
+          "max": 280.64599999999996
+        },
+        "lcpMs": {
+          "median": 280.1385,
+          "min": 280.04200000000003,
+          "max": 280.64599999999996
+        },
+        "speedIndexMs": {
+          "median": 280.1385,
+          "min": 280.04200000000003,
+          "max": 280.64599999999996
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.000260558199871485,
+          "min": 0.000260558199871485,
+          "max": 0.000260558199871485
+        }
+      },
+      "staging": {
+        "score": {
+          "median": 100,
+          "min": 100,
+          "max": 100
+        },
+        "fcpMs": {
+          "median": 306.576,
+          "min": 296.919,
+          "max": 311.983
+        },
+        "lcpMs": {
+          "median": 306.576,
+          "min": 296.919,
+          "max": 311.983
+        },
+        "speedIndexMs": {
+          "median": 306.576,
+          "min": 296.919,
+          "max": 311.983
+        },
+        "tbtMs": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "cls": {
+          "median": 0.000260558199871485,
+          "min": 0.000260558199871485,
+          "max": 0.000260558199871485
+        }
+      },
+      "deltas": {
+        "score": {
+          "absolute": 0,
+          "percent": 0
+        },
+        "fcpMs": {
+          "absolute": 26.4375,
+          "percent": 9.437296194560904
+        },
+        "lcpMs": {
+          "absolute": 26.4375,
+          "percent": 9.437296194560904
+        },
+        "speedIndexMs": {
+          "absolute": 26.4375,
+          "percent": 9.437296194560904
+        },
+        "tbtMs": {
+          "absolute": 0,
+          "percent": null
+        },
+        "cls": {
+          "absolute": 0,
+          "percent": 0
+        }
+      }
+    }
+  ],
+  "stagingCategorySummary": [
+    {
+      "route": "/",
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 66,
+      "agenticBrowsing": 100
+    },
+    {
+      "route": "/about/",
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 66,
+      "agenticBrowsing": 100
+    },
+    {
+      "route": "/process/",
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 66,
+      "agenticBrowsing": 100
+    },
+    {
+      "route": "/contact/",
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 66,
+      "agenticBrowsing": 100
+    },
+    {
+      "route": "/privacy/",
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 66,
+      "agenticBrowsing": 100
+    },
+    {
+      "route": "/thank-you/",
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 66,
+      "agenticBrowsing": 100
+    }
+  ]
+}

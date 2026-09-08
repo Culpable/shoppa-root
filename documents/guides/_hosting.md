@@ -10,7 +10,7 @@ Shoppa Root is migrating its public marketing site from GitHub Pages to Cloudfla
 | Worker runtime in the repository | Complete - 8 September 2026 |
 | Local Worker contract | Complete - 8 September 2026 |
 | Workers provisioning | Complete - 8 September 2026 |
-| Staging proof | In progress - 8 September 2026; blocked on Web Analytics beacon |
+| Staging proof | Complete - 8 September 2026; awaiting cutover approval |
 | Production cutover | Not started |
 | Decommission | Not started |
 
@@ -284,18 +284,81 @@ Every other field is unchanged. Rollback is the same `PUT` with `ai_bots_protect
 
 ## Cloudflare Web Analytics beacon
 
-A request with `Accept: text/html` appends `<script src="https://static.cloudflareinsights.com/beacon.min.js/...">` with token `f3f18752153b4a1da0aa6587baae3efd`. `rum/site_info/list` still has no site for zone `shoppa.au`. Hosted body-parity against `dist` therefore fails for browser-like requests. Disabling it is account-level (autonomy stop 2) and is not applied until the user approves.
+A request with `Accept: text/html` appended `<script src="https://static.cloudflareinsights.com/beacon.min.js/...">`. `rum/site_info/list` had no site for the zone. The user approved the FinTrace disable on 8 September 2026.
 
-Proposed disable, matching FinTrace: create or locate the zone RUM site, then
+| Call | Body |
+| --- | --- |
+| `POST /accounts/213ab3604485056376263d22fa242742/rum/site_info` | `{"zone_tag": "dae30eef9757b84c7217dbd9dd624ff9", "auto_install": true}` created site `e3e00a5697024d2195628d21f22e9717` |
+| `PUT /accounts/213ab3604485056376263d22fa242742/rum/site_info/e3e00a5697024d2195628d21f22e9717` | `{"zone_tag": "dae30eef9757b84c7217dbd9dd624ff9", "auto_install": true, "enabled": false}` |
 
-`PUT /accounts/213ab3604485056376263d22fa242742/rum/site_info/<site_tag>`
-`{"zone_tag": "dae30eef9757b84c7217dbd9dd624ff9", "auto_install": true, "enabled": false}`
+`ruleset.enabled` is `false`. Browser-Accept HTML matched `dist` within a minute. Rollback is the same `PUT` with `"enabled": true`.
 
-Rollback is the same call with `"enabled": true`.
+## Staging proof
+
+Every check below ran against `https://staging.shoppa.au/` on 8 September 2026 after the beacon was disabled, serving Worker version `00722e95-13c2-4782-bff1-dc299044be5d`.
+
+| Check | Result |
+| --- | --- |
+| `verify-hosted-parity.mjs --noindex` | Pass. Six documents and three discovery files byte-identical to `dist`, plain and with a browser `Accept` header. Full header policy, `X-Robots-Tag: noindex`, no body names `staging.shoppa.au` or `workers.dev` |
+| `run-http-contract.mjs` | 20 of 20 cases |
+| `verify-hosted-transport.mjs` | IPv4 and IPv6 identical bodies; Brotli on HTML and JS; HTTP/2 with `h3` advertised; hashed `/_astro/*.js` edge-cached |
+| `verify-negotiated-content.mjs` | Built Markdown equals deployed documents on all six routes; HTML `304` / Markdown `200`; slashless `307`; `HEAD` empty |
+| `verify-browser-runtime.mjs` | Seven documents at `1440x900` and `390x844`: zero console errors, CSP violations, failed first-party requests, or horizontal overflow |
+| `PLAYWRIGHT_BASE_URL=https://staging.shoppa.au playwright test` | 60 passed |
+
+### Lighthouse matrix
+
+96 performance reports with Lighthouse `13.4.1`: 5 mobile and 3 desktop runs per route per host. Production `c23297d` (GitHub Pages), staging Worker `00722e95`. Summary: `documents/guides/parity/lighthouse-summary.json`.
+
+**Mobile medians**
+
+| Route | Prod score | Staging score | Δ | Prod LCP | Staging LCP | Δ | Prod TBT | Staging TBT | Δ | Prod SI | Staging SI | Δ |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `/` | 100 | 100 | +0 | 1,406 | 1,372 | -34 | 0 | 0 | +0 | 1,256 | 1,276 | +20 |
+| `/about/` | 100 | 100 | +0 | 1,201 | 1,222 | +21 | 0 | 0 | +0 | 1,051 | 1,072 | +21 |
+| `/process/` | 100 | 100 | +0 | 1,230 | 1,223 | -7 | 0 | 0 | +0 | 1,230 | 1,220 | -10 |
+| `/contact/` | 100 | 100 | +0 | 1,201 | 1,224 | +23 | 0 | 0 | +0 | 1,051 | 1,074 | +23 |
+| `/privacy/` | 100 | 100 | +0 | 1,200 | 1,227 | +26 | 0 | 0 | +0 | 1,050 | 1,077 | +26 |
+| `/thank-you/` | 100 | 100 | +0 | 1,201 | 1,223 | +22 | 0 | 0 | +0 | 1,051 | 1,073 | +22 |
+
+**Desktop medians**
+
+| Route | Prod score | Staging score | Δ | Prod LCP | Staging LCP | Δ | Prod TBT | Staging TBT | Δ | Prod SI | Staging SI | Δ |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `/` | 100 | 100 | +0 | 334 | 344 | +11 | 0 | 0 | +0 | 294 | 317 | +23 |
+| `/about/` | 100 | 100 | +0 | 321 | 344 | +23 | 0 | 0 | +0 | 281 | 304 | +23 |
+| `/process/` | 100 | 100 | +0 | 320 | 346 | +25 | 0 | 0 | +0 | 280 | 306 | +25 |
+| `/contact/` | 100 | 100 | +0 | 281 | 305 | +24 | 0 | 0 | +0 | 281 | 305 | +24 |
+| `/privacy/` | 100 | 100 | +0 | 281 | 305 | +24 | 0 | 0 | +0 | 281 | 305 | +24 |
+| `/thank-you/` | 100 | 100 | +0 | 280 | 307 | +26 | 0 | 0 | +0 | 280 | 307 | +26 |
+
+Homepage LCP mobile range: production 1,351-1,610 ms, staging 1,371-1,434 ms. Staging is not worse beyond run-to-run range, so CSP fallback (b) is not applied.
+
+**HTML transfer (gzip/br decoded download size from curl --compressed)**
+
+| Route | Production | Staging |
+| --- | ---: | ---: |
+| `/` | 17,243 | 17,020 |
+| `/about/` | 11,106 | 10,947 |
+| `/process/` | 12,449 | 12,282 |
+| `/contact/` | 9,703 | 9,554 |
+| `/privacy/` | 9,646 | 9,494 |
+| `/thank-you/` | 10,074 | 9,928 |
+
+**Staging category scores** (one mobile run per route). SEO is excluded from comparison: the only failing audit is `is-crawlable`, caused by the deliberate `X-Robots-Tag: noindex`.
+
+| Route | Accessibility | Best practices | SEO | Agentic browsing |
+| --- | ---: | ---: | ---: | ---: |
+| `/` | 100 | 100 | 66 | 100 |
+| `/about/` | 100 | 100 | 66 | 100 |
+| `/process/` | 100 | 100 | 66 | 100 |
+| `/contact/` | 100 | 100 | 66 | 100 |
+| `/privacy/` | 100 | 100 | 66 | 100 |
+| `/thank-you/` | 100 | 100 | 66 | 100 |
 
 ## Cutover packet and rollback
 
-Snapshot: `documents/guides/parity/cutover-snapshot.json` captured `2026-09-08T04:54:39.039Z`. Twenty DNS records, `always_use_https: off`, bot management as after D-6, Worker deployment `7cee0199-f69f-412a-86cb-827946c11d90` serving the staging-route release, GitHub Pages still `https://shoppa.au/`.
+Snapshot: `documents/guides/parity/cutover-snapshot.json` captured `2026-09-08T05:21:20Z` (refreshed after the RUM disable). Twenty DNS records, `always_use_https: off`, bot management as after D-6, Worker deployment `af9fed32-392e-47d1-9a80-c6c06f3a3bb4` at version `00722e95-13c2-4782-bff1-dc299044be5d`, GitHub Pages still `https://shoppa.au/`.
 
 Rollback payloads generated from that snapshot:
 
@@ -305,4 +368,5 @@ Rollback payloads generated from that snapshot:
 - Disable any `http_request_dynamic_redirect` ruleset created at cutover.
 - `PATCH always_use_https` to `off`.
 - Bot-management restore as above.
+- RUM restore: `PUT` site `e3e00a5697024d2195628d21f22e9717` with `"enabled": true`.
 - `node scripts/cutover.mjs rollback` is the executable form after cutover has written `cutover-snapshot-applied.json`.

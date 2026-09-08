@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-09-08T04:54:39.039Z",
+  "capturedAt": "2026-09-08T05:21:40.160Z",
   "zoneId": "dae30eef9757b84c7217dbd9dd624ff9",
   "accountId": "213ab3604485056376263d22fa242742",
   "dnsRecords": [
@@ -301,17 +301,6 @@
       "enabled": true
     },
     {
-      "id": "4a23302ca1e6aa3dde9ebadd9eefcf5c4541a4d1",
-      "zone_id": "9f79f842598f32ede2fb86d93325260c",
-      "zone_name": "fintrace.com.au",
-      "hostname": "fintrace.com.au",
-      "service": "fintrace-root",
-      "environment": "production",
-      "cert_id": "f85ab010-d2d3-4511-a358-6c9e3288bf9c",
-      "previews_enabled": false,
-      "enabled": true
-    },
-    {
       "id": "1f244a2bc91612e583f30cbda311cfbe5dc9b5e8",
       "zone_id": "0534ecfcfde9d322566af12ec11c1bef",
       "zone_name": "bulma.com.au",
@@ -330,6 +319,17 @@
       "service": "shoppa-root",
       "environment": "production",
       "cert_id": "0a0c8cf9-4aea-403c-809c-ca7af6f8eb0a",
+      "previews_enabled": false,
+      "enabled": true
+    },
+    {
+      "id": "4a23302ca1e6aa3dde9ebadd9eefcf5c4541a4d1",
+      "zone_id": "9f79f842598f32ede2fb86d93325260c",
+      "zone_name": "fintrace.com.au",
+      "hostname": "fintrace.com.au",
+      "service": "fintrace-root",
+      "environment": "production",
+      "cert_id": "f85ab010-d2d3-4511-a358-6c9e3288bf9c",
       "previews_enabled": false,
       "enabled": true
     }
@@ -365,7 +365,7 @@
     }
   ],
   "workerDeployment": {
-    "id": "7cee0199-f69f-412a-86cb-827946c11d90",
+    "id": "af9fed32-392e-47d1-9a80-c6c06f3a3bb4",
     "source": "wrangler",
     "strategy": "percentage",
     "author_email": "jake.sacino@gmail.com",
@@ -374,11 +374,11 @@
     },
     "versions": [
       {
-        "version_id": "6ab67084-449b-4986-b10b-4dc8ce2c7d06",
+        "version_id": "00722e95-13c2-4782-bff1-dc299044be5d",
         "percentage": 100
       }
     ],
-    "created_on": "2026-09-08T04:52:02.725934Z"
+    "created_on": "2026-09-08T04:56:36.841515Z"
   },
   "githubPages": {
     "url": "https://api.github.com/repos/Culpable/shoppa-root/pages",

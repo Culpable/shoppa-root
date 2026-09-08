@@ -13,6 +13,7 @@ node_modules/
 .astro/
 playwright-report/
 test-results/
+documents/guides/parity/lighthouse/
 *.tsbuildinfo
 .wrangler/
 worker-configuration.d.ts

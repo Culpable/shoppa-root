@@ -101,6 +101,56 @@ function readSnapshot() {
   return state;
 }
 
+const APPLIED_PATH = `${SNAPSHOT_PATH.replace(/\.json$/, '')}-applied.json`;
+
+/**
+ * A create body for one snapshotted record.
+ *
+ * The snapshot stores `comment: null` and `tags: []` for a record that carries
+ * neither, and Cloudflare rejects a null comment on create, so both are dropped
+ * unless they hold a value. This runs on the restore paths only, where a
+ * rejected body would leave the apex with no record at all.
+ */
+function dnsCreateBody(record) {
+  const { id, comment, tags, ...body } = record;
+  if (comment) body.comment = comment;
+  if (tags?.length) body.tags = tags;
+  return JSON.stringify(body);
+}
+
+/** Record what cutover has already applied so rollback never depends on a later step succeeding. */
+function writeApplied(update) {
+  let applied = {};
+  try {
+    applied = JSON.parse(readFileSync(APPLIED_PATH, 'utf8'));
+  } catch {
+    applied = {};
+  }
+  const merged = { ...applied, ...update, appliedAt: new Date().toISOString() };
+  writeFileSync(APPLIED_PATH, `${JSON.stringify(merged, null, 2)}\n`);
+  return merged;
+}
+
+/** The applied file if cutover wrote one, otherwise the live state discovered by name. */
+async function readApplied() {
+  try {
+    return JSON.parse(readFileSync(APPLIED_PATH, 'utf8'));
+  } catch {
+    const domains = await api(`/accounts/${ACCOUNT_ID}/workers/domains`);
+    const rulesets = await api(`/zones/${ZONE_ID}/rulesets`);
+    const discovered = {
+      apexDomainId: domains.find((entry) => entry.hostname === APEX)?.id ?? null,
+      redirectRulesetId: rulesets.find(
+        (entry) => entry.phase === 'http_request_dynamic_redirect' && entry.name === REDIRECT_RULE_NAME,
+      )?.id ?? null,
+    };
+    process.stdout.write(
+      `no applied file; discovered apex domain ${discovered.apexDomainId ?? 'none'} and redirect ruleset ${discovered.redirectRulesetId ?? 'none'}\n`,
+    );
+    return discovered;
+  }
+}
+
 async function cutover() {
   const state = readSnapshot();
   const apexRecordIds = state.dnsRecords
@@ -119,10 +169,11 @@ async function cutover() {
     });
   } catch (error) {
     for (const record of state.apexARecords) {
-      await api(`/zones/${ZONE_ID}/dns_records`, { method: 'POST', body: JSON.stringify(record) });
+      await api(`/zones/${ZONE_ID}/dns_records`, { method: 'POST', body: dnsCreateBody(record) });
     }
     throw new Error(`Apex attach failed; the four A records were restored. Cause: ${error.message}`);
   }
+  writeApplied({ apexDomainId: attached.id, apexCertId: attached.cert_id });
   process.stdout.write(`apex custom domain: ${attached.id} cert ${attached.cert_id}\n`);
 
   await api(`/zones/${ZONE_ID}/dns_records/${WWW_RECORD_ID}`, {
@@ -161,30 +212,31 @@ async function cutover() {
       ],
     }),
   });
+  writeApplied({ redirectRulesetId: ruleset.id });
   process.stdout.write(`redirect ruleset: ${ruleset.id}\n`);
 
   await api(`/zones/${ZONE_ID}/settings/always_use_https`, {
     method: 'PATCH',
     body: JSON.stringify({ value: 'on' }),
   });
+  writeApplied({ alwaysUseHttpsWasSetOn: true });
   process.stdout.write(`always_use_https: ${state.alwaysUseHttps} -> on\n`);
-
-  writeFileSync(
-    `${SNAPSHOT_PATH.replace(/\.json$/, '')}-applied.json`,
-    `${JSON.stringify({ appliedAt: new Date().toISOString(), apexDomainId: attached.id, apexCertId: attached.cert_id, redirectRulesetId: ruleset.id }, null, 2)}\n`,
-  );
 }
 
 async function rollback() {
   const state = readSnapshot();
-  const applied = JSON.parse(readFileSync(`${SNAPSHOT_PATH.replace(/\.json$/, '')}-applied.json`, 'utf8'));
+  const applied = await readApplied();
 
   await api(`/zones/${ZONE_ID}/settings/always_use_https`, {
     method: 'PATCH',
     body: JSON.stringify({ value: state.alwaysUseHttps }),
   });
-  await api(`/zones/${ZONE_ID}/rulesets/${applied.redirectRulesetId}`, { method: 'DELETE' }).catch(() => {});
-  await api(`/accounts/${ACCOUNT_ID}/workers/domains/${applied.apexDomainId}`, { method: 'DELETE' }).catch(() => {});
+  if (applied.redirectRulesetId) {
+    await api(`/zones/${ZONE_ID}/rulesets/${applied.redirectRulesetId}`, { method: 'DELETE' }).catch(() => {});
+  }
+  if (applied.apexDomainId) {
+    await api(`/accounts/${ACCOUNT_ID}/workers/domains/${applied.apexDomainId}`, { method: 'DELETE' }).catch(() => {});
+  }
 
   const current = await api(`/zones/${ZONE_ID}/dns_records?per_page=100`);
   for (const record of current.filter((entry) => entry.name === APEX && ['A', 'AAAA', 'CNAME'].includes(entry.type))) {
@@ -194,10 +246,9 @@ async function rollback() {
     await api(`/zones/${ZONE_ID}/dns_records/${record.id}`, { method: 'DELETE' });
   }
   for (const record of state.apexARecords) {
-    await api(`/zones/${ZONE_ID}/dns_records`, { method: 'POST', body: JSON.stringify(record) });
+    await api(`/zones/${ZONE_ID}/dns_records`, { method: 'POST', body: dnsCreateBody(record) });
   }
-  const { id, ...wwwBody } = state.wwwRecord;
-  await api(`/zones/${ZONE_ID}/dns_records`, { method: 'POST', body: JSON.stringify(wwwBody) });
+  await api(`/zones/${ZONE_ID}/dns_records`, { method: 'POST', body: dnsCreateBody(state.wwwRecord) });
   process.stdout.write('Rollback applied: GitHub Pages records restored.\n');
 }
 

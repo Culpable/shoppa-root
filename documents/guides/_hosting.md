@@ -356,6 +356,22 @@ Homepage LCP mobile range: production 1,351-1,610 ms, staging 1,371-1,434 ms. St
 | `/privacy/` | 100 | 100 | 66 | 100 |
 | `/thank-you/` | 100 | 100 | 66 | 100 |
 
+## Browser evidence
+
+`node scripts/capture-hosted-screenshots.mjs --base=https://staging.shoppa.au --prefix=staging` wrote fourteen full-page captures to `documents/verification/screenshots/workers-migration/`: `staging-{home,about,process,contact,privacy,thank-you,not-found}-{desktop,mobile}.png` at `1440x900` and `390x844`. Step 6 repeats the run with `--prefix=apex` against `https://shoppa.au` so the two hosts can be compared image by image.
+
+## Implementation review, 8 September 2026
+
+Steps 1 to 5 were re-verified after the fact. `pnpm build:worker`, `pnpm test` (8 unit tests, 20 build artefacts, 60 Playwright), `pnpm test:http` and `verify-negotiated-content.mjs` on `wrangler dev`, and `verify-hosted-parity.mjs`, `run-http-contract.mjs` and `verify-hosted-transport.mjs` on staging all passed again. Live DNS matched `cutover-snapshot.json` with zero drift; bot management, `always_use_https: off`, the absent redirect entrypoint, the Workers domain list, both Workers' subdomain flags, the three Keychain entries, and GitHub Pages `built` all matched the record. `https://shoppa.au/` still answers `server: GitHub.com`.
+
+Three fixes landed in that pass:
+
+- `scripts/capture-hosted-screenshots.mjs` was added and the staging captures taken; that evidence had never been produced.
+- `scripts/cutover.mjs` now records each applied change as it lands, discovers the apex Workers domain and redirect ruleset by name when no applied file exists, and strips the snapshot's `comment: null` and empty `tags` from every DNS restore body. Cloudflare rejects a null comment on create, so the previous bodies could have failed at the worst moment.
+- `scripts/run-http-contract.mjs` accepts `--base-url <url>` as well as a positional origin; the flag form previously ran against the literal string.
+
+The Worker version drifts ahead of any snapshot because every push to `main` redeploys through Workers Builds. Deployment `af9fed32` (version `00722e95`) named below is the staging-proof state, not necessarily the live one; Step 6 opens by re-running `cutover.mjs snapshot`.
+
 ## Cutover packet and rollback
 
 Snapshot: `documents/guides/parity/cutover-snapshot.json` captured `2026-09-08T05:21:20Z` (refreshed after the RUM disable). Twenty DNS records, `always_use_https: off`, bot management as after D-6, Worker deployment `af9fed32-392e-47d1-9a80-c6c06f3a3bb4` at version `00722e95-13c2-4782-bff1-dc299044be5d`, GitHub Pages still `https://shoppa.au/`.
@@ -369,4 +385,4 @@ Rollback payloads generated from that snapshot:
 - `PATCH always_use_https` to `off`.
 - Bot-management restore as above.
 - RUM restore: `PUT` site `e3e00a5697024d2195628d21f22e9717` with `"enabled": true`.
-- `node scripts/cutover.mjs rollback` is the executable form after cutover has written `cutover-snapshot-applied.json`.
+- `node scripts/cutover.mjs rollback` is the executable form. It reads `cutover-snapshot-applied.json`, which `cutover` now writes step by step, and falls back to finding the apex Workers domain by hostname and the redirect ruleset by name if that file is missing.

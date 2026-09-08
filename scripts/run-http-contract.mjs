@@ -57,7 +57,13 @@ const runtimeManifestPath = resolve(temporaryDirectory, 'http-contract.json');
 
 try {
   await writeFile(runtimeManifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
-  const exitCode = await runVerifier(runtimeManifestPath, process.argv[2]);
+  // Accept the base URL positionally or as `--base-url <url>`, the flag the
+  // verifier itself takes, so the hosted checks cannot silently run against the
+  // literal string `--base-url` and report an unrelated failure.
+  const runnerArguments = process.argv.slice(2);
+  const flagIndex = runnerArguments.indexOf('--base-url');
+  const baseUrl = flagIndex === -1 ? runnerArguments[0] : runnerArguments[flagIndex + 1];
+  const exitCode = await runVerifier(runtimeManifestPath, baseUrl);
   process.exitCode = exitCode;
 } finally {
   await unlink(runtimeManifestPath).catch(() => undefined);

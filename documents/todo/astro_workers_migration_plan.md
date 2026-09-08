@@ -31,7 +31,7 @@ The migration is complete when:
 - `wrangler.jsonc`, `src/worker.ts`, `src/lib/agent-readable-http/`, `src/headers/_headers`, and `scripts/generate-agent-markdown.mjs` exist at the repository root, and `pnpm build:worker` produces a `dist/` that the Worker serves with the Section 3.1 delivery contract (D-2, D-10).
 - Cloudflare Workers Builds deploys `shoppa-root` from `main` and uploads non-promoted versions of every other branch to `shoppa-root-preview` (D-3).
 - The user reviewed `https://staging.shoppa.au/` with the hosted-proof and Lighthouse report and explicitly approved cutover.
-- `https://shoppa.au/` is served by the Worker; `http://shoppa.au/<path>` returns `301` to HTTPS; `https://www.shoppa.au/<path>?<query>` returns one `308` to the matching apex URL; every discovery file still names only `https://shoppa.au`; the sixteen non-web DNS records are byte-identical to the pre-cutover snapshot.
+- `https://shoppa.au/` is served by the Worker; `http://shoppa.au/<path>` returns `301` to HTTPS; `https://www.shoppa.au/<path>?<query>` returns one `308` to the matching apex URL; every discovery file still names only `https://shoppa.au`; the fourteen non-web DNS records are byte-identical to the pre-cutover snapshot.
 - GitHub Pages is disabled, `.github/workflows/deploy.yml` and `public/CNAME` are removed, and `AGENTS.md`, `README.md`, `DESIGN.md`, `documents/AGENTS/testing.md`, `documents/AGENTS/code-standards.md`, and `documents/guides/_hosting.md` describe Workers as the only host.
 
 ---
@@ -106,11 +106,11 @@ flowchart LR
 
 - **REQ-1 (MUST):** Add `wrangler` `4.129.0` exact as a devDependency; add `wrangler.jsonc` at the repository root with `name: 'shoppa-root'`, `account_id`, `compatibility_date` set to the execution date, `main: 'src/worker.ts'`, `assets: { binding: 'ASSETS', directory: './dist', not_found_handling: '404-page', run_worker_first: <the FinTrace pattern list> }`, `workers_dev: false`, `preview_urls: false`, `routes: []` until Step 5, and `env.preview` with `name: 'shoppa-root-preview'`, `workers_dev: true`, `preview_urls: true`, `routes: []` (D-15).
 - **REQ-2 (MUST):** Every route stays prerendered. The only request-time code is the negotiated Markdown selector `src/worker.ts` with the `ASSETS` binding (D-2). No adapter, no on-demand route, no other binding, no `nodejs_compat`, no secret.
-- **REQ-3 (MUST):** `pnpm build` keeps its current output (Pages-compatible; no `.md`, no `_headers`). New `pnpm build:worker` runs `pnpm build && node scripts/generate-agent-markdown.mjs dist https://shoppa.au && node scripts/publish-headers.mjs`, writing Markdown under `dist/_agent-markdown/` for the six documents plus the recovery document and copying `src/headers/_headers` to `dist/_headers`. `pnpm deploy` is `wrangler deploy --env=""`; `pnpm deploy:preview` is `wrangler versions upload --env preview`; `pnpm worker:dev` is `wrangler dev`; `pnpm test:http` runs the HTTP contract.
+- **REQ-3 (MUST):** `pnpm build` keeps its visitor-facing output (Pages-compatible; no `.md`, no `_headers`). New `pnpm build:worker` runs `pnpm build && node --experimental-strip-types scripts/generate-agent-markdown.mjs dist https://shoppa.au && node scripts/publish-headers.mjs`, writing Markdown under `dist/_agent-markdown/` for the six documents plus the recovery document and copying `src/headers/_headers` to `dist/_headers`. `pnpm deploy` is `wrangler deploy --env=""`; `pnpm deploy:preview` is `wrangler versions upload --env preview`; `pnpm worker:dev` is `wrangler dev`; `pnpm test:http` runs the HTTP contract. As built: `pnpm build` is `wrangler types && astro check && astro build`, because `scripts/validate-build.mjs` and the Markdown generator import the Worker's TypeScript modules and `astro check` needs the generated `Env` type; the generator runs under `--experimental-strip-types` for the same reason. Neither changes a byte of what a visitor receives, and `worker-configuration.d.ts` stays untracked.
 - **REQ-4 (MUST):** `astro.config.mjs` adds `vite.build.assetsInlineLimit: 0` so the landing module is emitted as `/_astro/*.js` and no document contains an executable inline script (D-10). `build.inlineStylesheets: 'always'` is unchanged (D-17). The config comment that cites the GitHub Pages cache cap is rewritten in Step 7.
 - **REQ-5 (MUST):** `src/headers/_headers` provides `/*`: `Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'`, `Permissions-Policy` as in FinTrace, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`; `/llms.txt` and `/robots.txt` `Content-Type: text/plain; charset=utf-8`; `/_astro/*` `Cache-Control: public, max-age=31536000, immutable`; `https://staging.shoppa.au/*` and `https://:version.:subdomain.workers.dev/*` `X-Robots-Tag: noindex` (D-11). No HSTS (D-16).
 - **REQ-6 (MUST):** Worker document responses carry every `/*` header from `_headers`, `Vary: Accept`, the source status, and a byte-identical HTML body when HTML is selected; Markdown responses use `text/markdown; charset=utf-8`; direct `/_agent-markdown/` requests return `404`; unknown paths return `dist/404.html` with status `404` for HTML and the Markdown recovery document for Markdown; `406` when neither is acceptable; conditional requests work across both representations.
-- **REQ-7 (MUST):** `scripts/validate-build.mjs` keeps every current assertion for `pnpm build` output and, when run after `pnpm build:worker`, additionally asserts `dist/_headers` matches the source template and `dist/_agent-markdown/` holds exactly `index.md`, `about.md`, `process.md`, `contact.md`, `privacy.md`, `thank-you.md`, and `404.md`; the "no `.md` in `dist/`" assertion is scoped to exclude `_agent-markdown/` (Section 6.1 records why). `scripts/serve-build.mjs` is unchanged; the Playwright suite keeps passing unchanged apart from the Section 6.1 rows.
+- **REQ-7 (MUST):** `scripts/validate-build.mjs` keeps every current assertion for `pnpm build` output and, when run after `pnpm build:worker`, additionally asserts `dist/_headers` matches the source template and `dist/_agent-markdown/` holds exactly `index.md`, `about/index.md`, `process/index.md`, `contact/index.md`, `privacy/index.md`, `thank-you/index.md`, and `404.md` (the route mirrors the site's `trailingSlash: 'always'` paths, so `routeToInternalMarkdownPath` maps `/about/` to `_agent-markdown/about/index.md`; `404.md` is flat because it is selected by status, not by path); the "no `.md` in `dist/`" assertion is scoped to exclude `_agent-markdown/` (Section 6.1 records why). `scripts/serve-build.mjs` is unchanged; the Playwright suite keeps passing unchanged apart from the Section 6.1 rows.
 - **REQ-8 (MUST):** Workers Builds is the sole release controller (D-3): repository `Culpable/shoppa-root`, root directory `/` (repository root), production trigger `main` with build `pnpm build:worker` and deploy `pnpm deploy`, preview trigger every other branch with build `pnpm build:worker` and deploy `pnpm deploy:preview`, each trigger on its own script tag, build variables `NODE_VERSION=22.23.1` and `PNPM_VERSION=11.22.0`, and a dedicated account API token stored only in Keychain and the Builds token registry.
 - **REQ-9 (MUST):** Before any custom domain, both Workers are bootstrapped from this machine (`wrangler deploy --env preview`, then `wrangler deploy --env=""` with `routes: []`) and verified through a `wrangler versions upload --env preview --preview-alias migration` URL.
 - **REQ-10 (MUST):** `staging.shoppa.au` is attached as a Workers custom domain on `shoppa-root` only after the local gate and the preview-URL proof pass (D-7). Cloudflare creates its DNS record; no manual record is created. Every staging response carries `X-Robots-Tag: noindex`, and no body, canonical, sitemap, `llms.txt`, JSON-LD, or Open Graph value contains `staging.shoppa.au` or `workers.dev`.
@@ -144,7 +144,7 @@ flowchart LR
 
 **Compatibility:**
 - [ ] `https://shoppa.au/` stays on GitHub Pages until the approved cutover; Pages deploys keep succeeding after each pre-cutover push.
-- [ ] The sixteen non-web DNS records are byte-identical to the snapshot after staging attach and after cutover.
+- [ ] The fourteen non-web DNS records are byte-identical to the snapshot after staging attach and after cutover.
 
 **Ops/Docs:**
 - [ ] `documents/guides/_hosting.md` holds the inventory, token map, DNS before-state, bot-management before-state, cutover packet, rollback payloads, Lighthouse tables, and release evidence.
@@ -266,7 +266,7 @@ flowchart LR
 
 ### 4.3 Background
 
-**Full current DNS inventory for zone `shoppa.au` (read during planning; refresh before every write).** Twenty records, all unproxied. Only the four apex `A` records and the `www` `CNAME` are migration targets. TTL `1` is Cloudflare's automatic TTL.
+**Full current DNS inventory for zone `shoppa.au` (read during planning; refresh before every write).** Nineteen records, all unproxied. Only the four apex `A` records and the `www` `CNAME` are migration targets. TTL `1` is Cloudflare's automatic TTL.
 
 | Type | Name | Content | Priority | TTL | Record ID | Role |
 | --- | --- | --- | ---: | ---: | --- | --- |
@@ -313,7 +313,7 @@ flowchart LR
 
 #### 1.2 Success Criteria
 - `documents/guides/parity/production-baseline.json` contains one entry for each of 6 routes, the 404 document, 3 discovery files, and every image and identity asset, each with status, content type, and body SHA-256; `jq` confirms the counts and every HTML hash equals the local `dist/` hash.
-- `documents/guides/_hosting.md` records the account, zone ID, nameservers, all 20 DNS records with IDs, the zone settings and bot-management values listed in Section 2.5, the three ruleset IDs, the certificate pack IDs, the Workers and domains inventory, the Builds token names, the GitHub repository and owner IDs, and the Pages state.
+- `documents/guides/_hosting.md` records the account, zone ID, nameservers, all 19 DNS records with IDs, the zone settings and bot-management values listed in Section 2.5, the three ruleset IDs, the certificate pack IDs, the Workers and domains inventory, the Builds token names, the GitHub repository and owner IDs, and the Pages state.
 - `pnpm build && pnpm test` exits 0.
 - No Cloudflare resource, GitHub setting, or DNS record changed (re-query the DNS export and diff against the recorded table: zero differences).
 
@@ -379,7 +379,7 @@ flowchart LR
 - Present the user with `https://shoppa.au/`, `https://staging.shoppa.au/`, the hosted-proof results, the Lighthouse table, the header result, the bot-management change, and the rollback packet, then request explicit approval with the native question tool. Stop if approval is withheld; leave staging live.
 
 #### 5.2 Success Criteria
-- `GET /accounts/{account_id}/workers/domains` lists `staging.shoppa.au` on `shoppa-root`, `production`, zone `dae30eef9757b84c7217dbd9dd624ff9`, certificate active; the only new DNS record is the Cloudflare-created `staging` record; all twenty pre-existing records are byte-identical to the Step 1 table.
+- `GET /accounts/{account_id}/workers/domains` lists `staging.shoppa.au` on `shoppa-root`, `production`, zone `dae30eef9757b84c7217dbd9dd624ff9`, certificate active; the only new DNS record is the Cloudflare-created `staging` record; all nineteen pre-existing records are byte-identical to the Step 1 table, and the zone then holds twenty.
 - Bot management reads back with `ai_bots_protection: "disabled"`, `is_robots_txt_managed: false`, and every other field equal to the recorded before-state.
 - `curl -I https://staging.shoppa.au/` returns `200`, `server: cloudflare`, `X-Robots-Tag: noindex`, the REQ-5 headers, `Vary: Accept`, `cache-control: public, max-age=0, must-revalidate`; `/robots.txt` body SHA-256 equals `dist/robots.txt`; `/_astro/*` immutable; `/llms.txt` charset; Markdown negotiation and the `404` recovery work; no document contains `static.cloudflareinsights.com`.
 - No response body, canonical, sitemap, `llms.txt`, JSON-LD, or Open Graph value contains `staging.shoppa.au` or `workers.dev`.
@@ -396,6 +396,46 @@ Steps 1-4 are done. Step 5 hosted proof is done. Step 6 has **not** started.
 - Evidence: `documents/guides/_hosting.md`, `documents/guides/parity/cutover-snapshot.json`, `documents/guides/parity/lighthouse-summary.json`.
 - Hosted proof passed after the user approved disabling the Web Analytics beacon (RUM site `e3e00a5697024d2195628d21f22e9717`, `enabled: false`).
 - Cutover approval was requested. The user instructed: do not cut over; wait for review. No DNS, `www`, or `always_use_https` write will run until an explicit recorded approval for Step 6.
+- Every push to `main` since the staging attach has redeployed the production Worker through the Builds trigger, so the version `shoppa-root` serves moves ahead of the version named in a given snapshot. That is expected; Step 6 opens by re-running `cutover.mjs snapshot`.
+
+#### 5.4 Implementation review (8 September 2026)
+
+Steps 1 to 5 were re-verified end to end against the live repository and account. Everything below was re-run, not read from the earlier record.
+
+| Check | Result |
+| --- | --- |
+| `pnpm build:worker` | exit 0; 7 pages; `dist/_headers` and the seven Markdown documents written |
+| `pnpm test` | exit 0; 8 unit tests, `validate-build.mjs` 20 artefacts, Playwright 60 passed |
+| `pnpm test:http` on `wrangler dev` | 20 of 20 contract cases |
+| `verify-negotiated-content.mjs` on `wrangler dev` | pass |
+| `verify-hosted-parity.mjs --noindex` on staging | pass |
+| `run-http-contract.mjs` on staging | 20 of 20 |
+| `verify-hosted-transport.mjs` on staging | pass; IPv4/IPv6 parity, Brotli, HTTP/2 with `h3` advertised |
+| `curl -I https://staging.shoppa.au/` | `200`, `server: cloudflare`, `X-Robots-Tag: noindex`, full REQ-5 header set, `Vary: Accept`, `cache-control: public, max-age=0, must-revalidate` |
+| `curl -I https://shoppa.au/` | `200`, `server: GitHub.com`, `cache-control: max-age=600` - production is untouched |
+| Live DNS versus `cutover-snapshot.json` | 20 records, zero drift |
+| Bot management | `ai_bots_protection: disabled`, `is_robots_txt_managed: false`, every other field as recorded |
+| `always_use_https` | `off`; no `http_request_dynamic_redirect` entrypoint (error `10003`) |
+| Workers domains | only `staging.shoppa.au` on `shoppa-root`; no apex hostname |
+| Worker subdomain flags | `shoppa-root` `false/false`; `shoppa-root-preview` `true/true` |
+| Keychain | all three `shoppa-root-cloudflare-build-api-token*` entries present |
+| GitHub Pages | still `built`, `cname: shoppa.au`; the last five `Deploy to GitHub Pages` runs succeeded |
+| Source scope (REQ-17) | no page copy, stylesheet, component, font, `trailingSlash`, sitemap, `robots.txt`, or `llms.txt` change; `/privacy/` still names GitHub Pages, as Step 6 requires |
+
+Three gaps were found and closed in this pass:
+
+1. **Retained screenshots were missing.** Section 6.3 keeps a full-page capture per route and viewport, and nothing had been written to `documents/verification/screenshots/workers-migration/`. Added `scripts/capture-hosted-screenshots.mjs` (`--base`, `--prefix`, `--out`; the FinTrace settle-and-retry pattern without the `sharp` dependency) and captured the fourteen staging images `staging-<route>-<desktop|mobile>.png`. Step 6 runs the same script with `--prefix=apex`.
+2. **`cutover.mjs` rollback could be blocked by its own bookkeeping.** The applied-state file was written only after the last cutover step, so a failure between the apex attach and that write left `rollback` unable to start; and the snapshot stores `comment: null` and `tags: []`, which Cloudflare rejects on a DNS create. `cutover` now records each change as it lands, `rollback` falls back to discovering the apex Workers domain by hostname and the redirect ruleset by name when no applied file exists, and every restore body is built by `dnsCreateBody()`, which drops an empty comment and empty tags. The rollback path stays unexercised by design; these are the failure modes it could not have survived.
+3. **`run-http-contract.mjs` misread `--base-url`.** It took `process.argv[2]` as the origin, so the documented flag form ran against the literal string `--base-url` and failed with `Invalid URL` on the first case. It now accepts the flag and the positional form; both were re-run against staging.
+
+Recorded deviations from the written plan, all verified harmless:
+
+- `pnpm build` prepends `wrangler types` and the Markdown generator runs under `--experimental-strip-types` (REQ-3, as amended).
+- `dist/_agent-markdown/` mirrors the slashed route paths rather than flat file names (REQ-7, as amended).
+- `pnpm-workspace.yaml` was added to allow only the `esbuild` and `workerd` native builds under pnpm 11.
+- `.gitignore` excludes `documents/guides/parity/lighthouse/`; only `lighthouse-summary.json` is committed.
+- `scripts/host-override.mjs` and `scripts/lighthouse-report-cache.mjs` were ported from FinTrace alongside the scripts named in Section 2.6.
+- The Workers Builds `GET` list endpoints answer `12000 Not found` to the Global API Key, so the trigger inventory in `_hosting.md` is confirmed by behaviour instead: every push to `main` since the attach produced a new `shoppa-root` deployment.
 
 ### Step 6: Cut over `shoppa.au` and `www.shoppa.au`
 **Objective:** Move production to the verified Worker version with an exact, tested rollback.
@@ -406,14 +446,16 @@ Steps 1-4 are done. Step 5 hosted proof is done. Step 6 has **not** started.
 - Run `cutover.mjs cutover`: delete the four apex `A` records by ID (conflict fallback, Section 3.2), attach `shoppa.au` as a custom domain on `shoppa-root` (`PUT /accounts/{account_id}/workers/domains`), add `{ "pattern": "shoppa.au", "custom_domain": true }` to `wrangler.jsonc` routes; `PATCH` record `6b24bcee2bc397e10fdf6947ca0ae89e` to `A 192.0.2.0`, `proxied: true`, comment `Proxied placeholder for canonical www redirect`; create the `http_request_dynamic_redirect` ruleset rule per REQ-13; `PATCH` `always_use_https` to `on`.
 - Run `cutover.mjs verify` and the full hosted proof against `https://shoppa.au/`, plus three mobile Lighthouse runs per route.
 - If any gate fails: `cutover.mjs rollback` (delete the apex custom domain and its record, recreate the four `A` records, restore the `www` `CNAME`, disable the redirect rule, set `always_use_https` back to `off`), verify `https://shoppa.au/` reports `server: GitHub.com`, and stop.
+- Capture the apex evidence set with `node scripts/capture-hosted-screenshots.mjs --base=https://shoppa.au --prefix=apex` and compare it against the staging captures.
 - After success: `cutover.mjs remove-staging` (delete the staging custom domain and its DNS record), remove the staging `_headers` rule and route, commit, push, confirm the Builds deployment, and re-verify the apex.
 
 #### 6.2 Success Criteria
-- `GET /accounts/{account_id}/workers/domains` lists `shoppa.au` on `shoppa-root` with an active certificate; DNS shows exactly one Cloudflare-created proxied apex record and no `185.199.*` apex record; `www` is `A 192.0.2.0` proxied; the sixteen non-web records are byte-identical to the snapshot.
+- `GET /accounts/{account_id}/workers/domains` lists `shoppa.au` on `shoppa-root` with an active certificate; DNS shows exactly one Cloudflare-created proxied apex record and no `185.199.*` apex record; `www` is `A 192.0.2.0` proxied; the fourteen non-web records are byte-identical to the snapshot.
 - `curl -I https://shoppa.au/` returns `200`, `server: cloudflare`, no `X-Robots-Tag`, the REQ-5 headers, `Vary: Accept`, `cache-control: public, max-age=0, must-revalidate`; `curl -I http://shoppa.au/about/` returns `301` with `location: https://shoppa.au/about/`; `curl -I "https://www.shoppa.au/process/?source=host-check"` returns one `308` with `location: https://shoppa.au/process/?source=host-check`; unknown path `404`; `/_astro/*` immutable; `/llms.txt` charset; Markdown negotiation works; `/robots.txt` equals the repository file.
 - `https://shoppa.au/privacy/` contains the D-12 sentence and no longer contains `GitHub Pages`.
 - IPv4 and IPv6 return identical decoded bodies; Brotli on HTML, CSS, and JavaScript; HTTP/3 advertised; all Playwright suites pass on the apex at both viewports; three mobile Lighthouse runs per route are recorded.
 - After staging removal, `workers/domains` no longer lists `staging.shoppa.au`, the staging record is gone, and the deployed `_headers` has no staging rule.
+- `documents/verification/screenshots/workers-migration/` holds the fourteen `apex-*` captures beside the fourteen `staging-*` captures.
 - GitHub Pages is still enabled at the end of this step and every rollback payload remains valid.
 
 ### Step 7: Decommission GitHub Pages and synchronise documentation
@@ -449,7 +491,7 @@ Steps 1-4 are done. Step 5 hosted proof is done. Step 6 has **not** started.
 | REQ-2, REQ-4: rendered behaviour under the Worker | `wrangler dev`, staging, apex | Existing 33-rule accessibility spec, readiness spec, and landing-effects regression pass at both viewports | Reuse `test/*.spec.ts` with `PLAYWRIGHT_BASE_URL` (Steps 3, 5, 6) |
 | REQ-10, REQ-11: staging edge state | `https://staging.shoppa.au/` | `noindex` on every response; `robots.txt` byte-identical; no `cloudflareinsights` script; no `staging`/`workers.dev` in any body | Command: `verify-hosted-parity.mjs` and `verify-http-contract.mjs` against staging |
 | REQ-12: transport | staging then apex | IPv4/IPv6 body identity, Brotli, HTTP/3, HTML `max-age=0` | Command: `verify-hosted-transport.mjs` |
-| REQ-13: DNS isolation | after staging attach and after cutover | Sixteen non-web records byte-identical to the snapshot | Command: `cutover.mjs verify` (record diff against `cutover-snapshot.json`) |
+| REQ-13: DNS isolation | after staging attach and after cutover | Fourteen non-web records byte-identical to the snapshot | Command: `cutover.mjs verify` (record diff against `cutover-snapshot.json`) |
 | REQ-13: redirects and HTTPS | apex after cutover | `http://` `301`; `www` one `308` with path and query; slashless `307` | Command: `cutover.mjs verify` |
 | Cutover failure path | any Step 6 gate fails | Rollback restores GitHub Pages: apex `server: GitHub.com`, four `A` records and `www` `CNAME` recreated from payloads | Command: `cutover.mjs rollback` (payloads validated against the live records in Step 5; the rollback itself is exercised only if needed) |
 | REQ-14: privacy copy | `/privacy/` on staging then apex | Cloudflare sentence present, GitHub sentence absent, date updated | Browser inspection (6.3); `agent-readiness.spec.ts` trust-anchor length still passes |
@@ -464,7 +506,7 @@ Steps 1-4 are done. Step 5 hosted proof is done. Step 6 has **not** started.
 - Tool: `dev-browser` (`/Users/sacino/.agents/skills/dev-browser/SKILL.md`), public visitor, no data state.
 - Routes: `/`, `/about/`, `/process/`, `/contact/`, `/privacy/`, `/thank-you/`, and an unknown path; viewports `1440x900` and `390x844`; run against `wrangler dev` (Step 3), `https://staging.shoppa.au/` (Step 5), and `https://shoppa.au/` (Step 6).
 - Inspect: page renders identically to the production baseline screenshots in `documents/verification/screenshots/`; homepage landing effects animate from the external module; navigation collapse on mobile; keyboard focus; zero console errors, `securitypolicyviolation` events, and failed requests; no horizontal overflow; `/privacy/` shows the D-12 paragraph after Step 6.
-- Retained evidence: full-page screenshots per route and viewport for staging and apex under `documents/verification/screenshots/workers-migration/`.
+- Retained evidence: full-page screenshots per route and viewport for staging and apex under `documents/verification/screenshots/workers-migration/`, captured by `node scripts/capture-hosted-screenshots.mjs --base=<origin> --prefix=<staging|apex>`. The fourteen staging captures exist; the apex set is a Step 6 deliverable.
 
 ### 6.5 Completion gates
 - Pre-approval (end of Step 5): `pnpm build:worker && pnpm test` exit 0; `pnpm test:http` all cases pass on `wrangler dev`; all hosted scripts pass on staging; Playwright passes on staging; Lighthouse matrix complete; snapshot and rollback packet committed.

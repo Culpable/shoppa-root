@@ -1,0 +1,443 @@
+{
+  "baseUrl": "http://127.0.0.1:8787",
+  "timeoutMs": 10000,
+  "sensitiveHeaders": [
+    "authorization",
+    "cookie",
+    "set-cookie"
+  ],
+  "cases": [
+    {
+      "name": "home HTML",
+      "path": "/",
+      "headers": {
+        "accept": "text/html"
+      },
+      "expect": {
+        "status": 200,
+        "headers": {
+          "content-type": {
+            "includes": [
+              "text/html",
+              "charset=utf-8"
+            ]
+          },
+          "vary": {
+            "includes": [
+              "Accept"
+            ]
+          },
+          "content-security-policy": {
+            "includes": [
+              "default-src 'self'",
+              "frame-ancestors 'none'",
+              "script-src 'self'"
+            ]
+          },
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY",
+          "referrer-policy": "strict-origin-when-cross-origin",
+          "permissions-policy": {
+            "includes": [
+              "camera=()",
+              "microphone=()"
+            ]
+          }
+        },
+        "utf8": true,
+        "bodyIncludes": [
+          "<main"
+        ],
+        "bodyEqualsFile": "../dist/index.html"
+      }
+    },
+    {
+      "name": "home Markdown after HTML",
+      "path": "/",
+      "headers": {
+        "accept": "text/markdown"
+      },
+      "expect": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/markdown; charset=utf-8",
+          "vary": {
+            "includes": [
+              "Accept"
+            ]
+          },
+          "etag": {
+            "absent": true
+          },
+          "last-modified": {
+            "absent": true
+          }
+        },
+        "utf8": true,
+        "bodyIncludes": [
+          "canonical: \"https://shoppa.au/\"",
+          "# The shopping agent that’s actually yours"
+        ],
+        "bodyEqualsFile": "../dist/_agent-markdown/index.md"
+      }
+    },
+    {
+      "name": "about Markdown",
+      "path": "/about/",
+      "headers": {
+        "accept": "text/markdown"
+      },
+      "expect": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/markdown; charset=utf-8",
+          "vary": {
+            "includes": [
+              "Accept"
+            ]
+          }
+        },
+        "utf8": true,
+        "bodyEqualsFile": "../dist/_agent-markdown/about/index.md",
+        "bodyIncludes": [
+          "canonical: \"https://shoppa.au/about/\"",
+          "# The team building Australia’s retailer-owned shopping agents"
+        ]
+      }
+    },
+    {
+      "name": "process Markdown",
+      "path": "/process/",
+      "headers": {
+        "accept": "text/markdown"
+      },
+      "expect": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/markdown; charset=utf-8",
+          "vary": {
+            "includes": [
+              "Accept"
+            ]
+          }
+        },
+        "utf8": true,
+        "bodyEqualsFile": "../dist/_agent-markdown/process/index.md",
+        "bodyIncludes": [
+          "canonical: \"https://shoppa.au/process/\"",
+          "# "
+        ]
+      }
+    },
+    {
+      "name": "contact Markdown",
+      "path": "/contact/",
+      "headers": {
+        "accept": "text/markdown"
+      },
+      "expect": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/markdown; charset=utf-8",
+          "vary": {
+            "includes": [
+              "Accept"
+            ]
+          }
+        },
+        "utf8": true,
+        "bodyEqualsFile": "../dist/_agent-markdown/contact/index.md",
+        "bodyIncludes": [
+          "canonical: \"https://shoppa.au/contact/\"",
+          "# "
+        ]
+      }
+    },
+    {
+      "name": "privacy Markdown",
+      "path": "/privacy/",
+      "headers": {
+        "accept": "text/markdown"
+      },
+      "expect": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/markdown; charset=utf-8",
+          "vary": {
+            "includes": [
+              "Accept"
+            ]
+          }
+        },
+        "utf8": true,
+        "bodyEqualsFile": "../dist/_agent-markdown/privacy/index.md",
+        "bodyIncludes": [
+          "canonical: \"https://shoppa.au/privacy/\"",
+          "# Privacy at Shoppa"
+        ]
+      }
+    },
+    {
+      "name": "thank-you Markdown",
+      "path": "/thank-you/",
+      "headers": {
+        "accept": "text/markdown"
+      },
+      "expect": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/markdown; charset=utf-8",
+          "vary": {
+            "includes": [
+              "Accept"
+            ]
+          }
+        },
+        "utf8": true,
+        "bodyEqualsFile": "../dist/_agent-markdown/thank-you/index.md",
+        "bodyIncludes": [
+          "canonical: \"https://shoppa.au/thank-you/\"",
+          "# "
+        ]
+      }
+    },
+    {
+      "name": "home Markdown first cache order",
+      "path": "/",
+      "headers": {
+        "accept": "text/markdown"
+      },
+      "expect": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/markdown; charset=utf-8",
+          "vary": {
+            "includes": [
+              "Accept"
+            ]
+          }
+        },
+        "bodyEqualsFile": "../dist/_agent-markdown/index.md"
+      }
+    },
+    {
+      "name": "home HTML after Markdown",
+      "path": "/",
+      "headers": {
+        "accept": "text/html"
+      },
+      "expect": {
+        "status": 200,
+        "headers": {
+          "content-type": {
+            "includes": [
+              "text/html",
+              "charset=utf-8"
+            ]
+          },
+          "vary": {
+            "includes": [
+              "Accept"
+            ]
+          }
+        },
+        "bodyEqualsFile": "../dist/index.html"
+      }
+    },
+    {
+      "name": "about slash redirect",
+      "path": "/about",
+      "redirect": "manual",
+      "expect": {
+        "status": 307,
+        "headers": {
+          "location": "/about/"
+        }
+      }
+    },
+    {
+      "name": "unknown HTML",
+      "path": "/__missing/",
+      "headers": {
+        "accept": "text/html"
+      },
+      "expect": {
+        "status": 404,
+        "headers": {
+          "content-type": {
+            "includes": [
+              "text/html",
+              "charset=utf-8"
+            ]
+          },
+          "vary": {
+            "includes": [
+              "Accept"
+            ]
+          }
+        },
+        "utf8": true,
+        "bodyEqualsFile": "../dist/404.html"
+      }
+    },
+    {
+      "name": "unknown Markdown",
+      "path": "/__missing/",
+      "headers": {
+        "accept": "text/markdown"
+      },
+      "expect": {
+        "status": 404,
+        "headers": {
+          "content-type": "text/markdown; charset=utf-8",
+          "vary": {
+            "includes": [
+              "Accept"
+            ]
+          }
+        },
+        "utf8": true,
+        "bodyIncludes": [
+          "# Page not found",
+          "https://shoppa.au/contact/"
+        ]
+      }
+    },
+    {
+      "name": "document media type rejected",
+      "path": "/",
+      "headers": {
+        "accept": "image/png"
+      },
+      "expect": {
+        "status": 406,
+        "headers": {
+          "content-type": "text/plain; charset=utf-8",
+          "vary": {
+            "includes": [
+              "Accept"
+            ]
+          }
+        },
+        "bodyIncludes": [
+          "Not acceptable"
+        ]
+      }
+    },
+    {
+      "name": "Markdown HEAD",
+      "path": "/about/",
+      "method": "HEAD",
+      "headers": {
+        "accept": "text/markdown",
+        "accept-encoding": "identity"
+      },
+      "expect": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/markdown; charset=utf-8",
+          "content-length": {
+            "present": true
+          },
+          "vary": {
+            "includes": [
+              "Accept"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "internal Markdown blocked",
+      "path": "/_agent-markdown/index.md",
+      "headers": {
+        "accept": "text/markdown"
+      },
+      "expect": {
+        "status": 404,
+        "bodyIncludes": [
+          "Not found"
+        ]
+      }
+    },
+    {
+      "name": "robots",
+      "path": "/robots.txt",
+      "expect": {
+        "status": 200,
+        "headers": {
+          "content-type": {
+            "includes": [
+              "text/plain"
+            ]
+          }
+        },
+        "utf8": true,
+        "bodyIncludes": [
+          "Sitemap: https://shoppa.au/sitemap.xml"
+        ]
+      }
+    },
+    {
+      "name": "sitemap",
+      "path": "/sitemap.xml",
+      "expect": {
+        "status": 200,
+        "headers": {
+          "content-type": {
+            "includes": [
+              "xml"
+            ]
+          }
+        },
+        "utf8": true,
+        "bodyIncludes": [
+          "https://shoppa.au/",
+          "https://shoppa.au/about/",
+          "https://shoppa.au/process/",
+          "https://shoppa.au/contact/",
+          "https://shoppa.au/privacy/"
+        ]
+      }
+    },
+    {
+      "name": "llms UTF-8",
+      "path": "/llms.txt",
+      "expect": {
+        "status": 200,
+        "headers": {
+          "content-type": "text/plain; charset=utf-8"
+        },
+        "utf8": true,
+        "bodyIncludes": [
+          "# Shoppa",
+          "retailer’s own site"
+        ]
+      }
+    },
+    {
+      "name": "fingerprinted Astro asset",
+      "path": "{{ASTRO_ASSET_PATH}}",
+      "expect": {
+        "status": 200,
+        "headers": {
+          "cache-control": "public, max-age=31536000, immutable"
+        }
+      }
+    },
+    {
+      "name": "favicon media type",
+      "path": "/favicon.ico",
+      "expect": {
+        "status": 200,
+        "headers": {
+          "content-type": {
+            "includes": [
+              "icon"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

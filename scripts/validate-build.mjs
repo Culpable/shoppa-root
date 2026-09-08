@@ -48,8 +48,32 @@ const socialImageFiles = [
 const requiredFiles = ['index.html', 'about/index.html', 'process/index.html', 'contact/index.html', 'privacy/index.html', 'thank-you/index.html', '404.html', 'CNAME', 'robots.txt', 'llms.txt', 'sitemap.xml', ...identityFiles, ...socialImageFiles];
 for (const file of requiredFiles) await stat(resolve(dist, file));
 const distEntries = await readdir(dist, { recursive: true });
-const markdownOutputs = distEntries.filter((file) => file.endsWith('.md'));
-assert.deepEqual(markdownOutputs, [], `dist/ must contain no Markdown files, found: ${markdownOutputs.join(', ')}`);
+const expectedWorkerMarkdown = [
+  '_agent-markdown/404.md',
+  '_agent-markdown/about/index.md',
+  '_agent-markdown/contact/index.md',
+  '_agent-markdown/index.md',
+  '_agent-markdown/privacy/index.md',
+  '_agent-markdown/process/index.md',
+  '_agent-markdown/thank-you/index.md',
+];
+const markdownOutputs = distEntries.filter((file) => file.endsWith('.md')).sort();
+let workerOutput = false;
+try {
+  await stat(resolve(dist, '_headers'));
+  workerOutput = true;
+} catch {
+  workerOutput = false;
+}
+if (workerOutput) {
+  assert.deepEqual(markdownOutputs, expectedWorkerMarkdown, `Worker dist/_agent-markdown must contain exactly the seven documents, found: ${markdownOutputs.join(', ')}`);
+  const publishedHeaders = await read('_headers');
+  const sourceHeaders = await readFile(resolve(root, 'src/headers/_headers'), 'utf8');
+  const withTrailingNewline = (value) => (value.endsWith('\n') ? value : `${value}\n`);
+  assert.equal(withTrailingNewline(publishedHeaders), withTrailingNewline(sourceHeaders.replace(/[ \t]+$/gm, '')));
+} else {
+  assert.deepEqual(markdownOutputs, [], `dist/ must contain no Markdown files, found: ${markdownOutputs.join(', ')}`);
+}
 const sitemapFiles = distEntries.filter((file) => file.endsWith('.xml') && file.includes('sitemap')).sort();
 assert.deepEqual(sitemapFiles, ['sitemap.xml']);
 
@@ -78,6 +102,17 @@ const htmlRoutes = [
 ];
 const htmlFiles = htmlRoutes.map(({ file }) => file);
 const html = (await Promise.all(htmlFiles.map(read))).join('\n');
+for (const file of htmlFiles) {
+  const page = await read(file);
+  for (const match of page.matchAll(/<script\b([^>]*)>/gi)) {
+    const attrs = match[1];
+    const isJsonLd = /type\s*=\s*["']application\/ld\+json["']/i.test(attrs);
+    const hasSrc = /\bsrc\s*=/i.test(attrs);
+    if (!isJsonLd && !hasSrc) {
+      throw new Error(`${file} contains an executable inline script.`);
+    }
+  }
+}
 for (const forbidden of ['Algolia', 'Coveo', 'Elasticsearch', 'self-service', 'analytics', 'Embeddings', 'Convex', 'mock mode', '/shoppa-root/']) {
   if (html.includes(forbidden)) throw new Error(`Built output contains forbidden text: ${forbidden}`);
 }
@@ -342,6 +377,35 @@ assert.match(await read('about/index.html'), /Courier Prime/);
 assert.match(await read('process/index.html'), /Courier Prime/);
 for (const file of ['contact/index.html', 'privacy/index.html', 'thank-you/index.html', '404.html']) {
   assert.doesNotMatch(await read(file), /Courier Prime/, `${file} must not ship Courier Prime.`);
+}
+
+if (workerOutput) {
+  const stripTags = (value) => value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  const textPieces = (value) => value
+    .split(/<[^>]+>/g)
+    .map((piece) => piece.replace(/\s+/g, ' ').trim())
+    .filter((piece) => piece.length > 2);
+  const documentPairs = [
+    ['index.html', '_agent-markdown/index.md'],
+    ['about/index.html', '_agent-markdown/about/index.md'],
+    ['process/index.html', '_agent-markdown/process/index.md'],
+    ['contact/index.html', '_agent-markdown/contact/index.md'],
+    ['privacy/index.html', '_agent-markdown/privacy/index.md'],
+    ['thank-you/index.html', '_agent-markdown/thank-you/index.md'],
+  ];
+  for (const [htmlFile, markdownFile] of documentPairs) {
+    const page = await read(htmlFile);
+    const markdown = await read(markdownFile);
+    const main = page.match(/<main\b[^>]*>([\s\S]*?)<\/main>/i)?.[1] ?? '';
+    const heading = stripTags(main.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1] ?? '');
+    assert.ok(heading && markdown.includes(heading), `${markdownFile} is missing the rendered <h1> text.`);
+    const paragraphs = [...main.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)].map((match) => match[1]);
+    for (const paragraph of paragraphs) {
+      for (const piece of textPieces(paragraph)) {
+        assert.ok(markdown.includes(piece), `${markdownFile} is missing a <main> paragraph: ${piece}`);
+      }
+    }
+  }
 }
 
 console.log(`Validated ${requiredFiles.length} build artefacts, ${htmlFiles.length} HTML routes, and ${fallbackTokens.size} colour tokens across three gamut layers.`);

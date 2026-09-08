@@ -7,11 +7,18 @@
   "scripts": {
     "dev": "astro dev",
     "check": "astro check",
-    "build": "astro check && astro build",
+    "build": "wrangler types && astro check && astro build",
+    "build:worker": "pnpm build && node --experimental-strip-types scripts/generate-agent-markdown.mjs dist https://shoppa.au && node scripts/publish-headers.mjs",
     "preview": "astro preview",
-    "test": "pnpm test:build-output && playwright test",
+    "test": "pnpm test:unit && pnpm test:build-output && playwright test",
+    "test:unit": "node --experimental-strip-types --test test/*.test.ts",
     "test:build-output": "node scripts/validate-build.mjs",
-    "test:agent-a11y": "playwright test test/agent-accessibility.spec.ts"
+    "test:agent-a11y": "playwright test test/agent-accessibility.spec.ts",
+    "test:http": "node scripts/run-http-contract.mjs",
+    "worker:dev": "wrangler dev",
+    "worker:types": "wrangler types",
+    "deploy": "wrangler deploy --env=\"\"",
+    "deploy:preview": "wrangler versions upload --env preview"
   },
   "dependencies": {
     "astro": "7.2.2"
@@ -20,6 +27,8 @@
     "@astrojs/check": "0.9.10",
     "@axe-core/playwright": "4.13.0",
     "@playwright/test": "1.62.1",
-    "typescript": "6.0.3"
+    "parse5": "8.0.1",
+    "typescript": "6.0.3",
+    "wrangler": "4.129.0"
   }
 }

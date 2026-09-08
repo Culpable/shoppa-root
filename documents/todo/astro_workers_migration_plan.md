@@ -317,7 +317,7 @@ flowchart LR
 - `pnpm build && pnpm test` exits 0.
 - No Cloudflare resource, GitHub setting, or DNS record changed (re-query the DNS export and diff against the recorded table: zero differences).
 
-### Step 2: Add the Worker, negotiated Markdown, headers, Wrangler configuration, and test updates
+### Step 2: Add the Worker, negotiated Markdown, headers, Wrangler configuration, and test updates 🔄 **IN PROGRESS**
 **Objective:** Deliver the Workers runtime contract locally before any hosted resource exists, without changing what GitHub Pages serves.
 
 #### 2.1 High-Level Approach

@@ -10,11 +10,11 @@ Shoppa Root is migrating its public marketing site from GitHub Pages to Cloudfla
 | Worker runtime in the repository | Complete - 8 September 2026 |
 | Local Worker contract | Complete - 8 September 2026 |
 | Workers provisioning | Complete - 8 September 2026 |
-| Staging proof | Not started |
+| Staging proof | In progress - 8 September 2026; blocked on Web Analytics beacon |
 | Production cutover | Not started |
 | Decommission | Not started |
 
-`https://shoppa.au/` is still served by GitHub Pages. Workers `shoppa-root` and `shoppa-root-preview` exist with no custom domain yet.
+`https://shoppa.au/` is still served by GitHub Pages. `https://staging.shoppa.au/` is on Worker `shoppa-root`.
 
 ## Final topology
 
@@ -253,3 +253,56 @@ Against `https://migration-shoppa-root-preview.webpop.workers.dev/` on 8 Septemb
 | `35fce291-4309-4053-be02-6532e672cd6f` | preview | `8d6fc80` on `claude/astro-workers-preview-check` | success; uploaded version `09274b03-5bb0-4470-88d8-83bfd557b59a` with alias `claude-astro-workers-preview-check` |
 
 The preview build uploaded a version and promoted nothing: `shoppa-root-preview` stayed on bootstrap deployment `fb98d340-a511-4469-9151-e6143d23daf3` serving version `847b59e9-4310-4910-9869-e23b191eb312`. The throwaway branch was deleted locally and remotely.
+
+## Staging attach
+
+`staging.shoppa.au` was attached by adding it to `routes` in `wrangler.jsonc` and letting the Workers Builds production trigger deploy it (build `1f93ea68-8816-4053-9429-56f6afb20f81` from commit `2074f06`, 8 September 2026).
+
+| Field | Value |
+| --- | --- |
+| Workers domain ID | `2cc072688b4f43842c4b97f4fe843511ee537694` |
+| Hostname | `staging.shoppa.au` |
+| Service and environment | `shoppa-root`, `production` |
+| Zone | `dae30eef9757b84c7217dbd9dd624ff9` |
+| Certificate ID | `0a0c8cf9-4aea-403c-809c-ca7af6f8eb0a` |
+| DNS record Cloudflare created | `AAAA staging.shoppa.au 100::`, proxied, TTL auto, ID `c84f135afa779cdd47df28c776b00092` |
+
+The zone now holds twenty records. The nineteen pre-existing records were compared by ID afterwards: **all nineteen are byte-identical**. Resolution against `vita.ns.cloudflare.com`, `1.1.1.1` and `8.8.8.8` returns Cloudflare anycast addresses, including AAAA.
+
+`curl -I https://staging.shoppa.au/` returns `200`, `server: cloudflare`, `X-Robots-Tag: noindex`, the REQ-5 header baseline, `Vary: Accept`, and `cache-control: public, max-age=0, must-revalidate`. D-14 does not fire.
+
+## Zone bot management (plan D-6)
+
+Read, then `PUT` without `using_latest_model` (that field is rejected). Only two values changed:
+
+| Field | Before | After |
+| --- | --- | --- |
+| `ai_bots_protection` | `block` | `disabled` |
+| `is_robots_txt_managed` | `true` | `false` |
+
+Every other field is unchanged. Rollback is the same `PUT` with `ai_bots_protection: "block"` and `is_robots_txt_managed: true`.
+
+## Cloudflare Web Analytics beacon
+
+A request with `Accept: text/html` appends `<script src="https://static.cloudflareinsights.com/beacon.min.js/...">` with token `f3f18752153b4a1da0aa6587baae3efd`. `rum/site_info/list` still has no site for zone `shoppa.au`. Hosted body-parity against `dist` therefore fails for browser-like requests. Disabling it is account-level (autonomy stop 2) and is not applied until the user approves.
+
+Proposed disable, matching FinTrace: create or locate the zone RUM site, then
+
+`PUT /accounts/213ab3604485056376263d22fa242742/rum/site_info/<site_tag>`
+`{"zone_tag": "dae30eef9757b84c7217dbd9dd624ff9", "auto_install": true, "enabled": false}`
+
+Rollback is the same call with `"enabled": true`.
+
+## Cutover packet and rollback
+
+Snapshot: `documents/guides/parity/cutover-snapshot.json` captured `2026-09-08T04:54:39.039Z`. Twenty DNS records, `always_use_https: off`, bot management as after D-6, Worker deployment `7cee0199-f69f-412a-86cb-827946c11d90` serving the staging-route release, GitHub Pages still `https://shoppa.au/`.
+
+Rollback payloads generated from that snapshot:
+
+- Recreate the four apex `A` records `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`, unproxied, TTL auto.
+- Restore `www` record `6b24bcee2bc397e10fdf6947ca0ae89e` as `CNAME culpable.github.io`, unproxied.
+- `DELETE /accounts/213ab3604485056376263d22fa242742/workers/domains/2cc072688b4f43842c4b97f4fe843511ee537694` and delete DNS `c84f135afa779cdd47df28c776b00092` if staging is being removed as part of rollback.
+- Disable any `http_request_dynamic_redirect` ruleset created at cutover.
+- `PATCH always_use_https` to `off`.
+- Bot-management restore as above.
+- `node scripts/cutover.mjs rollback` is the executable form after cutover has written `cutover-snapshot-applied.json`.

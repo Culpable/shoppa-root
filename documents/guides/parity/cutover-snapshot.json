@@ -1,0 +1,408 @@
+{
+  "capturedAt": "2026-09-08T04:54:39.039Z",
+  "zoneId": "dae30eef9757b84c7217dbd9dd624ff9",
+  "accountId": "213ab3604485056376263d22fa242742",
+  "dnsRecords": [
+    {
+      "id": "d1250c61d842ba2819a4b1cf4eae95c5",
+      "type": "A",
+      "name": "shoppa.au",
+      "content": "185.199.111.153",
+      "proxied": false,
+      "ttl": 1,
+      "priority": null,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "361c9d0f3f1ad0d75cd6122972c59c7b",
+      "type": "A",
+      "name": "shoppa.au",
+      "content": "185.199.109.153",
+      "proxied": false,
+      "ttl": 1,
+      "priority": null,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "ac55355c895f86f3b4c58765beef15d3",
+      "type": "A",
+      "name": "shoppa.au",
+      "content": "185.199.110.153",
+      "proxied": false,
+      "ttl": 1,
+      "priority": null,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "c9faedf776a91f559f60810ba0f481f1",
+      "type": "A",
+      "name": "shoppa.au",
+      "content": "185.199.108.153",
+      "proxied": false,
+      "ttl": 1,
+      "priority": null,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "21e064b93c58362f52a5f2878c17abb4",
+      "type": "CNAME",
+      "name": "api.shoppa.au",
+      "content": "0b6c388bd64c13a1.vercel-dns-016.com",
+      "proxied": false,
+      "ttl": 1,
+      "priority": null,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "733ed2ed3f0b5093f864984fa61fdabf",
+      "type": "CNAME",
+      "name": "app.shoppa.au",
+      "content": "39123217a4b35b6a.vercel-dns-016.com",
+      "proxied": false,
+      "ttl": 1,
+      "priority": null,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "cf2c0631bc3099afce749bf765896ed5",
+      "type": "CNAME",
+      "name": "demo.shoppa.au",
+      "content": "44ebdd479a4d5c78.vercel-dns-016.com",
+      "proxied": false,
+      "ttl": 1,
+      "priority": null,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "6b24bcee2bc397e10fdf6947ca0ae89e",
+      "type": "CNAME",
+      "name": "www.shoppa.au",
+      "content": "culpable.github.io",
+      "proxied": false,
+      "ttl": 1,
+      "priority": null,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "f15ef39b42f61eb1946e328ab80ce32c",
+      "type": "MX",
+      "name": "send.notifications.shoppa.au",
+      "content": "feedback-smtp.ap-northeast-1.amazonses.com",
+      "proxied": false,
+      "ttl": 3600,
+      "priority": 10,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "2a6d20b2ef66cdb7cb2fe8b9d9089420",
+      "type": "MX",
+      "name": "shoppa.au",
+      "content": "route3.mx.cloudflare.net",
+      "proxied": false,
+      "ttl": 1,
+      "priority": 95,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "a33bf99342c416779d97da9651ed1110",
+      "type": "MX",
+      "name": "shoppa.au",
+      "content": "route2.mx.cloudflare.net",
+      "proxied": false,
+      "ttl": 1,
+      "priority": 73,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "a7633beabd79bd19264458b58794d815",
+      "type": "MX",
+      "name": "shoppa.au",
+      "content": "route1.mx.cloudflare.net",
+      "proxied": false,
+      "ttl": 1,
+      "priority": 59,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "d0697748a6a11b29bc38d966d161a27d",
+      "type": "TXT",
+      "name": "cf2024-1._domainkey.shoppa.au",
+      "content": "\"v=DKIM1; h=sha256; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiweykoi+o48IOGuP7GR3X0MOExCUDY/BCRHoWBnh3rChl7WhdyCxW3jgq1daEjPPqoi7sJvdg5hEQVsgVRQP4DcnQDVjGMbASQtrY4WmB1VebF+RPJB2ECPsEDTpeiI5ZyUAwJaVX7r6bznU67g7LvFq35yIo4sdlmtZGV+i0H4cpYH9+3JJ78k\" \"m4KXwaf9xUJCWF6nxeD+qG6Fyruw1Qlbds2r85U9dkNDVAS3gioCvELryh1TxKGiVTkg4wqHTyHfWsp7KD3WQHYJn0RyfJJu6YEmL77zonn7p2SRMvTMP3ZEXibnC9gz3nnhR6wcYL8Q7zXypKTMD58bTixDSJwIDAQAB\"",
+      "proxied": false,
+      "ttl": 1,
+      "priority": null,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "5e506573945ebb81fcf08f43ff467144",
+      "type": "TXT",
+      "name": "_dmarc.notifications.shoppa.au",
+      "content": "v=DMARC1; p=none;",
+      "proxied": false,
+      "ttl": 1,
+      "priority": null,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "538a4bd0ef854dae3f4cab4cd53752a5",
+      "type": "TXT",
+      "name": "_github-pages-challenge-culpable.shoppa.au",
+      "content": "\"13c99b3166160650f8c3eaa6f06754\"",
+      "proxied": false,
+      "ttl": 1,
+      "priority": null,
+      "comment": "GH domain verification",
+      "tags": []
+    },
+    {
+      "id": "72527418955306c2e591fcb4da689ab3",
+      "type": "TXT",
+      "name": "resend._domainkey.notifications.shoppa.au",
+      "content": "\"p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDk6jpIyOk5Y08S6whmLdgZBYkoFN9DBku/y3dvXXwPCGWxG/5o0OdSvjdV4cXifDg7FQ/X0tHagNv356dV25mfQrIYFYfnJZoiDXVGTP+tIp+Z30Jugoac6CcBADT8W19ehbFE5Pl2ZkHHnkh3PJB1j9u9QZ8icuKOhYLaP446rwIDAQAB\"",
+      "proxied": false,
+      "ttl": 3600,
+      "priority": null,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "1a103e1a3a822ef266c55c088827b348",
+      "type": "TXT",
+      "name": "send.notifications.shoppa.au",
+      "content": "\"v=spf1 include:amazonses.com ~all\"",
+      "proxied": false,
+      "ttl": 3600,
+      "priority": null,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "e14ee27648298a92b475f662247679fd",
+      "type": "TXT",
+      "name": "shoppa.au",
+      "content": "\"v=spf1 include:_spf.mx.cloudflare.net ~all\"",
+      "proxied": false,
+      "ttl": 1,
+      "priority": null,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "id": "ed38e006d0f776cc57d1c2e1804d1e7d",
+      "type": "TXT",
+      "name": "shoppa.au",
+      "content": "\"google-site-verification=3lopm8ke5X-USUbVZV1JCkWIDHv03yeY0k05m_w9f3w\"",
+      "proxied": false,
+      "ttl": 1,
+      "priority": null,
+      "comment": "GSC verification",
+      "tags": []
+    },
+    {
+      "id": "c84f135afa779cdd47df28c776b00092",
+      "type": "AAAA",
+      "name": "staging.shoppa.au",
+      "content": "100::",
+      "proxied": true,
+      "ttl": 1,
+      "priority": null,
+      "comment": null,
+      "tags": []
+    }
+  ],
+  "apexARecords": [
+    {
+      "type": "A",
+      "name": "shoppa.au",
+      "content": "185.199.111.153",
+      "ttl": 1,
+      "proxied": false,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "type": "A",
+      "name": "shoppa.au",
+      "content": "185.199.109.153",
+      "ttl": 1,
+      "proxied": false,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "type": "A",
+      "name": "shoppa.au",
+      "content": "185.199.110.153",
+      "ttl": 1,
+      "proxied": false,
+      "comment": null,
+      "tags": []
+    },
+    {
+      "type": "A",
+      "name": "shoppa.au",
+      "content": "185.199.108.153",
+      "ttl": 1,
+      "proxied": false,
+      "comment": null,
+      "tags": []
+    }
+  ],
+  "wwwRecord": {
+    "id": "6b24bcee2bc397e10fdf6947ca0ae89e",
+    "type": "CNAME",
+    "name": "www.shoppa.au",
+    "content": "culpable.github.io",
+    "ttl": 1,
+    "proxied": false,
+    "comment": null,
+    "tags": []
+  },
+  "alwaysUseHttps": "off",
+  "botManagement": {
+    "enable_js": false,
+    "fight_mode": false,
+    "ai_bots_protection": "disabled",
+    "content_bots_protection": "disabled",
+    "crawler_protection": "disabled",
+    "ai_training": "disabled",
+    "ai_search": "disabled",
+    "ai_user": "disabled",
+    "is_robots_txt_managed": false,
+    "bot_preference_sync_enabled": false,
+    "cf_robots_variant": "off",
+    "ai_bots_migration_opt_out": false,
+    "using_latest_model": true
+  },
+  "workersDomains": [
+    {
+      "id": "1e50d39091ecc025024430208266c45e0bc93be2",
+      "zone_id": "ce76f15eb5f7065b52ed9d8046020b4a",
+      "zone_name": "taxgenie.com.au",
+      "hostname": "taxgenie.com.au",
+      "service": "taxgenie-root",
+      "environment": "production",
+      "cert_id": "716ecedf-d3ce-4970-8a28-5384264d4124",
+      "previews_enabled": false,
+      "enabled": true
+    },
+    {
+      "id": "4a23302ca1e6aa3dde9ebadd9eefcf5c4541a4d1",
+      "zone_id": "9f79f842598f32ede2fb86d93325260c",
+      "zone_name": "fintrace.com.au",
+      "hostname": "fintrace.com.au",
+      "service": "fintrace-root",
+      "environment": "production",
+      "cert_id": "f85ab010-d2d3-4511-a358-6c9e3288bf9c",
+      "previews_enabled": false,
+      "enabled": true
+    },
+    {
+      "id": "1f244a2bc91612e583f30cbda311cfbe5dc9b5e8",
+      "zone_id": "0534ecfcfde9d322566af12ec11c1bef",
+      "zone_name": "bulma.com.au",
+      "hostname": "bulma.com.au",
+      "service": "bulma-root",
+      "environment": "production",
+      "cert_id": "a63f3ea9-3d72-4972-bb2f-5941a9b072e4",
+      "previews_enabled": false,
+      "enabled": true
+    },
+    {
+      "id": "2cc072688b4f43842c4b97f4fe843511ee537694",
+      "zone_id": "dae30eef9757b84c7217dbd9dd624ff9",
+      "zone_name": "shoppa.au",
+      "hostname": "staging.shoppa.au",
+      "service": "shoppa-root",
+      "environment": "production",
+      "cert_id": "0a0c8cf9-4aea-403c-809c-ca7af6f8eb0a",
+      "previews_enabled": false,
+      "enabled": true
+    }
+  ],
+  "rulesets": [
+    {
+      "description": "Created by the Cloudflare security team, this ruleset provides normalization on the URL path",
+      "id": "70339d97bdb34195bbf054b1ebe81f76",
+      "kind": "managed",
+      "last_updated": "2024-08-01T17:37:11.538019Z",
+      "name": "Cloudflare Normalization Ruleset",
+      "phase": "http_request_sanitize",
+      "version": "6"
+    },
+    {
+      "description": "Created by the Cloudflare security team, this ruleset is designed to provide protection for free zones",
+      "id": "77454fe2d30c4220b5701f6fdfb893ba",
+      "kind": "managed",
+      "last_updated": "2026-08-17T16:24:51.912839Z",
+      "name": "Cloudflare Managed Free Ruleset",
+      "phase": "http_request_firewall_managed",
+      "source": "firewall_managed",
+      "version": "74"
+    },
+    {
+      "description": "Automatic mitigation of HTTP-based DDoS attacks. Cloudflare routinely adds signatures to address new attack vectors. Additional configuration allows you to customize the sensitivity of each rule and the performed mitigation action.",
+      "id": "4d21379b4f9f4bb088e0729962c8b3cf",
+      "kind": "managed",
+      "last_updated": "2026-09-07T09:49:40.835763Z",
+      "name": "DDoS L7 ruleset",
+      "phase": "ddos_l7",
+      "version": "3409"
+    }
+  ],
+  "workerDeployment": {
+    "id": "7cee0199-f69f-412a-86cb-827946c11d90",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "author_email": "jake.sacino@gmail.com",
+    "annotations": {
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "6ab67084-449b-4986-b10b-4dc8ce2c7d06",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-09-08T04:52:02.725934Z"
+  },
+  "githubPages": {
+    "url": "https://api.github.com/repos/Culpable/shoppa-root/pages",
+    "status": "built",
+    "cname": "shoppa.au",
+    "custom_404": false,
+    "html_url": "https://shoppa.au/",
+    "build_type": "workflow",
+    "source": {
+      "branch": "main",
+      "path": "/"
+    },
+    "public": true,
+    "protected_domain_state": "verified",
+    "pending_domain_unverified_at": null,
+    "https_certificate": {
+      "state": "approved",
+      "description": "The certificate has been approved.",
+      "domains": [
+        "shoppa.au",
+        "www.shoppa.au"
+      ],
+      "expires_at": "2026-11-16"
+    },
+    "https_enforced": true
+  }
+}

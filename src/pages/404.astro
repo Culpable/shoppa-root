@@ -1,4 +1,5 @@
 ---
+import Icon from '../components/Icon.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import type { PageMetadataInput } from '../lib/metadata.ts';
 
@@ -12,6 +13,7 @@ const metadata = {
 
 <BaseLayout metadata={metadata}>
   <section class="container not-found">
+    <Icon name="compass" tile="peach" size={56} class="not-found-icon" />
     <p class="not-found-number">404</p>
     <h1>Page not found</h1>
     <p>Sorry, we couldn’t find the page you’re looking for.</p>

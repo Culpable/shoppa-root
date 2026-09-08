@@ -1,5 +1,7 @@
 # Shoppa Landing Site (Astro, Warm Sunrise) Plan ✅ **COMPLETED**
 
+> **Implemented status (verified 2026-08-31):** Implemented and ready to archive from documents/todo. Evidence: `src/pages/`, `src/styles/global.css`, `scripts/validate-build.mjs`, `test/agent-accessibility.spec.ts`, `test/agent-readiness.spec.ts`, `README.md`, `DESIGN.md`, `.github/workflows/deploy.yml`.
+
 <critical_warning>
 > **CRITICAL WARNING:** Deployment-stack exception to the `build-astro-websites` skill. This build deploys to **GitHub Pages via GitHub Actions**, exactly as `AGENTS.md` (`<build_directives>`) and `README.md` mandate. GitHub Pages is not one of the skill's three supported stacks (Vercel, Cloudflare Workers Builds, Cloudflare Pages) - the user explicitly directed: use GitHub Pages per the AGENTS + README, and note this as an exception when using the skill. Therefore: apply the skill's architecture, engineering, and verification standards in full, but do **not** read or apply any of its provider reference files, and do not migrate hosting. `public/CNAME` is the custom-domain source of truth and must survive verbatim into the build output (`dist/CNAME`). Never move or delete it.
 </critical_warning>
@@ -130,7 +132,7 @@ The embeddings site claims these; Shoppa's product docs explicitly exclude them 
 - The user ran a prototype round (8 directions, one HTML bundle with a picker) and chose **Variant 3 "Warm Sunrise"**: terracotta/peach/cream, Bricolage Grotesque + Figtree, rounded cards.
 - The user reported a visual defect in the chosen variant with a screenshot: the hero's peach highlight box behind "actually yours" collides with the text line above it. Regression artefact: `/Users/sacino/.t3/userdata/attachments/ae85fa7b-6e21-4acb-b8e6-a78409e529dd-9947c88b-63e7-40c3-875e-f0e5df81794a.png`.
 - Hosting: the user initially suggested Cloudflare Workers, then corrected: *"for this build, make it clear we are using GitHub Pages as per the AGENTS + README. Note in the plan that this is an exception noted when using the skill."*
-- Contact: *"Just go with the direct email for now, and have a placeholder for a formspree form akin to embeddings post-completion for us to add."* Published address: **hello@shoppa.au** (user-selected; a pre-launch mailbox check is Step 12's responsibility to flag, not to perform silently).
+- Contact: *"Just go with the direct email for now, and have a placeholder for a formspree form akin to embeddings post-completion for us to add."* Published address: **hello@shoppa.au**. Cloudflare Email Routing forwards every `@shoppa.au` address to `solutions@embeddings.au`; the literal `hello@` rule remains enabled.
 - Copy positioning: adapt embeddings copy to product positioning now (user chose this over verbatim porting). Approved adaptations: embed-led hero subhead; proof pill 3 = "2 lines / of code to go live"; agent side panels = real two-line embed + demo.shoppa.au proof; true-claim capability chips; returns and search-stack claims removed.
 - Services section: reframe as the catalogue story (user choice); section label **"the catalogue"**, anchor `/#catalogue` (user choice).
 - Testimonial: keep the slot with a product-specific placeholder quote, Draft A (user choice; wording in 7.4). Attribution stays anonymous: "Australian retail executive · Head of Digital, National Retailer".
@@ -283,7 +285,7 @@ The embeddings site claims these; Shoppa's product docs explicitly exclude them 
 
 #### 12.1 High-Level Approach
 - Update `README.md`: Status section (Astro implemented; commands; deploy pipeline as-built). Keep the CNAME and Pages rationale.
-- Flag to the user (in the completion report, not silently): confirm the `hello@shoppa.au` mailbox or forward exists before DNS cutover.
+- Current state: Cloudflare Email Routing forwards every `@shoppa.au` address to `solutions@embeddings.au`; the literal `hello@` rule remains enabled.
 
 **Success Criteria:**
 - README contains the actual build/dev commands and no "stack is still to be decided" text.
@@ -480,4 +482,4 @@ Final validation:
 - GitHub Actions workflow YAML parser - passed.
 - Consolidated audit XML - passed XML parsing.
 
-Deployment was not run. Before launch, confirm that `hello@shoppa.au` receives mail, enable GitHub Pages with the GitHub Actions source, and point the apex and `www` DNS records at GitHub Pages.
+The landing-page deployment was not run in this original implementation. Cloudflare Email Routing now forwards `hello@shoppa.au` to `solutions@embeddings.au`; the apex and `www` continue to serve the GitHub Pages site.

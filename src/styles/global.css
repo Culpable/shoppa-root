@@ -305,20 +305,38 @@ ul, ol { padding: 0; }
    card holds below it, so the three cards keep one internal rhythm. */
 .flow-title { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: 700; }
 .flow-title .status { margin-left: auto; }
-.flow-icon { display: grid; flex: none; place-items: center; width: 28px; height: 28px; border-radius: 9px; }
-/* The glyph fills the tile and carries its inset in the viewBox (FlowIcon.astro).
-   A smaller centred svg left a 5.5px pad it could not round evenly, so the mark
-   snapped off-centre; sharing the tile's rect removes that rounding entirely. */
-.flow-icon svg { width: 100%; height: 100%; }
-.flow-icon-catalogue { color: var(--colour-accent-text); background: var(--colour-tint-peach); }
-.flow-icon-agent { color: white; background: var(--colour-accent); }
-.flow-icon-customer { color: var(--colour-ink); background: var(--colour-tint-blush); }
+/* Icon tiles (Icon.astro): one tinted rounded square at any size, radius held
+   at 32% of the edge so a 28px hero tile (9px) and a 56px page tile (18px)
+   share one shape. The glyph fills the tile and carries its inset in the
+   viewBox: a smaller centred svg left a 5.5px pad it could not round evenly,
+   so the mark snapped off-centre; sharing the tile's rect removes that
+   rounding entirely. */
+.icon-tile { --icon-tile: 28px; display: grid; flex: none; place-items: center; width: var(--icon-tile); height: var(--icon-tile); border-radius: calc(var(--icon-tile) * 0.32); }
+.icon-tile svg { width: 100%; height: 100%; display: block; }
+.icon-tile-peach { color: var(--colour-accent-text); background: var(--colour-tint-peach); }
+.icon-tile-terracotta { color: white; background: var(--colour-accent); }
+.icon-tile-blush { color: var(--colour-ink); background: var(--colour-tint-blush); }
+.icon-tile-sage { color: var(--colour-success); background: var(--colour-tint-sage); }
+.icon-tile-band { color: var(--colour-band-accent); background: var(--colour-band-wash); }
+/* Inline glyph beside text: 1em so it tracks the label size, dropped 0.08em so
+   its optical centre sits on the x-height rather than the cap height. */
+.icon-inline { display: inline-grid; flex: none; place-items: center; width: 1em; height: 1em; position: relative; top: 0.08em; }
+.icon-inline svg { width: 1.2em; height: 1.2em; display: block; }
+/* A tile that opens a card or column sits above the heading with a label-sized gap. */
+.card-icon { margin-bottom: 14px; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.card-head .index { margin-bottom: 0; }
+.stage-icon { margin-bottom: 14px; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
+.panel-head .eyebrow { margin-bottom: 0; }
+.not-found-icon { margin-bottom: 18px; }
 .flow-meta { margin: 0; color: var(--colour-ink-secondary); font-size: 12.5px; }
-.status { display: inline-flex; width: fit-content; align-items: center; min-height: 29px; padding: 4px 11px; border-radius: 999px; color: var(--colour-success); background: var(--colour-tint-sage); font-size: 12px; font-weight: 700; }
+.status { display: inline-flex; width: fit-content; align-items: center; gap: 5px; min-height: 29px; padding: 4px 11px 4px 9px; border-radius: 999px; color: var(--colour-success); background: var(--colour-tint-sage); font-size: 12px; font-weight: 700; }
 .flow-connector { display: grid; justify-items: center; gap: 3px; height: 44px; color: var(--colour-ink-secondary); font-size: 11.5px; font-weight: 700; letter-spacing: 0.16em; text-indent: 0.16em; text-transform: uppercase; }
 .flow-connector::before, .flow-connector::after { width: 1.5px; height: 11px; background: var(--colour-border-strong); content: ''; }
 .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; list-style: none; }
-.chip-list li { padding: 5px 12px; border: 1px solid var(--colour-border-strong); border-radius: 999px; font-size: 12px; font-weight: 600; }
+.chip-list li { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px 5px 10px; border: 1px solid var(--colour-border-strong); border-radius: 999px; font-size: 12px; font-weight: 600; }
+.chip-list .icon-inline { color: var(--colour-accent-text); }
 .mini-browser { display: grid; gap: 14px; }
 .browser-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 14px; background: var(--colour-surface-sunken); color: var(--colour-ink-secondary); font-size: 12px; }
 .mini-chat { display: grid; gap: 10px; font-size: 13px; }
@@ -546,6 +564,7 @@ ul, ol { padding: 0; }
    before the paragraph they introduce. Keep this rhythm local to the utility
    card so supporting pages retain their established heading spacing. */
 .utility-card > h2 { margin: 30px 0 14px; }
+.utility-card > .card-icon + h2 { margin-top: 0; }
 .not-found { min-height: 58vh; display: grid; align-content: center; justify-items: start; }
 .not-found-number { margin-bottom: 8px; color: var(--colour-accent); font-family: var(--font-display); font-size: clamp(76px, 13vw, 150px); font-weight: 800; line-height: 0.8; }
 
@@ -570,10 +589,12 @@ ul, ol { padding: 0; }
    applied by that script at runtime, so the page is complete without
    JavaScript and crawlers see the full static content. */
 
-/* Replay states: hidden messages keep their layout space (opacity plus a
-   small lift only), so the sale plays without moving anything else. */
+/* Replay states: hidden messages keep their layout space at opacity zero.
+   Showing a message snaps it to full opacity before the rise begins, so text
+   never passes through a low-contrast composited frame. The transform keeps
+   the approved arrival motion without moving anything else in layout. */
 .replay-hidden { opacity: 0; transform: translateY(10px); }
-.replay-shown { opacity: 1; transform: translateY(0); transition: opacity 340ms ease-out, transform 420ms cubic-bezier(0.34, 1.45, 0.5, 1); }
+.replay-shown { opacity: 1; transform: translateY(0); transition: transform 420ms cubic-bezier(0.34, 1.45, 0.5, 1); }
 
 /* The typing indicator is an absolute overlay on the spot the upcoming
    (hidden, space-reserving) bubble already occupies. It must never enter
@@ -648,7 +669,7 @@ ul, ol { padding: 0; }
   .flow-card-agent .flow-title { margin-bottom: 0; }
   .flow-card-agent .chip-list { flex: 1 0 auto; justify-content: flex-end; gap: 6px; }
   .flow-card-agent .chip-list li:nth-child(3) { display: none; }
-  .flow-card-agent .chip-list li { padding: 4px 9px; font-size: 11.5px; }
+  .flow-card-agent .chip-list li { padding: 4px 9px 4px 8px; font-size: 11.5px; }
   .agent-grid { margin-top: 32px; }
   .conversation { padding: 16px; }
   .conversation .browser-bar { margin: -16px -16px 22px; }

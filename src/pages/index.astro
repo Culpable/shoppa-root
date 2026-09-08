@@ -2,7 +2,7 @@
 import AgentAvatar from '../components/AgentAvatar.astro';
 import CTASection from '../components/CTASection.astro';
 import DressThumbnail from '../components/DressThumbnail.astro';
-import FlowIcon from '../components/FlowIcon.astro';
+import Icon, { type IconName } from '../components/Icon.astro';
 import LandingEffects from '../components/LandingEffects.astro';
 import PaidOrderBadge from '../components/PaidOrderBadge.astro';
 import SourceLink from '../components/SourceLink.astro';
@@ -40,10 +40,10 @@ const timeline = [
 // as a stray second heading inside the card. A stat belongs in a band where
 // every item carries one (the timeline above, the about-page stats band); in a
 // narrative set it stays in the sentence its source backs.
-const shiftCards = [
-  { title: 'Disintermediation', body: 'AI agents become the storefront. If the agent belongs to a platform, the customer relationship, loyalty activation, and first-party data go with it. Your own agent keeps them.', source: 'McKinsey', href: timeline[3].href },
-  { title: 'The data foundation', body: 'AI-driven traffic to retail sites grew 393% year on year in Q1 2026. An agent is only as good as the catalogue behind it: missing descriptions, stale inventory, and inconsistent taxonomy produce wrong answers, whether the agent is yours or a platform’s.', source: 'Adobe Digital Insights', href: 'https://business.adobe.com/blog/ai-traffic-surge-retail-sites-not-machine-readable' },
-  { title: 'The race is on', body: 'Early movers are already putting branded agents in front of their customers. Every month without one is a month of conversations, and conversions, happening somewhere else.', source: 'Deloitte 2026 outlook', href: timeline[2].href },
+const shiftCards: { icon: IconName; title: string; body: string; source: string; href: string }[] = [
+  { icon: 'handshake', title: 'Disintermediation', body: 'AI agents become the storefront. If the agent belongs to a platform, the customer relationship, loyalty activation, and first-party data go with it. Your own agent keeps them.', source: 'McKinsey', href: timeline[3].href },
+  { icon: 'database', title: 'The data foundation', body: 'AI-driven traffic to retail sites grew 393% year on year in Q1 2026. An agent is only as good as the catalogue behind it: missing descriptions, stale inventory, and inconsistent taxonomy produce wrong answers, whether the agent is yours or a platform’s.', source: 'Adobe Digital Insights', href: 'https://business.adobe.com/blog/ai-traffic-surge-retail-sites-not-machine-readable' },
+  { icon: 'rocket-launch', title: 'The race is on', body: 'Early movers are already putting branded agents in front of their customers. Every month without one is a month of conversations, and conversions, happening somewhere else.', source: 'Deloitte 2026 outlook', href: timeline[2].href },
 ];
 ---
 
@@ -56,11 +56,11 @@ const shiftCards = [
       <ul class="proof-pills" aria-label="Shoppa at a glance"><li class="proof-pill"><strong>Sold</strong><span>in one conversation</span></li><li class="proof-pill"><strong>Yours</strong><span>not rented</span></li><li class="proof-pill"><strong>2 lines</strong><span>of code to go live</span></li></ul>
     </div>
     <div class="flow-stack" aria-label="Your catalogue feeds your agent, which answers your customer">
-      <div class="flow-card"><div class="flow-title"><FlowIcon variant="catalogue" /><span>Your catalogue</span><span class="status">ready</span></div><p class="flow-meta">details · descriptions · stock</p></div>
+      <div class="flow-card"><div class="flow-title"><Icon name="catalogue" tile="peach" /><span>Your catalogue</span><span class="status"><Icon name="check-circle" />ready</span></div><p class="flow-meta">details · descriptions · stock</p></div>
       <div class="flow-connector">feeds</div>
-      <div class="flow-card flow-card-agent"><div class="flow-title"><FlowIcon variant="agent" /><span>Your agent</span></div><ul class="chip-list"><li>discover</li><li>checkout</li><li>support</li></ul></div>
+      <div class="flow-card flow-card-agent"><div class="flow-title"><Icon name="agent" tile="terracotta" /><span>Your agent</span></div><ul class="chip-list"><li><Icon name="magnifying-glass" />discover</li><li><Icon name="credit-card" />checkout</li><li><Icon name="headset" />support</li></ul></div>
       <div class="flow-connector">answers</div>
-      <div class="flow-card"><div class="flow-title"><FlowIcon variant="customer" /><span>Your customer</span></div><div class="mini-browser"><div class="browser-bar"><span>yourstore.com.au</span><span><span aria-hidden="true">✦ </span>your brand</span></div><div class="mini-chat"><p class="bubble bubble-customer">Do you have the Sapphire Blue Midi in size 10?</p><div class="mini-agent-row"><AgentAvatar size="small" /><p class="bubble bubble-agent">Found it: in stock and in your size.</p></div><div class="product-row"><DressThumbnail variant="sapphire" idPrefix="hero-chat" size="small" /><strong>Sapphire Blue Midi</strong><span class="product-meta">$189 · size 10 · in stock</span></div><div class="mini-agent-row"><AgentAvatar size="small" /><p class="bubble bubble-agent">Pay here in the chat?</p></div><PaidOrderBadge /></div></div></div>
+      <div class="flow-card"><div class="flow-title"><Icon name="customer" tile="blush" /><span>Your customer</span></div><div class="mini-browser"><div class="browser-bar"><span>yourstore.com.au</span><span><span aria-hidden="true">✦ </span>your brand</span></div><div class="mini-chat"><p class="bubble bubble-customer">Do you have the Sapphire Blue Midi in size 10?</p><div class="mini-agent-row"><AgentAvatar size="small" /><p class="bubble bubble-agent">Found it: in stock and in your size.</p></div><div class="product-row"><DressThumbnail variant="sapphire" idPrefix="hero-chat" size="small" /><strong>Sapphire Blue Midi</strong><span class="product-meta">$189 · size 10 · in stock</span></div><div class="mini-agent-row"><AgentAvatar size="small" /><p class="bubble bubble-agent">Pay here in the chat?</p></div><PaidOrderBadge /></div></div></div>
     </div>
   </section>
 
@@ -79,7 +79,7 @@ const shiftCards = [
           <li class="conversation-message"><AgentAvatar /><div class="message-stack"><p class="bubble bubble-agent"><span class="sr-only">Your agent: </span>Good news. Order #8412 is out for delivery and should be with you today.</p></div></li>
         </ol>
       </article>
-      <div class="side-panels"><article class="embed-panel"><p class="eyebrow dark-eyebrow">the embed</p><h3>Two lines of code.</h3><p>No rebuild, no platform migration.</p><pre class="code-block"><code>{embedCode}</code></pre></article><article class="demo-panel"><p class="eyebrow dark-eyebrow">the demo</p><h3>See it live.</h3><p>Harlow the Label, a demo boutique running the real embed.</p><a class="demo-link" href="https://demo.shoppa.au">demo.shoppa.au <span aria-hidden="true">↗</span></a></article></div>
+      <div class="side-panels"><article class="embed-panel"><div class="panel-head"><p class="eyebrow dark-eyebrow">the embed</p><Icon name="code" tile="band" size={36} /></div><h3>Two lines of code.</h3><p>No rebuild, no platform migration.</p><pre class="code-block"><code>{embedCode}</code></pre></article><article class="demo-panel"><div class="panel-head"><p class="eyebrow dark-eyebrow">the demo</p><Icon name="rocket-launch" tile="band" size={36} /></div><h3>See it live.</h3><p>Harlow the Label, a demo boutique running the real embed.</p><a class="demo-link" href="https://demo.shoppa.au">demo.shoppa.au <span aria-hidden="true">↗</span></a></article></div>
     </div>
     <ul class="capabilities">{capabilities.map((capability) => <li>{capability}</li>)}</ul>
   </section>
@@ -95,7 +95,7 @@ const shiftCards = [
 
   <section id="why-now" class="container section dark-band"><h2>Agentic shopping isn’t coming. It’s here.</h2><div class="timeline-grid">{timeline.map((item) => <article class="timeline-card"><span class="timeline-date">{item.date}</span><p class="timeline-stat">{item.stat}</p><p class="timeline-label">{item.label}</p><p class="timeline-text">{item.text}</p><SourceLink href={item.href} source={item.source} /></article>)}</div><div class="timeline-close"><strong>Retailers who own the conversation keep the customer.</strong><span>The rest are handing their relationships to someone else’s agent.</span></div></section>
 
-  <section class="container section"><div class="section-intro"><p class="eyebrow">the shift</p><h2>Your customers will talk to an AI agent. Make sure it’s yours.</h2><p>When shopping moves into a third-party chat, the platform owns the relationship, the data, and the follow-up sale. A shopping agent you own keeps discovery, checkout, and after-sales support on your site, in your brand, answering from your catalogue.</p></div><div class="shift-grid">{shiftCards.map((card) => <article class="shift-card"><h3>{card.title}</h3><p>{card.body}</p><SourceLink href={card.href} source={card.source} onLight /></article>)}</div></section>
+  <section class="container section"><div class="section-intro"><p class="eyebrow">the shift</p><h2>Your customers will talk to an AI agent. Make sure it’s yours.</h2><p>When shopping moves into a third-party chat, the platform owns the relationship, the data, and the follow-up sale. A shopping agent you own keeps discovery, checkout, and after-sales support on your site, in your brand, answering from your catalogue.</p></div><div class="shift-grid">{shiftCards.map((card) => <article class="shift-card"><Icon name={card.icon} tile="peach" size={40} class="card-icon" /><h3>{card.title}</h3><p>{card.body}</p><SourceLink href={card.href} source={card.source} onLight /></article>)}</div></section>
 
   <section id="proof" class="container section dark-band testimonial"><blockquote>We went from a script tag to a live agent <em>in an afternoon</em>. Customers ask, pay, and track orders without leaving the chat - and it’s <em>our brand doing the talking</em>.</blockquote><footer><strong>Australian retail executive</strong><span>Head of Digital, National Retailer</span></footer></section>
   <CTASection />

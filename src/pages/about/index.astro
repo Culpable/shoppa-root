@@ -2,6 +2,7 @@
 import CTASection from '../../components/CTASection.astro';
 import PageIntro from '../../components/PageIntro.astro';
 import SourceLink from '../../components/SourceLink.astro';
+import Icon, { type IconName, type IconTone } from '../../components/Icon.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { PageMetadataInput } from '../../lib/metadata.ts';
 
@@ -11,10 +12,10 @@ const metadata = {
     'The team building Shoppa, the AI shopping agent Australian retailers deploy and own on their own sites.',
 } satisfies PageMetadataInput;
 
-const capabilities = [
-  { index: '01', title: 'The agent', body: 'Discovery, checkout, and order support in one conversation. Your agent greets customers, answers from your catalogue, takes payment in the chat, and handles ‘where’s my order?’ follow-ups.' },
-  { index: '02', title: 'The embed', body: 'The complete integration is two script tags. No rebuild, no platform migration, no new storefront - your agent lives on the site you already have, in your brand.' },
-  { index: '03', title: 'The catalogue', body: 'Your agent is grounded in the product feed you already run. Complete titles, descriptions, prices, sizes, and stock are what turn a chat window into a salesperson.' },
+const capabilities: { index: string; icon: IconName; tone: IconTone; title: string; body: string }[] = [
+  { index: '01', icon: 'agent', tone: 'terracotta', title: 'The agent', body: 'Discovery, checkout, and order support in one conversation. Your agent greets customers, answers from your catalogue, takes payment in the chat, and handles ‘where’s my order?’ follow-ups.' },
+  { index: '02', icon: 'code', tone: 'peach', title: 'The embed', body: 'The complete integration is two script tags. No rebuild, no platform migration, no new storefront - your agent lives on the site you already have, in your brand.' },
+  { index: '03', icon: 'catalogue', tone: 'peach', title: 'The catalogue', body: 'Your agent is grounded in the product feed you already run. Complete titles, descriptions, prices, sizes, and stock are what turn a chat window into a salesperson.' },
 ];
 const stats = [
   { value: '393%', label: 'YoY growth in AI-driven e-commerce', source: 'Adobe', href: 'https://business.adobe.com/blog/ai-traffic-surge-retail-sites-not-machine-readable' },
@@ -30,7 +31,7 @@ const stats = [
   </PageIntro>
   <section class="container"><dl class="proof-band"><div class="proof-item"><dt>focus</dt><dd>retailer-owned shopping agents</dd></div><div class="proof-item"><dt>built as</dt><dd>an out-of-the-box agent you deploy</dd></div><div class="proof-item"><dt>based in</dt><dd>Perth + Melbourne</dd></div></dl></section>
   <section class="container prose-grid"><p>Shoppa was built by engineers who spent years building large language model pipelines and enterprise data systems. When agentic shopping emerged - AI agents autonomously researching and purchasing on behalf of consumers - we saw the critical gap: retailers had no way to put their own agent in front of customers without ceding the relationship to a platform. We built Shoppa to close that gap.</p><p>Our approach is engineering-led and outcome-driven. Success is a customer who asks, pays, and gets a straight answer about their order without ever leaving your site.</p></section>
-  <section class="container dark-band approach-block"><p class="eyebrow">our approach</p><h2>Built for retail conversations, not generic AI chat</h2><p>Most AI tools bolt a chat window onto a website and stop there. We chose a different path: one product for one problem. Putting a trustworthy agent between a retailer and their customer, on the retailer’s terms, grounded in the retailer’s own product data.</p><div class="capability-grid">{capabilities.map((item) => <article class="capability-card"><p class="index">{item.index}</p><h3>{item.title}</h3><p>{item.body}</p></article>)}</div></section>
+  <section class="container dark-band approach-block"><p class="eyebrow">our approach</p><h2>Built for retail conversations, not generic AI chat</h2><p>Most AI tools bolt a chat window onto a website and stop there. We chose a different path: one product for one problem. Putting a trustworthy agent between a retailer and their customer, on the retailer’s terms, grounded in the retailer’s own product data.</p><div class="capability-grid">{capabilities.map((item) => <article class="capability-card"><div class="card-head"><Icon name={item.icon} tile={item.tone} size={40} /><p class="index">{item.index}</p></div><h3>{item.title}</h3><p>{item.body}</p></article>)}</div></section>
   <section class="container"><dl class="stats-band">{stats.map((stat) => <div class="stat-item"><dt>{stat.source}</dt><dd class="stat-value">{stat.value}</dd><dd>{stat.label}</dd><dd class="stat-source"><SourceLink href={stat.href} source={stat.source} onLight /></dd></div>)}</dl></section>
   <CTASection />
 </BaseLayout>

@@ -46,7 +46,7 @@ Public marketing site for Shoppa, an out-of-the-box AI shopping agent for Austra
 <environments>
 - Development: `pnpm dev` serves the local static site at `http://localhost:4321`; no database, authentication, or external service is required.
 - Test: `pnpm build && pnpm test` builds `dist/`, validates required artefacts, and serves it through a Playwright-owned local server. Tests must not target the deployed site.
-- Production: GitHub Pages serves the static `dist/` artifact at `https://shoppa.au`; pushes to `main` deploy only through `.github/workflows/deploy.yml`.
+- Production: GitHub Pages serves the static `dist/` artifact at `https://shoppa.au`; pushes to `main` deploy only through `.github/workflows/deploy.yml`. Cloudflare Email Routing forwards every `@shoppa.au` address to `solutions@embeddings.au`; the literal `hello@` rule remains enabled and Shoppa has no outbound mail provider. Exact DNS snapshots and rollback steps are in `documents/guides/_email_routing.md`.
 </environments>
 
 <technology_stack>

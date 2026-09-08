@@ -2,15 +2,21 @@
   "version": "0.2.0",
   "configurations": [
     {
-      // Boots `pnpm dev` with the Node inspector attached, then opens Chrome
-      // on the printed local URL. Breakpoints work in Astro frontmatter,
-      // config, and client-side scripts.
+      // Boots `pnpm dev` on port 4340 with the Node inspector attached, then
+      // opens Chrome on the printed local URL. Astro's dev server hot-reloads
+      // (Vite HMR) out of the box, so edits land without a restart, and
+      // breakpoints work in Astro frontmatter, config, and client scripts.
+      //
+      // Port 4340 is reserved for this project's debug session: 4321 is the
+      // Astro default that every sibling repo also uses (and the Playwright
+      // suite's server), so two dev servers collided there. webpop debugs on
+      // 4330; both can run at once.
       "name": "Debug Shoppa",
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["dev"],
+      "runtimeArgs": ["dev", "--port", "4340", "--host", "localhost"],
       "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**"],
       "serverReadyAction": {

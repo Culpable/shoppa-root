@@ -387,6 +387,16 @@ flowchart LR
 - Lighthouse: 96 reports complete (2 hosts x 6 routes x 5 mobile plus 2 hosts x 6 routes x 3 desktop); every table row has median, min, max, delta; staging SEO scores are marked excluded because of the intentional `noindex`.
 - `documents/guides/parity/cutover-snapshot.json` and the rollback packet are committed before the approval request; the approval request names both URLs and the packet; the recorded answer is explicit before Step 6 starts.
 
+#### 5.3 Current execution state (8 September 2026)
+
+Steps 1-4 are done. Step 5 hosted proof is done. Step 6 has **not** started.
+
+- `https://shoppa.au/` is still GitHub Pages (`server: GitHub.com`).
+- `https://staging.shoppa.au/` is Worker `shoppa-root` (domain `2cc072688b4f43842c4b97f4fe843511ee537694`, version `00722e95-13c2-4782-bff1-dc299044be5d`).
+- Evidence: `documents/guides/_hosting.md`, `documents/guides/parity/cutover-snapshot.json`, `documents/guides/parity/lighthouse-summary.json`.
+- Hosted proof passed after the user approved disabling the Web Analytics beacon (RUM site `e3e00a5697024d2195628d21f22e9717`, `enabled: false`).
+- Cutover approval was requested. The user instructed: do not cut over; wait for review. No DNS, `www`, or `always_use_https` write will run until an explicit recorded approval for Step 6.
+
 ### Step 6: Cut over `shoppa.au` and `www.shoppa.au`
 **Objective:** Move production to the verified Worker version with an exact, tested rollback.
 
